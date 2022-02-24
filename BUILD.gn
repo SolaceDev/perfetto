@@ -221,6 +221,14 @@ if (enable_perfetto_platform_services) {
       deps += [ "src/tracing/consumer_api_deprecated" ]
     }
   }
+
+  # TODO: add configurable static/dynamic lib logic if there's ever a need. Only
+  # dynamic is needed now.
+  target("shared_library", "protozero") {
+    deps = [
+      "src/protozero:protozero",
+    ]
+  }
 }
 
 if (!build_with_chromium) {
