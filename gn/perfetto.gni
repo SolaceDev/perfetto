@@ -85,6 +85,14 @@ declare_args() {
   # based on GN (e.g. v8) should NOT set this and instead directly sets
   # perfetto_build_with_embedder=true in their GN files.
   is_perfetto_embedder = false
+
+  # TODO: Find out the history of what is_component_build was originally
+  # intended for. It currently exists a something configurable, which has the
+  # desired effect of exporting PERFETTO_EXPORT symbols when building a library.
+  # However, it isn't exposed anywhere, so this exposes it as configuruable.
+  # When building protozero as a standalone library, configure
+  # is_component_build=true to ensure the entry points aren't hidden.
+  is_component_build = false
 }
 
 # This can be overridden by embedders (e.g. v8) in their .gn(i) files. This must
