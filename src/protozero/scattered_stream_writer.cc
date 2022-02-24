@@ -57,15 +57,9 @@ void ScatteredStreamWriter::WriteBytesSlowPath(const uint8_t* src,
 
 // TODO(primiano): perf optimization: I suspect that at the end this will always
 // be called with |size| == 4, in which case we might just hardcode it.
-uint8_t* ScatteredStreamWriter::ReserveBytes(size_t size) {
-  if (write_ptr_ + size > cur_range_.end) {
-    // Assume the reservations are always < Delegate::GetNewBuffer().size(),
-    // so that one single call to Extend() will definitely give enough headroom.
-    Extend();
-    PERFETTO_DCHECK(write_ptr_ + size <= cur_range_.end);
-  }
-  uint8_t* begin = write_ptr_;
-  write_ptr_ += size;
+ScatteredStreamWriter::ReservedBytes
+ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
+  constexpr size_t size = ReservedBytes::kFieldSize;
 #if PERFETTO_DCHECK_IS_ON()
   // In the past, the service had a matching DCHECK in
   // TraceBuffer::TryPatchChunkContents, which was assuming that service and all
@@ -76,9 +70,32 @@ uint8_t* ScatteredStreamWriter::ReserveBytes(size_t size) {
   // debug mode. At some point around 2023 it should be safe to remove it.
   // (running a debug version of traced in production seems a bad idea
   // regardless).
-  memset(begin, 0, size);
+  zeroReservedBytes = true;
 #endif
-  return begin;
+
+  ScatteredStreamWriter::ReservedBytes ret = {
+    { write_ptr_, nullptr },
+    std::min(size, static_cast<size_t>(cur_range_.end - write_ptr_))
+  };
+
+  if (ret.firstSz_ < size) {
+    // Assume the reservations are always < Delegate::GetNewBuffer().size(),
+    // so that one single call to Extend() will definitely give enough headroom.
+    Extend();
+    PERFETTO_DCHECK(write_ptr_ + size - ret.firstSz_ <= cur_range_.end);
+
+    ret.buf_[1] = write_ptr_;
+    if (zeroReservedBytes) {
+        memset(write_ptr_, 0, size - ret.firstSz_);
+    }
+    write_ptr_ += size - ret.firstSz_;
+  } else {
+    write_ptr_ += ret.firstSz_;
+  }
+  if (zeroReservedBytes) {
+    memset(ret.buf_[0], 0, ret.firstSz_);
+  }
+  return ret;
 }
 
 }  // namespace protozero

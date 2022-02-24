@@ -72,8 +72,14 @@ class PERFETTO_EXPORT Message {
   // of this message (minus |size_already_written| below). This is the mechanism
   // used by messages to backfill their corresponding size field in the parent
   // message.
-  uint8_t* size_field() const { return size_field_; }
-  void set_size_field(uint8_t* size_field) { size_field_ = size_field; }
+  const ScatteredStreamWriter::ReservedBytes& size_field() const { return size_field_; }
+  void set_size_field(ScatteredStreamWriter::ReservedBytes size_field)
+    { size_field_ = size_field; }
+  void reset_size_field() { size_field_.Reset(); }
+  void WriteReservedSize(uint32_t value) { size_field_.WriteRedundantVarInt(value); }
+  void SetPrereservedSizeContiguousMemoryRange(uint8_t* mem) {
+    size_field_.SetPrereservedContiguousMemoryRange(mem);
+  }
 
   // This is to deal with case of backfilling the size of a root (non-nested)
   // message which is split into multiple chunks. Upon finalization only the
@@ -224,7 +230,7 @@ class PERFETTO_EXPORT Message {
   // [optional] Pointer to a non-aligned pre-reserved var-int slot of
   // kMessageLengthFieldSize bytes. When set, the Finalize() method will write
   // the size of proto-encoded message in the pointed memory region.
-  uint8_t* size_field_;
+  ScatteredStreamWriter::ReservedBytes size_field_;
 
   // Keeps track of the size of the current message.
   uint32_t size_;

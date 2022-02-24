@@ -56,7 +56,7 @@ void Message::Reset(ScatteredStreamWriter* stream_writer, MessageArena* arena) {
   stream_writer_ = stream_writer;
   arena_ = arena;
   size_ = 0;
-  size_field_ = nullptr;
+  size_field_.Reset();
   size_already_written_ = 0;
   nested_message_ = nullptr;
   finalized_ = false;
@@ -121,13 +121,11 @@ uint32_t Message::Finalize() {
 
   // Write the length of the nested message a posteriori, using a leading-zero
   // redundant varint encoding.
-  if (size_field_) {
+  if (!size_field_.IsNull()) {
     PERFETTO_DCHECK(!finalized_);
     PERFETTO_DCHECK(size_ < proto_utils::kMaxMessageLength);
     PERFETTO_DCHECK(size_ >= size_already_written_);
-    proto_utils::WriteRedundantVarInt(size_ - size_already_written_,
-                                      size_field_);
-    size_field_ = nullptr;
+    size_field_.WriteRedundantVarInt(size_ - size_already_written_);
   }
 
   finalized_ = true;

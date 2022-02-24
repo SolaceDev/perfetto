@@ -93,7 +93,7 @@ void TraceWriterImpl::Flush(std::function<void()> callback) {
   protobuf_stream_writer_.Reset({nullptr, nullptr});
 
   // |last_packet_size_field_| might have pointed into the chunk we returned.
-  last_packet_size_field_ = nullptr;
+  last_packet_size_field_.Reset();
 }
 
 TraceWriterImpl::TracePacketHandle TraceWriterImpl::NewTracePacket() {
@@ -135,10 +135,8 @@ TraceWriterImpl::TracePacketHandle TraceWriterImpl::NewTracePacket() {
   }
 
   cur_packet_->Reset(&protobuf_stream_writer_);
-  uint8_t* header = protobuf_stream_writer_.ReserveBytes(kPacketHeaderSize);
-  memset(header, 0, kPacketHeaderSize);
-  cur_packet_->set_size_field(header);
-  last_packet_size_field_ = header;
+  cur_packet_->set_size_field(protobuf_stream_writer_.ReserveBytes(true));
+  last_packet_size_field_ = cur_packet_->size_field();
 
   TracePacketHandle handle(cur_packet_.get());
   cur_fragment_start_ = protobuf_stream_writer_.write_ptr();
@@ -216,12 +214,7 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
       // Backfill the last fragment's header with an invalid size (too large),
       // so that the service's TraceBuffer throws out the incomplete packet.
       // It'll restart reading from the next chunk we submit.
-      WriteRedundantVarInt(SharedMemoryABI::kPacketSizeDropPacket,
-                           cur_packet_->size_field());
-
-      // Reset the size field, since we should not write the current packet's
-      // size anymore after this.
-      cur_packet_->set_size_field(nullptr);
+      cur_packet_->WriteReservedSize(SharedMemoryABI::kPacketSizeDropPacket);
 
       // We don't set kLastPacketContinuesOnNextChunk or kChunkNeedsPatching on
       // the last chunk, because its last fragment will be discarded anyway.
@@ -235,18 +228,17 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
       // field references into |cur_chunk_|.
       for (auto* nested_msg = cur_packet_->nested_message(); nested_msg;
            nested_msg = nested_msg->nested_message()) {
-        uint8_t* const cur_hdr = nested_msg->size_field();
-
         // If this is false the protozero Message has already been instructed to
         // write, upon Finalize(), its size into the patch list.
-        bool size_field_points_within_chunk =
-            cur_hdr >= cur_chunk_.payload_begin() &&
-            cur_hdr + kMessageLengthFieldSize <= cur_chunk_.end();
+        const bool size_field_points_within_chunk =
+          nested_msg->size_field().IsContiguousWithinRange(
+            cur_chunk_.payload_begin(),
+            cur_chunk_.end());
 
         if (size_field_points_within_chunk)
-          nested_msg->set_size_field(nullptr);
+          nested_msg->reset_size_field();
       }
-    } else if (!drop_packets_ && last_packet_size_field_) {
+    } else if (!drop_packets_ && !last_packet_size_field_.IsNull()) {
       // If we weren't dropping packets before, we should indicate to the
       // service that we're about to lose data. We do this by invalidating the
       // size of the last packet in |cur_chunk_|. The service will record
@@ -255,12 +247,11 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
       PERFETTO_DCHECK(cur_chunk_.is_valid());
 
       // |last_packet_size_field_| should point within |cur_chunk_|'s payload.
-      PERFETTO_DCHECK(last_packet_size_field_ >= cur_chunk_.payload_begin() &&
-                      last_packet_size_field_ + kMessageLengthFieldSize <=
+      PERFETTO_DCHECK(last_packet_size_field_.buf_[0] >= cur_chunk_.payload_begin() &&
+                      last_packet_size_field_.buf_[0] + kMessageLengthFieldSize <=
                           cur_chunk_.end());
 
-      WriteRedundantVarInt(SharedMemoryABI::kPacketSizeDropPacket,
-                           last_packet_size_field_);
+      last_packet_size_field_.WriteRedundantVarInt(SharedMemoryABI::kPacketSizeDropPacket);
     }
 
     if (cur_chunk_.is_valid()) {
@@ -272,7 +263,7 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
     cur_chunk_ = SharedMemoryABI::Chunk();  // Reset to an invalid chunk.
     reached_max_packets_per_chunk_ = false;
     retry_new_chunk_after_packet_ = false;
-    last_packet_size_field_ = nullptr;
+    last_packet_size_field_.Reset();
 
     PERFETTO_ANNOTATE_BENIGN_RACE_SIZED(&g_garbage_chunk,
                                         sizeof(g_garbage_chunk),
@@ -297,7 +288,7 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
     PERFETTO_DCHECK(partial_size > 0);
     cur_packet_->inc_size_already_written(partial_size);
     cur_chunk_.SetFlag(ChunkHeader::kLastPacketContinuesOnNextChunk);
-    WriteRedundantVarInt(partial_size, cur_packet_->size_field());
+    cur_packet_->WriteReservedSize(partial_size);
 
     // Descend in the stack of non-finalized nested submessages (if any) and
     // detour their |size_field| into the |patch_list_|. At this point we have
@@ -306,24 +297,22 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
     bool chunk_needs_patching = false;
     for (auto* nested_msg = cur_packet_->nested_message(); nested_msg;
          nested_msg = nested_msg->nested_message()) {
-      uint8_t* const cur_hdr = nested_msg->size_field();
-
-      // If this is false the protozero Message has already been instructed to
-      // write, upon Finalize(), its size into the patch list.
-      bool size_field_points_within_chunk =
-          cur_hdr >= cur_chunk_.payload_begin() &&
-          cur_hdr + kMessageLengthFieldSize <= cur_chunk_.end();
+      ptrdiff_t offset;
+      const bool size_field_points_within_chunk =
+        nested_msg->size_field().IsContiguousWithinRange(
+          cur_chunk_.payload_begin(),
+          cur_chunk_.end(),
+          &offset);
 
       if (size_field_points_within_chunk) {
-        auto offset =
-            static_cast<uint16_t>(cur_hdr - cur_chunk_.payload_begin());
         const ChunkID cur_chunk_id =
             cur_chunk_.header()->chunk_id.load(std::memory_order_relaxed);
-        Patch* patch = patch_list_.emplace_back(cur_chunk_id, offset);
-        nested_msg->set_size_field(&patch->size_field[0]);
+        Patch* patch = patch_list_.emplace_back(cur_chunk_id, static_cast<uint16_t>(offset));
+        nested_msg->SetPrereservedSizeContiguousMemoryRange(&patch->size_field[0]);
         chunk_needs_patching = true;
       } else {
 #if PERFETTO_DCHECK_IS_ON()
+        const uint8_t* cur_hdr = cur_chunk_.payload_begin() + offset;
         // Ensure that the size field of the message points to an element of the
         // patch list.
         auto patch_it = std::find_if(
@@ -351,12 +340,12 @@ protozero::ContiguousMemoryRange TraceWriterImpl::GetNewBuffer() {
   retry_new_chunk_after_packet_ = false;
   next_chunk_id_++;
   cur_chunk_ = std::move(new_chunk);
-  last_packet_size_field_ = nullptr;
+  last_packet_size_field_.Reset();
 
   uint8_t* payload_begin = cur_chunk_.payload_begin();
   if (fragmenting_packet_) {
-    cur_packet_->set_size_field(payload_begin);
-    last_packet_size_field_ = payload_begin;
+    last_packet_size_field_.SetPrereservedContiguousMemoryRange(payload_begin);
+    cur_packet_->set_size_field(last_packet_size_field_);
     memset(payload_begin, 0, kPacketHeaderSize);
     payload_begin += kPacketHeaderSize;
     cur_fragment_start_ = payload_begin;

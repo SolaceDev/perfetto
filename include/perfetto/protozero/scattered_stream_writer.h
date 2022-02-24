@@ -25,6 +25,7 @@
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/export.h"
 #include "perfetto/protozero/contiguous_memory_range.h"
+#include "perfetto/protozero/proto_utils.h"
 
 namespace protozero {
 
@@ -47,6 +48,51 @@ class PERFETTO_EXPORT ScatteredStreamWriter {
    public:
     virtual ~Delegate();
     virtual ContiguousMemoryRange GetNewBuffer() = 0;
+  };
+
+  struct ReservedBytes {
+    uint8_t *buf_[2];
+    size_t firstSz_;
+
+    // Maximum message value supported: 256 MiB (4 x 7-bit due to varint encoding).
+    static constexpr size_t kFieldSize = proto_utils::kMessageLengthFieldSize;
+
+    inline void Reset() { buf_[0] = nullptr; buf_[1] = nullptr; firstSz_ = 0; }
+
+    // Writes a fixed-size redundant encoding of the given |value|. This is
+    // used to backfill fixed-size reservations for the length field using a
+    // non-canonical varint encoding (e.g. \x81\x80\x80\x00 instead of \x01).
+    // See https://github.com/google/protobuf/issues/1530.
+    // This is used mainly in two cases:
+    // 1) At trace writing time, when starting a nested messages. The size of a
+    //    nested message is not known until all its field have been written.
+    //    |kMessageLengthFieldSize| bytes are reserved to encode the size field and
+    //    backfilled at the end.
+    // 2) When rewriting a message at trace filtering time, in protozero/filtering.
+    //    At that point we know only the upper bound of the length (a filtered
+    //    message is <= the original one) and we backfill after the message has been
+    //    filtered.
+    inline void WriteRedundantVarInt(uint32_t value) {
+      uint8_t* dst = buf_[0];
+      for (size_t i=0; i < kFieldSize; ++i) {
+        const uint8_t msb = (i == 3)? 0 : 0x80;
+        if (firstSz_ == i) dst = buf_[1];
+        *(dst++) = static_cast<uint8_t>(value | msb);
+        value >>= 7;
+      }
+      Reset();
+    }
+    inline bool IsNull() const { return buf_[0] == nullptr; }
+    inline void SetPrereservedContiguousMemoryRange(uint8_t* mem) {
+      buf_[0] = mem;
+      firstSz_ = kFieldSize;
+    }
+    inline bool IsContiguousWithinRange(const uint8_t* begin, const uint8_t* end, ptrdiff_t* offset=nullptr) const {
+      if (buf_[1]) return false;   // not contiguous
+      const bool ret = (begin >= buf_[0]) && (end >= (buf_[0] + firstSz_));
+      if (ret) *offset = buf_[0] - begin;
+      return ret;
+    }
   };
 
   explicit ScatteredStreamWriter(Delegate* delegate);
@@ -82,7 +128,7 @@ class PERFETTO_EXPORT ScatteredStreamWriter {
   // Reserves a fixed amount of bytes to be backfilled later. The reserved range
   // is guaranteed to be contiguous and not span across chunks. |size| has to be
   // <= than the size of a new buffer returned by the Delegate::GetNewBuffer().
-  uint8_t* ReserveBytes(size_t size);
+  ReservedBytes ReserveBytes(bool zeroReservedBytes);
 
   // Fast (but unsafe) version of the above. The caller must have previously
   // checked that there are at least |size| contiguous bytes available.

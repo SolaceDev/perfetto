@@ -201,18 +201,16 @@ inline uint8_t* WriteVarInt(T value, uint8_t* target) {
 // used to backfill fixed-size reservations for the length field using a
 // non-canonical varint encoding (e.g. \x81\x80\x80\x00 instead of \x01).
 // See https://github.com/google/protobuf/issues/1530.
-// This is used mainly in two cases:
-// 1) At trace writing time, when starting a nested messages. The size of a
-//    nested message is not known until all its field have been written.
-//    |kMessageLengthFieldSize| bytes are reserved to encode the size field and
-//    backfilled at the end.
-// 2) When rewriting a message at trace filtering time, in protozero/filtering.
-//    At that point we know only the upper bound of the length (a filtered
-//    message is <= the original one) and we backfill after the message has been
-//    filtered.
+// This is used when rewriting a message at trace filtering time, in
+// protozero/filtering. At that point we know only the upper bound of the length
+// (a filtered message is <= the original one) and we backfill after the message
+// has been filtered.
+// Nested messages need similar functionality, but with the added complexity of
+// the value being split across messages. This is handled by
+// ScatteredStreamWriter::ReservedBytes::WriteRedundantVarInt.
 inline void WriteRedundantVarInt(uint32_t value,
                                  uint8_t* buf,
-                                 size_t size = kMessageLengthFieldSize) {
+                                 size_t size) {
   for (size_t i = 0; i < size; ++i) {
     const uint8_t msb = (i < size - 1) ? 0x80 : 0;
     buf[i] = static_cast<uint8_t>(value) | msb;
