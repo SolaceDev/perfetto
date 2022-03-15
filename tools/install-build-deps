@@ -138,10 +138,14 @@ BUILD_DEPS_TOOLCHAIN_HOST = [
 
 BUILD_DEPS_HOST = [
     # Keep in sync with Android's //external/googletest/README.version.
+    # Note: README.version seems to have been removed between Android 10 and 11.
+    # Googletest recommends using the latest commit at master now; reference:
+    # https://android.googlesource.com/platform/external/googletest.git#Live-at-Head
+    # Choosing the latest commit on master at the time of this commit.
     Dependency(
         'buildtools/googletest',
         'https://android.googlesource.com/platform/external/googletest.git',
-        '3f05f651ae3621db58468153e32016bc1397800b', 'all', 'all'),
+        '7674c148dcef4061bcb43a48b874768944916fe9', 'all', 'all'),
 
     # Keep in sync with Chromium's //third_party/protobuf.
     Dependency(
