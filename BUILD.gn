@@ -80,6 +80,10 @@ if (enable_perfetto_unittests) {
     deps = perfetto_unittests_targets
   }
   all_targets += [ ":perfetto_unittests" ]
+
+  test("protozero_unittests") {
+      deps = protozero_unittests_targets
+  }
 }
 
 if (enable_perfetto_integration_tests) {
