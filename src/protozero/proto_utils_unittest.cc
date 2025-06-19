@@ -163,20 +163,20 @@ TEST(ProtoUtilsTest, VarIntEncodingNegative) {
 TEST(ProtoUtilsTest, RedundantVarIntEncoding) {
   uint8_t buf[kMessageLengthFieldSize];
 
-  WriteRedundantVarInt(0, buf);
+  WriteRedundantVarInt(0, buf, kMessageLengthFieldSize);
   EXPECT_EQ(0, memcmp("\x80\x80\x80\x00", buf, sizeof(buf)));
 
-  WriteRedundantVarInt(1, buf);
+  WriteRedundantVarInt(1, buf, kMessageLengthFieldSize);
   EXPECT_EQ(0, memcmp("\x81\x80\x80\x00", buf, sizeof(buf)));
 
-  WriteRedundantVarInt(0x80, buf);
+  WriteRedundantVarInt(0x80, buf, kMessageLengthFieldSize);
   EXPECT_EQ(0, memcmp("\x80\x81\x80\x00", buf, sizeof(buf)));
 
-  WriteRedundantVarInt(0x332211, buf);
+  WriteRedundantVarInt(0x332211, buf, kMessageLengthFieldSize);
   EXPECT_EQ(0, memcmp("\x91\xC4\xCC\x01", buf, sizeof(buf)));
 
   // Largest allowed length.
-  WriteRedundantVarInt(0x0FFFFFFF, buf);
+  WriteRedundantVarInt(0x0FFFFFFF, buf, kMessageLengthFieldSize);
   EXPECT_EQ(0, memcmp("\xFF\xFF\xFF\x7F", buf, sizeof(buf)));
 }
 

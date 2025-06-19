@@ -35,7 +35,6 @@ TEST(ScatteredStreamWriterTest, ScatteredWrites) {
 
   const uint8_t kOneByteBuf[] = {0x40};
   const uint8_t kThreeByteBuf[] = {0x50, 0x51, 0x52};
-  const uint8_t kFourByteBuf[] = {0x60, 0x61, 0x62, 0x63};
   uint8_t kTwentyByteBuf[20];
   for (uint8_t i = 0; i < sizeof(kTwentyByteBuf); ++i)
     kTwentyByteBuf[i] = 0xA0 + i;
@@ -55,47 +54,51 @@ TEST(ScatteredStreamWriterTest, ScatteredWrites) {
 
   // This starts at offset 1, to make sure we don't hardcode any assumption
   // about alignment.
-  uint8_t* reserved_range_1 = ssw.ReserveBytes(4);
+  auto reserved_range_1 = ssw.ReserveBytes(false);
+  // Check that the four bytes are reserved correctly.
   EXPECT_EQ(2u, delegate.chunks().size());
   EXPECT_EQ(3u, ssw.bytes_available());
 
   ssw.WriteByte(0xFF);
   ssw.WriteBytes(kThreeByteBuf, sizeof(kThreeByteBuf));
+  // Check that writing past the end of the chunk after the reserved
+  // bytes causes another extension, and that the reserved bytes
+  // are still not backfilled.
   EXPECT_EQ(3u, delegate.chunks().size());
   EXPECT_EQ(7u, ssw.bytes_available());
+  EXPECT_EQ("4000000000FF5051", delegate.GetChunkAsString(1));
 
-  uint8_t* reserved_range_2 = ssw.ReserveBytes(4);
+
+  auto reserved_range_2 = ssw.ReserveBytes(false);
   ssw.WriteBytes(kTwentyByteBuf, sizeof(kTwentyByteBuf));
   EXPECT_EQ(6u, delegate.chunks().size());
   EXPECT_EQ(7u, ssw.bytes_available());
+  EXPECT_EQ("5200000000A0A1A2", delegate.GetChunkAsString(2));
+  
 
-  // Writing reserved bytes should not change the bytes_available().
-  memcpy(reserved_range_1, kFourByteBuf, sizeof(kFourByteBuf));
-  memcpy(reserved_range_2, kFourByteBuf, sizeof(kFourByteBuf));
+  // Backfilling the reserved bytes should not change the bytes_available().
+  reserved_range_1.WriteRedundantVarInt(0x01020304);   // Encodes to 0x84 0x86 0x88 0x08
+  reserved_range_2.WriteRedundantVarInt(0x01020304);
   EXPECT_EQ(6u, delegate.chunks().size());
   EXPECT_EQ(7u, ssw.bytes_available());
+  
+  // Confirm the reserved bytes were backfilled successfully.
+  EXPECT_EQ("4084868808FF5051", delegate.GetChunkAsString(1));
+  EXPECT_EQ("5284868808A0A1A2", delegate.GetChunkAsString(2));
 
-  // Check that reserving more bytes than what left creates a brand new chunk
-  // even if the previous one is not exhausted
+  // After for-loop, only 2 bytes are left in the current chunk.
   for (uint8_t i = 0; i < 5; ++i)
     ssw.WriteByte(0xFF);
-  memcpy(ssw.ReserveBytes(4), kFourByteBuf, sizeof(kFourByteBuf));
-  memcpy(ssw.ReserveBytesUnsafe(3), kThreeByteBuf, sizeof(kThreeByteBuf));
-  memcpy(ssw.ReserveBytes(3), kThreeByteBuf, sizeof(kThreeByteBuf));
-  memcpy(ssw.ReserveBytesUnsafe(1), kOneByteBuf, sizeof(kOneByteBuf));
-  memcpy(ssw.ReserveBytes(1), kOneByteBuf, sizeof(kOneByteBuf));
-
-  EXPECT_EQ(8u, delegate.chunks().size());
-  EXPECT_EQ(3u, ssw.bytes_available());
-
-  EXPECT_EQ("0001020304050607", delegate.GetChunkAsString(0));
-  EXPECT_EQ("4060616263FF5051", delegate.GetChunkAsString(1));
-  EXPECT_EQ("5260616263A0A1A2", delegate.GetChunkAsString(2));
-  EXPECT_EQ("A3A4A5A6A7A8A9AA", delegate.GetChunkAsString(3));
-  EXPECT_EQ("ABACADAEAFB0B1B2", delegate.GetChunkAsString(4));
   EXPECT_EQ("B3FFFFFFFFFF0000", delegate.GetChunkAsString(5));
-  EXPECT_EQ("6061626350515200", delegate.GetChunkAsString(6));
-  EXPECT_EQ("5051524040000000", delegate.GetChunkAsString(7));
+
+  // Check that reserving more bytes than what left causes reserved bytes to span across
+  // multiple chunks. Write to these bytes immediately. Should see that the write
+  // (0x84 0x86 0x88 0x08) is split across two chunks.
+  ssw.ReserveBytes(false).WriteRedundantVarInt(0x01020304);
+  EXPECT_EQ(7u, delegate.chunks().size());
+  EXPECT_EQ(6u, ssw.bytes_available());
+  EXPECT_EQ("B3FFFFFFFFFF8486", delegate.GetChunkAsString(5));
+  EXPECT_EQ("8808000000000000", delegate.GetChunkAsString(6));
 
   // Finally reset the writer to a new buffer.
   uint8_t other_buffer[8] = {0};

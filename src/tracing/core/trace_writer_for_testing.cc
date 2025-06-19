@@ -84,7 +84,7 @@ TraceWriterForTesting::NewTracePacket() {
 
   auto packet = TraceWriter::TracePacketHandle(cur_packet_.get());
   packet->set_size_field(
-      stream_.ReserveBytes(protozero::proto_utils::kMessageLengthFieldSize));
+      stream_.ReserveBytes(true));
   return packet;
 }
 

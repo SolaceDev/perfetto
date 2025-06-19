@@ -153,7 +153,7 @@ Message* Message::BeginNestedMessageInternal(uint32_t field_id) {
   // The length of the nested message cannot be known upfront. So right now
   // just reserve the bytes to encode the size after the nested message is done.
   message->set_size_field(
-      stream_writer_->ReserveBytes(proto_utils::kMessageLengthFieldSize));
+      stream_writer_->ReserveBytes(false));
   size_ += proto_utils::kMessageLengthFieldSize;
 
   nested_message_ = message;
