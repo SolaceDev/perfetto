@@ -105,19 +105,13 @@ class MessageTest : public ::testing::Test {
     return buffer_->GetBytesAsString(old_readback_pos, num_bytes);
   }
 
-  // Properly initializes and exposes the size field of the messasge 
-  // so that we can read it later for the purpose of testing.
-  // Tests related to the size_field spanning across multiple chunks
-  // are handled in scattered_stream_writer_unittest.cc. Here, we
-  // assume that the size field is always contained in a single chunk.
-  uint8_t* SetSizeField(Message* msg) {
-    if (stream_writer_->write_ptr() == nullptr) {
-      stream_writer_->Reset(buffer_.get()->GetNewBuffer());
-    }
+  // Sets size field using ScatteredStreamWriter::ReserveBytes() to reserve
+  // space for the size field in the message. This is used to backfill the size
+  // field at the end of the message, after all fields have been written.
+  void SetSizeField(Message* msg) {
     ScatteredStreamWriter::ReservedBytes reserved_bytes =
         stream_writer_->ReserveBytes(false);
     msg->set_size_field(reserved_bytes);
-    return reserved_bytes.buf_[0];
   }
 
   static void BuildNestedMessages(Message* msg,
@@ -255,7 +249,8 @@ TEST_F(MessageTest, AppendScatteredBytes) {
 // on finalization.
 TEST_F(MessageTest, BackfillSizeOnFinalization) {
   Message* root_msg = NewMessage();
-  uint8_t* msg_size = SetSizeField(root_msg);
+  SetSizeField(root_msg);
+  uint8_t* msg_size = root_msg->size_field().buf_[0];
   root_msg->AppendVarInt(1, 0x42);
 
   FakeChildMessage* nested_msg_1 =
@@ -343,9 +338,12 @@ TEST_F(MessageTest, MessageHandle) {
   FakeRootMessage* msg2 = NewMessage();
   FakeRootMessage* msg3 = NewMessage();
   FakeRootMessage* ignored_msg = NewMessage();
-  uint8_t* msg1_size = SetSizeField(msg1);
-  uint8_t* msg2_size = SetSizeField(msg2);
-  uint8_t* msg3_size = SetSizeField(msg3);
+  SetSizeField(msg1);
+  SetSizeField(msg2);
+  SetSizeField(msg3);
+  uint8_t* msg1_size = msg1->size_field().buf_[0];
+  uint8_t* msg2_size = msg2->size_field().buf_[0];
+  uint8_t* msg3_size = msg3->size_field().buf_[0];
 
   // Test that the handle going out of scope causes the finalization of the
   // target message and triggers the optional callback.
@@ -401,11 +399,13 @@ TEST_F(MessageTest, MessageHandle) {
   {
     auto* nested_msg_1 = NewMessage()->BeginNestedMessage<FakeChildMessage>(3);
     MessageHandle<FakeChildMessage> child_handle_1(nested_msg_1);
-    uint8_t* size_msg_1 = SetSizeField(nested_msg_1);
+    SetSizeField(nested_msg_1);
+    uint8_t* size_msg_1 = nested_msg_1->size_field().buf_[0];
     child_handle_1->AppendVarInt(1, 0x11);
 
     auto* nested_msg_2 = NewMessage()->BeginNestedMessage<FakeChildMessage>(2);
-    size_msg_2 = SetSizeField(nested_msg_2);
+    SetSizeField(nested_msg_2);
+    size_msg_2 = nested_msg_2->size_field().buf_[0];
     MessageHandle<FakeChildMessage> child_handle_2(nested_msg_2);
     child_handle_2->AppendVarInt(2, 0xFF);
 
@@ -423,7 +423,8 @@ TEST_F(MessageTest, MessageHandle) {
 
 TEST_F(MessageTest, MoveMessageHandle) {
   FakeRootMessage* msg = NewMessage();
-  uint8_t* msg_size = SetSizeField(msg);
+  SetSizeField(msg);
+  uint8_t* msg_size = msg->size_field().buf_[0];
   // Test that the handle going out of scope causes the finalization of the
   // target message.
   {
