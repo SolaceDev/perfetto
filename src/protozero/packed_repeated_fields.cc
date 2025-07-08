@@ -18,6 +18,7 @@
 
 #include "perfetto/ext/base/utils.h"
 
+namespace solace {
 namespace protozero {
 
 // static
@@ -44,3 +45,4 @@ void PackedBufferBase::Reset() {
 }
 
 }  // namespace protozero
+}  // namespace solace

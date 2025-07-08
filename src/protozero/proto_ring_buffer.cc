@@ -20,6 +20,7 @@
 #include "perfetto/ext/base/paged_memory.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -184,3 +185,4 @@ ProtoRingBuffer::Message ProtoRingBuffer::ReadMessage() {
 }
 
 }  // namespace protozero
+}  // namespace solace

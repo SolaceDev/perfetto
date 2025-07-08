@@ -24,6 +24,7 @@
 
 #include "perfetto/base/logging.h"
 
+namespace solace {
 namespace protozero {
 namespace proto_utils {
 
@@ -299,5 +300,6 @@ using FieldMetadataHelper = T (*)(void);
 }  // namespace internal
 }  // namespace proto_utils
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_PROTO_UTILS_H_

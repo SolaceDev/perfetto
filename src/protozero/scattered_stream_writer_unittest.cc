@@ -24,6 +24,7 @@
 #include "src/protozero/test/fake_scattered_buffer.h"
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -112,3 +113,4 @@ TEST(ScatteredStreamWriterTest, ScatteredWrites) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

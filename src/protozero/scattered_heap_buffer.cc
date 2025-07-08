@@ -18,6 +18,7 @@
 
 #include <algorithm>
 
+namespace solace {
 namespace protozero {
 
 ScatteredHeapBuffer::Slice::Slice()
@@ -119,3 +120,4 @@ void ScatteredHeapBuffer::Reset() {
 }
 
 }  // namespace protozero
+}  // namespace solace

@@ -26,6 +26,7 @@
 #include "perfetto/protozero/root_message.h"
 #include "perfetto/protozero/scattered_stream_writer.h"
 
+namespace solace {
 namespace protozero {
 
 class Message;
@@ -124,7 +125,7 @@ class PERFETTO_EXPORT ScatteredHeapBuffer
 //   protozero::HeapBuffered<protozero::MyMessage> msg;
 //   msg->set_stuff(...);
 //   msg.SerializeAsString();
-template <typename T = ::protozero::Message>
+template <typename T = protozero::Message>
 class HeapBuffered {
  public:
   HeapBuffered() : HeapBuffered(4096, 4096) {}
@@ -181,5 +182,6 @@ class HeapBuffered {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_SCATTERED_HEAP_BUFFER_H_

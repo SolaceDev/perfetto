@@ -18,6 +18,7 @@
 
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -116,3 +117,4 @@ TEST(CopyablePtrTest, DeepCompare) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

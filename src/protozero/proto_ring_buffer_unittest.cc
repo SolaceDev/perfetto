@@ -30,6 +30,7 @@
 
 using testing::ElementsAre;
 
+namespace solace {
 namespace protozero {
 
 // For ASSERT_EQ()
@@ -230,3 +231,4 @@ TEST_F(ProtoRingBufferTest, HandleProtoErrorsGracefully) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

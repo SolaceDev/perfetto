@@ -25,6 +25,7 @@
 #error Unimplemented for big endian archs.
 #endif
 
+namespace solace {
 namespace protozero {
 
 template <typename Container>
@@ -79,3 +80,4 @@ void Field::SerializeAndAppendTo(std::vector<uint8_t>* dst) const {
 }
 
 }  // namespace protozero
+}  // namespace solace

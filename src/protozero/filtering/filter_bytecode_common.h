@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 
+namespace solace {
 namespace protozero {
 
 enum FilterOpcode : uint32_t {
@@ -38,5 +39,6 @@ enum FilterOpcode : uint32_t {
   kFilterOpcode_NestedField = 3,
 };
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_COMMON_H_

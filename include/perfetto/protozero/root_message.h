@@ -20,6 +20,7 @@
 #include "perfetto/protozero/message.h"
 #include "perfetto/protozero/message_arena.h"
 
+namespace solace {
 namespace protozero {
 
 // Helper class to hand out messages using the default MessageArena.
@@ -49,5 +50,6 @@ class RootMessage : public T {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_ROOT_MESSAGE_H_

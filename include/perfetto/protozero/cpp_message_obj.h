@@ -24,6 +24,7 @@
 
 #include "perfetto/base/export.h"
 
+namespace solace {
 namespace protozero {
 
 // Base class for generated .gen.h classes, which are full C++ objects that
@@ -42,5 +43,6 @@ class PERFETTO_EXPORT CppMessageObj {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_CPP_MESSAGE_OBJ_H_

@@ -19,6 +19,7 @@
 
 #include <memory>
 
+namespace solace {
 namespace protozero {
 
 // This class is essentially a std::vector<T> of fixed size = 1.
@@ -83,5 +84,6 @@ class CopyablePtr {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_COPYABLE_PTR_H_

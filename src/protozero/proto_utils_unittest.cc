@@ -22,6 +22,7 @@
 #include "perfetto/ext/base/utils.h"
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 namespace proto_utils {
 namespace {
@@ -230,3 +231,4 @@ TEST(ProtoUtilsTest, RejectVarIntTooBig) {
 }  // namespace
 }  // namespace proto_utils
 }  // namespace protozero
+}  // namespace solace

@@ -25,6 +25,7 @@
 #include "perfetto/protozero/contiguous_memory_range.h"
 #include "perfetto/protozero/scattered_stream_writer.h"
 
+namespace solace {
 namespace protozero {
 
 class PERFETTO_EXPORT ScatteredStreamWriterNullDelegate
@@ -42,5 +43,6 @@ class PERFETTO_EXPORT ScatteredStreamWriterNullDelegate
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_

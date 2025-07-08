@@ -22,6 +22,7 @@
 
 #include <vector>
 
+namespace solace {
 namespace protozero {
 
 // Loads the proto-encoded bytecode in memory and allows fast lookups for tuples
@@ -120,5 +121,6 @@ class FilterBytecodeParser {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_

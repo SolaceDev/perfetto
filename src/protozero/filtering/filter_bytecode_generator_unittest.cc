@@ -25,6 +25,7 @@
 // The parser is tested separately (without the generator) in
 // filter_bytecode_parser_unittest.cc
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -141,3 +142,4 @@ TEST(FilterBytecodeGeneratorTest, Nested) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

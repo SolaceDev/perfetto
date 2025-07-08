@@ -31,6 +31,7 @@
 #include "perfetto/protozero/proto_utils.h"
 #include "src/protozero/filtering/filter_bytecode_generator.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -321,3 +322,4 @@ std::string FilterUtil::LookupField(const uint32_t* field_ids,
 }
 
 }  // namespace protozero
+}  // namespace solace

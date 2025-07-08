@@ -22,6 +22,7 @@
 #include "perfetto/base/export.h"
 #include "perfetto/protozero/message.h"
 
+namespace solace {
 namespace protozero {
 
 class Message;
@@ -102,5 +103,6 @@ class MessageHandle : public MessageHandleBase {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_MESSAGE_HANDLE_H_

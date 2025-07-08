@@ -22,6 +22,7 @@
 #include "src/protozero/filtering/filter_bytecode_common.h"
 #include "src/protozero/filtering/filter_bytecode_parser.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -249,3 +250,4 @@ TEST(FilterBytecodeParserTest, ParserNestedMessages) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

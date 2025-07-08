@@ -23,6 +23,7 @@
 #include "perfetto/protozero/scattered_heap_buffer.h"
 #include "src/protozero/filtering/filter_bytecode_common.h"
 
+namespace solace {
 namespace protozero {
 
 FilterBytecodeGenerator::FilterBytecodeGenerator() = default;
@@ -89,3 +90,4 @@ std::string FilterBytecodeGenerator::Serialize() {
 }
 
 }  // namespace protozero
+}  // namespace solace

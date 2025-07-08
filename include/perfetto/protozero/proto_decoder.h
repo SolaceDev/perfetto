@@ -27,6 +27,7 @@
 #include "perfetto/protozero/field.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 // A generic protobuf decoder. Doesn't require any knowledge about the proto
@@ -465,5 +466,6 @@ class TypedProtoDecoder : public TypedProtoDecoderBase {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_PROTO_DECODER_H_

@@ -16,6 +16,6 @@
 
 syntax = "proto2";
 
-package protozero.test.protos;
+package solace.protozero.test.protos;
 
 message TrickyPublicImport {}

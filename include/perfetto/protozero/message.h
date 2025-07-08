@@ -36,6 +36,7 @@ class FakeProducer;
 }  // namespace shm_fuzz
 }  // namespace perfetto
 
+namespace solace {
 namespace protozero {
 
 class MessageArena;
@@ -252,5 +253,6 @@ class PERFETTO_EXPORT Message {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_MESSAGE_H_

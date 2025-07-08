@@ -23,6 +23,7 @@
 
 #include "perfetto/protozero/scattered_stream_writer.h"
 
+namespace solace {
 namespace protozero {
 
 // A simple ScatteredStreamWriter::Delegate implementation which just allocates
@@ -50,5 +51,6 @@ class FakeScatteredBuffer : public ScatteredStreamWriter::Delegate {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // SRC_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_

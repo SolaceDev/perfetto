@@ -23,6 +23,7 @@
 #include "perfetto/base/logging.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 // A helper class for schema-less tokenizing of protobuf messages.
@@ -195,5 +196,6 @@ class MessageTokenizer {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // SRC_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_

@@ -20,6 +20,7 @@
 
 #include "perfetto/base/logging.h"
 
+namespace solace {
 namespace protozero {
 
 ScatteredStreamWriter::Delegate::~Delegate() {}
@@ -110,3 +111,4 @@ ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
 }
 
 }  // namespace protozero
+}  // namespace solace

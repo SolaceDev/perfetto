@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+namespace solace {
 namespace protozero {
 
 // Creates a filter bytecode that can be passed to the FilterBytecodeParser.
@@ -72,5 +73,6 @@ class FilterBytecodeGenerator {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_

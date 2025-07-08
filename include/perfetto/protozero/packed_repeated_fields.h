@@ -26,6 +26,7 @@
 #include "perfetto/base/logging.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 // This file contains classes used when encoding packed repeated fields.
@@ -111,5 +112,6 @@ class PackedFixedSizeInt : public PackedBufferBase {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_PACKED_REPEATED_FIELDS_H_

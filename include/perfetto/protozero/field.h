@@ -26,6 +26,7 @@
 #include "perfetto/protozero/contiguous_memory_range.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 struct ConstBytes {
@@ -208,5 +209,6 @@ class Field {
 static_assert(sizeof(Field) == 16, "Field struct too big");
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_FIELD_H_

@@ -19,6 +19,7 @@
 #include "perfetto/protozero/root_message.h"
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -33,3 +34,4 @@ TEST(MessageHandleTest, MoveHandleSharedMessageDoesntFinalize) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

@@ -21,6 +21,7 @@
 #include "perfetto/base/logging.h"
 #include "src/protozero/filtering/message_filter.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -96,9 +97,10 @@ int FuzzMessageFilter(const uint8_t* data, size_t size) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return protozero::FuzzMessageFilter(data, size);
+  return solace::protozero::FuzzMessageFilter(data, size);
 }

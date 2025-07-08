@@ -20,6 +20,7 @@
 
 #include "perfetto/protozero/message.h"
 
+namespace solace {
 namespace protozero {
 
 MessageHandleBase::MessageHandleBase(Message* message) : message_(message) {
@@ -65,3 +66,4 @@ void MessageHandleBase::Move(MessageHandleBase&& other) {
 }
 
 }  // namespace protozero
+}  // namespace solace

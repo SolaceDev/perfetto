@@ -20,6 +20,7 @@
 #include "perfetto/protozero/scattered_heap_buffer.h"
 #include "src/protozero/filtering/message_tokenizer.h"
 
+namespace solace {
 namespace protozero {
 
 using proto_utils::ProtoWireType;
@@ -177,3 +178,4 @@ TEST(MessageTokenizerTest, InvlidCases) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

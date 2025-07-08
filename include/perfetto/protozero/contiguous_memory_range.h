@@ -21,6 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+namespace solace {
 namespace protozero {
 
 // Keep this struct trivially constructible (no ctors, no default initializers).
@@ -34,5 +35,6 @@ struct ContiguousMemoryRange {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_

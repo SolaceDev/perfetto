@@ -22,6 +22,7 @@
 #include "perfetto/base/logging.h"
 #include "perfetto/protozero/message_handle.h"
 
+namespace solace {
 namespace protozero {
 
 MessageArena::MessageArena() {
@@ -69,3 +70,4 @@ void MessageArena::DeleteLastMessageInternal() {
 }
 
 }  // namespace protozero
+}  // namespace solace

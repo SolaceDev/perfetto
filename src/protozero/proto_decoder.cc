@@ -27,6 +27,7 @@
 #include "perfetto/ext/base/utils.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 using namespace proto_utils;
@@ -263,3 +264,4 @@ void TypedProtoDecoderBase::ExpandHeapStorage() {
 }
 
 }  // namespace protozero
+}  // namespace solace

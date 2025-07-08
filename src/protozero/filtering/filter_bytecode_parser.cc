@@ -23,6 +23,7 @@
 #include "perfetto/protozero/proto_utils.h"
 #include "src/protozero/filtering/filter_bytecode_common.h"
 
+namespace solace {
 namespace protozero {
 
 void FilterBytecodeParser::Reset() {
@@ -230,3 +231,4 @@ FilterBytecodeParser::QueryResult FilterBytecodeParser::Query(
 }
 
 }  // namespace protozero
+}  // namespace solace

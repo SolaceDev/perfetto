@@ -20,6 +20,7 @@
 #ifndef INCLUDE_PERFETTO_PROTOZERO_FIELD_WRITER_H_
 #define INCLUDE_PERFETTO_PROTOZERO_FIELD_WRITER_H_
 
+namespace solace {
 namespace protozero {
 namespace internal {
 
@@ -184,5 +185,6 @@ struct FieldWriter<proto_utils::ProtoSchemaType::kBytes> {
 
 }  // namespace internal
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_FIELD_WRITER_H_

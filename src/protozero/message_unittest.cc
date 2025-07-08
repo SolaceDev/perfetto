@@ -28,6 +28,7 @@
 #include "src/protozero/test/fake_scattered_buffer.h"
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -439,3 +440,4 @@ TEST_F(MessageTest, MoveMessageHandle) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

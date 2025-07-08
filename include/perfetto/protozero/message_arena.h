@@ -26,6 +26,7 @@
 #include "perfetto/base/logging.h"
 #include "perfetto/protozero/message.h"
 
+namespace solace {
 namespace protozero {
 
 class Message;
@@ -91,5 +92,6 @@ class PERFETTO_EXPORT MessageArena {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_MESSAGE_ARENA_H_

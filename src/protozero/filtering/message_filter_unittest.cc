@@ -28,6 +28,7 @@
 #include "src/protozero/filtering/filter_util.h"
 #include "src/protozero/filtering/message_filter.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -808,3 +809,4 @@ TEST(MessageFilterTest, RealTracePassthrough) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

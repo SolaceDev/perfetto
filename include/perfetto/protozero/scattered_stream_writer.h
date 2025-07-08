@@ -27,6 +27,7 @@
 #include "perfetto/protozero/contiguous_memory_range.h"
 #include "perfetto/protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 // This class deals with the following problem: append-only proto messages want
@@ -169,5 +170,6 @@ class PERFETTO_EXPORT ScatteredStreamWriter {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_WRITER_H_

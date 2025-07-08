@@ -30,6 +30,7 @@
 #error Unimplemented for big endian archs.
 #endif
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -167,3 +168,4 @@ void Message::EndNestedMessage() {
 }
 
 }  // namespace protozero
+}  // namespace solace

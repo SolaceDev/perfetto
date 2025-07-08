@@ -25,6 +25,7 @@
 #include "perfetto/protozero/root_message.h"
 #include "perfetto/protozero/scattered_stream_writer.h"
 
+namespace solace {
 namespace protozero {
 
 class Message;
@@ -98,5 +99,6 @@ class StackBuffered : public StaticBuffered<T> {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
 #endif  // INCLUDE_PERFETTO_PROTOZERO_STATIC_BUFFER_H_

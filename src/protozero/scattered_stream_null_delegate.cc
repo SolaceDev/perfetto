@@ -16,6 +16,7 @@
 
 #include "perfetto/protozero/scattered_stream_null_delegate.h"
 
+namespace solace {
 namespace protozero {
 
 // An implementation of ScatteredStreamWriter::Delegate which always returns
@@ -35,3 +36,4 @@ ContiguousMemoryRange ScatteredStreamWriterNullDelegate::GetNewBuffer() {
 }
 
 }  // namespace protozero
+}  // namespace solace

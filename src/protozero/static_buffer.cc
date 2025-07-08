@@ -18,6 +18,7 @@
 
 #include "perfetto/base/logging.h"
 
+namespace solace {
 namespace protozero {
 
 StaticBufferDelegate::~StaticBufferDelegate() = default;
@@ -33,3 +34,4 @@ ContiguousMemoryRange StaticBufferDelegate::GetNewBuffer() {
 }
 
 }  // namespace protozero
+}  // namespace solace
