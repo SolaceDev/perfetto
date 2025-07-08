@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/cpp_message_obj.h"
+#include "perfetto/solace_protozero/cpp_message_obj.h"
 
 namespace solace {
 namespace protozero {

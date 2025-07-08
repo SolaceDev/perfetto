@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_MESSAGE_H_
-#define INCLUDE_PERFETTO_PROTOZERO_MESSAGE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_H_
 
 #include <assert.h>
 #include <stdint.h>
@@ -26,9 +26,9 @@
 
 #include "perfetto/base/export.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/contiguous_memory_range.h"
-#include "perfetto/protozero/proto_utils.h"
-#include "perfetto/protozero/scattered_stream_writer.h"
+#include "perfetto/solace_protozero/contiguous_memory_range.h"
+#include "perfetto/solace_protozero/proto_utils.h"
+#include "perfetto/solace_protozero/scattered_stream_writer.h"
 
 namespace perfetto {
 namespace shm_fuzz {
@@ -255,4 +255,4 @@ class PERFETTO_EXPORT Message {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_MESSAGE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_H_

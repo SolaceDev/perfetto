@@ -16,8 +16,8 @@
 
 #include "test/gtest_and_gmock.h"
 
-#include "perfetto/protozero/message.h"
-#include "perfetto/protozero/scattered_heap_buffer.h"
+#include "perfetto/solace_protozero/message.h"
+#include "perfetto/solace_protozero/scattered_heap_buffer.h"
 #include "src/protozero/filtering/message_tokenizer.h"
 
 namespace solace {

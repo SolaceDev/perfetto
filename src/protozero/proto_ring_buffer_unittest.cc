@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "perfetto/ext/base/utils.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 #include "test/gtest_and_gmock.h"
 
 using testing::ElementsAre;

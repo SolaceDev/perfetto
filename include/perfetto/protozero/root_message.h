@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_ROOT_MESSAGE_H_
-#define INCLUDE_PERFETTO_PROTOZERO_ROOT_MESSAGE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_ROOT_MESSAGE_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_ROOT_MESSAGE_H_
 
-#include "perfetto/protozero/message.h"
-#include "perfetto/protozero/message_arena.h"
+#include "perfetto/solace_protozero/message.h"
+#include "perfetto/solace_protozero/message_arena.h"
 
 namespace solace {
 namespace protozero {
@@ -52,4 +52,4 @@ class RootMessage : public T {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_ROOT_MESSAGE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_ROOT_MESSAGE_H_

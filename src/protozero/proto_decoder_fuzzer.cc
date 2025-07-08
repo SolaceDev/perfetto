@@ -18,7 +18,7 @@
 #include <stdint.h>
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/proto_decoder.h"
+#include "perfetto/solace_protozero/proto_decoder.h"
 
 namespace solace {
 namespace protozero {

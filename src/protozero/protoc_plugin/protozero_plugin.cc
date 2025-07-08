@@ -465,11 +465,11 @@ class GeneratorJob {
         "#define $guard$\n\n"
         "#include <stddef.h>\n"
         "#include <stdint.h>\n\n"
-        "#include \"perfetto/protozero/field_writer.h\"\n"
-        "#include \"perfetto/protozero/message.h\"\n"
-        "#include \"perfetto/protozero/packed_repeated_fields.h\"\n"
-        "#include \"perfetto/protozero/proto_decoder.h\"\n"
-        "#include \"perfetto/protozero/proto_utils.h\"\n",
+        "#include \"perfetto/solace_protozero/field_writer.h\"\n"
+        "#include \"perfetto/solace_protozero/message.h\"\n"
+        "#include \"perfetto/solace_protozero/packed_repeated_fields.h\"\n"
+        "#include \"perfetto/solace_protozero/proto_decoder.h\"\n"
+        "#include \"perfetto/solace_protozero/proto_utils.h\"\n",
         "greeting", greeting, "guard", guard);
 
     // Print includes for public imports.

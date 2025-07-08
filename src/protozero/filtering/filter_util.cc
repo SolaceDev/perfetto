@@ -28,7 +28,7 @@
 #include "perfetto/ext/base/getopt.h"
 #include "perfetto/ext/base/string_utils.h"
 #include "perfetto/ext/base/version.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 #include "src/protozero/filtering/filter_bytecode_generator.h"
 
 namespace solace {

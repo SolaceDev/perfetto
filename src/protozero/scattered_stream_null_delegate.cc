@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/scattered_stream_null_delegate.h"
+#include "perfetto/solace_protozero/scattered_stream_null_delegate.h"
 
 namespace solace {
 namespace protozero {

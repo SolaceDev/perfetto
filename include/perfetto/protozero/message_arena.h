@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_MESSAGE_ARENA_H_
-#define INCLUDE_PERFETTO_PROTOZERO_MESSAGE_ARENA_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_ARENA_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_ARENA_H_
 
 #include <stdint.h>
 
@@ -24,7 +24,7 @@
 
 #include "perfetto/base/export.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/message.h"
+#include "perfetto/solace_protozero/message.h"
 
 namespace solace {
 namespace protozero {
@@ -94,4 +94,4 @@ class PERFETTO_EXPORT MessageArena {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_MESSAGE_ARENA_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_ARENA_H_

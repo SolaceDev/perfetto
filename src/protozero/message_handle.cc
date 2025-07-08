@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/message_handle.h"
+#include "perfetto/solace_protozero/message_handle.h"
 
 #include <utility>
 
-#include "perfetto/protozero/message.h"
+#include "perfetto/solace_protozero/message.h"
 
 namespace solace {
 namespace protozero {

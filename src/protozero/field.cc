@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/field.h"
+#include "perfetto/solace_protozero/field.h"
 
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/logging.h"

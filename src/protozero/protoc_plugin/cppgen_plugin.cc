@@ -145,15 +145,15 @@ bool CppObjGenerator::Generate(const google::protobuf::FileDescriptor* file,
   h_printer.Print("#include <vector>\n");
   h_printer.Print("#include <string>\n");
   h_printer.Print("#include <type_traits>\n\n");
-  h_printer.Print("#include \"perfetto/protozero/cpp_message_obj.h\"\n");
-  h_printer.Print("#include \"perfetto/protozero/copyable_ptr.h\"\n");
+  h_printer.Print("#include \"perfetto/solace_protozero/cpp_message_obj.h\"\n");
+  h_printer.Print("#include \"perfetto/solace_protozero/copyable_ptr.h\"\n");
   h_printer.Print("#include \"perfetto/base/export.h\"\n\n");
 
-  cc_printer.Print("#include \"perfetto/protozero/message.h\"\n");
+  cc_printer.Print("#include \"perfetto/solace_protozero/message.h\"\n");
   cc_printer.Print(
-      "#include \"perfetto/protozero/packed_repeated_fields.h\"\n");
-  cc_printer.Print("#include \"perfetto/protozero/proto_decoder.h\"\n");
-  cc_printer.Print("#include \"perfetto/protozero/scattered_heap_buffer.h\"\n");
+      "#include \"perfetto/solace_protozero/packed_repeated_fields.h\"\n");
+  cc_printer.Print("#include \"perfetto/solace_protozero/proto_decoder.h\"\n");
+  cc_printer.Print("#include \"perfetto/solace_protozero/scattered_heap_buffer.h\"\n");
   cc_printer.Print(kHeader);
   cc_printer.Print("#if defined(__GNUC__) || defined(__clang__)\n");
   cc_printer.Print("#pragma GCC diagnostic push\n");

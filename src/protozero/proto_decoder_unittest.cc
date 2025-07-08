@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/proto_decoder.h"
+#include "perfetto/solace_protozero/proto_decoder.h"
 
 #include "perfetto/ext/base/utils.h"
-#include "perfetto/protozero/message.h"
-#include "perfetto/protozero/proto_utils.h"
-#include "perfetto/protozero/scattered_heap_buffer.h"
-#include "perfetto/protozero/static_buffer.h"
+#include "perfetto/solace_protozero/message.h"
+#include "perfetto/solace_protozero/proto_utils.h"
+#include "perfetto/solace_protozero/scattered_heap_buffer.h"
+#include "perfetto/solace_protozero/static_buffer.h"
 #include "test/gtest_and_gmock.h"
 
 #include "src/protozero/test/example_proto/test_messages.pb.h"

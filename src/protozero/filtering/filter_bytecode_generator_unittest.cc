@@ -16,8 +16,8 @@
 
 #include "test/gtest_and_gmock.h"
 
-#include "perfetto/protozero/packed_repeated_fields.h"
-#include "perfetto/protozero/scattered_heap_buffer.h"
+#include "perfetto/solace_protozero/packed_repeated_fields.h"
+#include "perfetto/solace_protozero/scattered_heap_buffer.h"
 #include "src/protozero/filtering/filter_bytecode_generator.h"
 #include "src/protozero/filtering/filter_bytecode_parser.h"
 

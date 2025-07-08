@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
-#define SRC_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
 
 #include <stdint.h>
 
@@ -207,4 +207,4 @@ class MessageFilter {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_FILTER_H_

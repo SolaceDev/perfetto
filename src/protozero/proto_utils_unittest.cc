@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
 #include <limits>
 

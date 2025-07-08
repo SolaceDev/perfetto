@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_SCATTERED_HEAP_BUFFER_H_
-#define INCLUDE_PERFETTO_PROTOZERO_SCATTERED_HEAP_BUFFER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_HEAP_BUFFER_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_HEAP_BUFFER_H_
 
 #include <memory>
 #include <string>
@@ -23,8 +23,8 @@
 
 #include "perfetto/base/export.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/root_message.h"
-#include "perfetto/protozero/scattered_stream_writer.h"
+#include "perfetto/solace_protozero/root_message.h"
+#include "perfetto/solace_protozero/scattered_stream_writer.h"
 
 namespace solace {
 namespace protozero {
@@ -184,4 +184,4 @@ class HeapBuffered {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_SCATTERED_HEAP_BUFFER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_HEAP_BUFFER_H_

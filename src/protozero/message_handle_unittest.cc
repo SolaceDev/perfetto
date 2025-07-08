@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/message_handle.h"
+#include "perfetto/solace_protozero/message_handle.h"
 
-#include "perfetto/protozero/root_message.h"
+#include "perfetto/solace_protozero/root_message.h"
 #include "test/gtest_and_gmock.h"
 
 namespace solace {

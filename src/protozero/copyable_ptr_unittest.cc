@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/copyable_ptr.h"
+#include "perfetto/solace_protozero/copyable_ptr.h"
 
 #include "test/gtest_and_gmock.h"
 

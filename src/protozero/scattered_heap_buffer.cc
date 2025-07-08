@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/scattered_heap_buffer.h"
+#include "perfetto/solace_protozero/scattered_heap_buffer.h"
 
 #include <algorithm>
 

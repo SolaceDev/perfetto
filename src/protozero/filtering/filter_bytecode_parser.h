@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_
-#define SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -123,4 +123,4 @@ class FilterBytecodeParser {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_FILTER_BYTECODE_PARSER_H_

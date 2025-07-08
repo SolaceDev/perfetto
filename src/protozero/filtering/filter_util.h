@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_FILTER_UTIL_H_
-#define SRC_PROTOZERO_FILTERING_FILTER_UTIL_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_FILTER_UTIL_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_FILTER_UTIL_H_
 
 #include <stdint.h>
 
@@ -104,4 +104,4 @@ class FilterUtil {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_FILTER_UTIL_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_FILTER_UTIL_H_

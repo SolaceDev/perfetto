@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_PROTO_RING_BUFFER_H_
-#define SRC_PROTOZERO_PROTO_RING_BUFFER_H_
+#ifndef SRC_SOLACE_PROTOZERO_PROTO_RING_BUFFER_H_
+#define SRC_SOLACE_PROTOZERO_PROTO_RING_BUFFER_H_
 
 #include <stdint.h>
 
@@ -137,4 +137,4 @@ class ProtoRingBuffer {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // SRC_PROTOZERO_PROTO_RING_BUFFER_H_
+#endif  // SRC_SOLACE_PROTOZERO_PROTO_RING_BUFFER_H_

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_
-#define SRC_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_
 
 #include <stdint.h>
 
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
 namespace solace {
 namespace protozero {
@@ -198,4 +198,4 @@ class MessageTokenizer {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_TOKENIZER_H_

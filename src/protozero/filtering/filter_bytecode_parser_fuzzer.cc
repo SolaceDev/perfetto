@@ -20,7 +20,7 @@
 
 #include "perfetto/ext/base/hash.h"
 
-#include "perfetto/protozero/packed_repeated_fields.h"
+#include "perfetto/solace_protozero/packed_repeated_fields.h"
 #include "src/protozero/filtering/filter_bytecode_parser.h"
 
 namespace solace {

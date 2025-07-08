@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/message.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/message.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_FIELD_WRITER_H_
-#define INCLUDE_PERFETTO_PROTOZERO_FIELD_WRITER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_FIELD_WRITER_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_FIELD_WRITER_H_
 
 namespace solace {
 namespace protozero {
@@ -187,4 +187,4 @@ struct FieldWriter<proto_utils::ProtoSchemaType::kBytes> {
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_FIELD_WRITER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_FIELD_WRITER_H_

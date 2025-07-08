@@ -18,7 +18,7 @@
 
 #include "perfetto/base/logging.h"
 #include "perfetto/ext/base/paged_memory.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
 namespace solace {
 namespace protozero {

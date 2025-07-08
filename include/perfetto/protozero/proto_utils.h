@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_PROTO_UTILS_H_
-#define INCLUDE_PERFETTO_PROTOZERO_PROTO_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_PROTO_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_PROTO_UTILS_H_
 
 #include <stddef.h>
 
@@ -302,4 +302,4 @@ using FieldMetadataHelper = T (*)(void);
 }  // namespace protozero
 }  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_PROTO_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_PROTO_UTILS_H_
