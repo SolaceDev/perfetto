@@ -22,7 +22,7 @@ source_set("tracing") {
     "../../../protos/perfetto/trace/track_event:cpp",
     "../../../protos/perfetto/trace/track_event:zero",
     "../base",
-    "../protozero",
+    "../solace_protozero",
     "core:forward_decls",
   ]
 

@@ -14,7 +14,7 @@
 
 source_set("ipc") {
   public_deps = [
-    "../../protozero",
+    "../../solace_protozero",
     "../base",
   ]
   sources = [

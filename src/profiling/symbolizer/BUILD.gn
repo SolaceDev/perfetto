@@ -44,7 +44,7 @@ source_set("symbolize_database") {
   ]
   deps = [
     "../../../gn:default_deps",
-    "../../../include/perfetto/protozero",
+    "../../../include/perfetto/solace_protozero",
     "../../../include/perfetto/trace_processor:trace_processor",
     "../../../protos/perfetto/trace:zero",
     "../../../protos/perfetto/trace/profiling:zero",

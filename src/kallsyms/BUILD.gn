@@ -17,7 +17,7 @@ import("../../gn/test.gni")
 source_set("kallsyms") {
   deps = [
     "../../gn:default_deps",
-    "../../include/perfetto/protozero",
+    "../../include/perfetto/solace_protozero",
     "../base",
   ]
   sources = [
