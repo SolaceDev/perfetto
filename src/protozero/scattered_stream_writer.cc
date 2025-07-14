@@ -97,14 +97,14 @@ ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
       ret.buf_[1] = write_ptr_;
       write_ptr_ += size - ret.firstSz_;
     }
-    if (zeroReservedBytes) {
-        memset(write_ptr_, 0, size - ret.firstSz_);
-    }
   } else {
     write_ptr_ += ret.firstSz_;
   }
   if (zeroReservedBytes) {
     memset(ret.buf_[0], 0, ret.firstSz_);
+    if (ret.buf_[1]) {
+      memset(ret.buf_[1], 0, size - ret.firstSz_);
+    }
   }
   return ret;
 }
