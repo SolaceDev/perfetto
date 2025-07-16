@@ -28,6 +28,8 @@
 #include "perfetto/solace_protozero/proto_utils.h"
 
 namespace solace {
+// The solace::protozero namespace contains third-party code that was altered for
+// internal use at solace.
 namespace protozero {
 
 // This class deals with the following problem: append-only proto messages want

@@ -27,6 +27,8 @@
 #include "perfetto/solace_protozero/message.h"
 
 namespace solace {
+// The solace::protozero namespace contains third-party code that was altered for
+// internal use at solace.
 namespace protozero {
 
 class Message;
