@@ -55,8 +55,6 @@ void ScatteredStreamWriter::WriteBytesSlowPath(const uint8_t* src,
   }
 }
 
-// TODO(primiano): perf optimization: I suspect that at the end this will always
-// be called with |size| == 4, in which case we might just hardcode it.
 ScatteredStreamWriter::ReservedBytes
 ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
   constexpr size_t size = ReservedBytes::kFieldSize;
@@ -84,16 +82,29 @@ ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
     Extend();
     PERFETTO_DCHECK(write_ptr_ + size - ret.firstSz_ <= cur_range_.end);
 
-    ret.buf_[1] = write_ptr_;
-    if (zeroReservedBytes) {
-        memset(write_ptr_, 0, size - ret.firstSz_);
+    if (ret.buf_[0] == nullptr) {
+      // If the first buffer was not set, it means we entered with an uninitialized
+      // write_ptr_. The call to Extend() initialized the write_ptr_ to the start of 
+      // a new chunk, so point the first ReservedBytes buf to it and update the 
+      // firstSz_ and write_ptr_ accordingly.
+      ret.buf_[0] = write_ptr_;
+      ret.firstSz_ = size;
+      write_ptr_ += ret.firstSz_;
+    } else {
+      // Otherwise, we did not have enough space in the first chunk to reserve
+      // the full size, so reserve the rest in the second chunk and update the
+      // write_ptr_ accordingly.
+      ret.buf_[1] = write_ptr_;
+      write_ptr_ += size - ret.firstSz_;
     }
-    write_ptr_ += size - ret.firstSz_;
   } else {
     write_ptr_ += ret.firstSz_;
   }
   if (zeroReservedBytes) {
     memset(ret.buf_[0], 0, ret.firstSz_);
+    if (ret.buf_[1]) {
+      memset(ret.buf_[1], 0, size - ret.firstSz_);
+    }
   }
   return ret;
 }

@@ -105,6 +105,15 @@ class MessageTest : public ::testing::Test {
     return buffer_->GetBytesAsString(old_readback_pos, num_bytes);
   }
 
+  // Sets size field using ScatteredStreamWriter::ReserveBytes() to reserve
+  // space for the size field in the message. This is used to backfill the size
+  // field at the end of the message, after all fields have been written.
+  void SetSizeField(Message* msg) {
+    ScatteredStreamWriter::ReservedBytes reserved_bytes =
+        stream_writer_->ReserveBytes(false);
+    msg->set_size_field(reserved_bytes);
+  }
+
   static void BuildNestedMessages(Message* msg,
                                   uint32_t max_depth,
                                   uint32_t depth = 0) {
@@ -240,8 +249,8 @@ TEST_F(MessageTest, AppendScatteredBytes) {
 // on finalization.
 TEST_F(MessageTest, BackfillSizeOnFinalization) {
   Message* root_msg = NewMessage();
-  uint8_t root_msg_size[proto_utils::kMessageLengthFieldSize] = {};
-  root_msg->set_size_field(&root_msg_size[0]);
+  SetSizeField(root_msg);
+  uint8_t* msg_size = root_msg->size_field().buf_[0];
   root_msg->AppendVarInt(1, 0x42);
 
   FakeChildMessage* nested_msg_1 =
@@ -256,17 +265,22 @@ TEST_F(MessageTest, BackfillSizeOnFinalization) {
 
   root_msg->inc_size_already_written(6);
 
-  // The value returned by Finalize() should be == the full size of |root_msg|.
+  // The value returned by Finalize() should be == the full size of |root_msg|
+  // excluding the bytes reserved for the size field.
   EXPECT_EQ(217u, root_msg->Finalize());
-  EXPECT_EQ(217u, GetNumSerializedBytes());
 
-  // However the size written in the size field should take into account the
-  // inc_size_already_written() call and be equal to 118 - 6 = 112, encoded
+  // The value returned by GetNumSerializedBytes() will include the bytes reserved
+  // for the size_field.
+  EXPECT_EQ(221u, GetNumSerializedBytes());
+
+  // The size written in the size field should take into account the
+  // inc_size_already_written() call and be equal to 217 - 6 = 211, encoded
   // in a rendundant varint encoding of kMessageLengthFieldSize bytes.
-  EXPECT_STREQ("\xD3\x81\x80\x00", reinterpret_cast<char*>(root_msg_size));
+  EXPECT_STREQ("\xD3\x81\x80\x00", reinterpret_cast<char*>(msg_size));
 
-  // Skip 2 bytes for the 0x42 varint + 1 byte for the |nested_msg_1| preamble.
-  GetNextSerializedBytes(3);
+  // Skip 4 bytes for the size field, 2 bytes for the 0x42 varint
+  // + 1 byte for the |nested_msg_1| preamble.
+  GetNextSerializedBytes(7);
 
   // Check that the size of |nested_msg_1| was backfilled. Its size is:
   // 203 bytes for |nest_mesg_2| (see below) + 5 bytes for its preamble +
@@ -294,7 +308,8 @@ TEST_F(MessageTest, StressTest) {
   // here on the full buffer hash.
   std::string full_buf = GetNextSerializedBytes(GetNumSerializedBytes());
   size_t buf_hash = SimpleHash(full_buf);
-  EXPECT_EQ(0xf9e32b65, buf_hash);
+  size_t expected_hash = 3743529221;
+  EXPECT_EQ(expected_hash, buf_hash);
 }
 
 TEST_F(MessageTest, DeeplyNested) {
@@ -306,7 +321,8 @@ TEST_F(MessageTest, DeeplyNested) {
 
   std::string full_buf = GetNextSerializedBytes(GetNumSerializedBytes());
   size_t buf_hash = SimpleHash(full_buf);
-  EXPECT_EQ(0xc0fde419, buf_hash);
+  size_t expected_hash = 864756345;
+  EXPECT_EQ(expected_hash, buf_hash);
 }
 
 TEST_F(MessageTest, DestructInvalidMessageHandle) {
@@ -322,50 +338,50 @@ TEST_F(MessageTest, MessageHandle) {
   FakeRootMessage* msg2 = NewMessage();
   FakeRootMessage* msg3 = NewMessage();
   FakeRootMessage* ignored_msg = NewMessage();
-  uint8_t msg1_size[proto_utils::kMessageLengthFieldSize] = {};
-  uint8_t msg2_size[proto_utils::kMessageLengthFieldSize] = {};
-  uint8_t msg3_size[proto_utils::kMessageLengthFieldSize] = {};
-  msg1->set_size_field(&msg1_size[0]);
-  msg2->set_size_field(&msg2_size[0]);
-  msg3->set_size_field(&msg3_size[0]);
+  SetSizeField(msg1);
+  SetSizeField(msg2);
+  SetSizeField(msg3);
+  uint8_t* msg1_size = msg1->size_field().buf_[0];
+  uint8_t* msg2_size = msg2->size_field().buf_[0];
+  uint8_t* msg3_size = msg3->size_field().buf_[0];
 
   // Test that the handle going out of scope causes the finalization of the
   // target message and triggers the optional callback.
   {
     MessageHandle<FakeRootMessage> handle1(msg1);
     handle1->AppendBytes(1 /* field_id */, kTestBytes, 1 /* size */);
-    ASSERT_EQ(0u, msg1_size[0]);
+    ASSERT_EQ(0u, *msg1_size);  // |msg1| should not be finalized yet.
   }
-  ASSERT_EQ(0x83u, msg1_size[0]);
+  ASSERT_EQ(0x83u, *msg1_size);
 
   // Test that the handle can be late initialized.
   MessageHandle<FakeRootMessage> handle2(ignored_msg);
   handle2 = MessageHandle<FakeRootMessage>(msg2);
   handle2->AppendBytes(1 /* field_id */, kTestBytes, 2 /* size */);
-  ASSERT_EQ(0u, msg2_size[0]);  // |msg2| should not be finalized yet.
+  ASSERT_EQ(0u, *msg2_size);  // |msg2| should not be finalized yet.
 
   // Test that std::move works and does NOT cause finalization of the moved
   // message.
   MessageHandle<FakeRootMessage> handle_swp(ignored_msg);
   handle_swp = std::move(handle2);
-  ASSERT_EQ(0u, msg2_size[0]);  // msg2 should be NOT finalized yet.
+  ASSERT_EQ(0u, *msg2_size);  // msg2 should not be finalized yet.
   handle_swp->AppendBytes(2 /* field_id */, kTestBytes, 3 /* size */);
 
   MessageHandle<FakeRootMessage> handle3(msg3);
   handle3->AppendBytes(1 /* field_id */, kTestBytes, 4 /* size */);
-  ASSERT_EQ(0u, msg3_size[0]);  // msg2 should be NOT finalized yet.
+  ASSERT_EQ(0u, *msg3_size);  // msg2 should not be finalized yet.
 
   // Both |handle3| and |handle_swp| point to a valid message (respectively,
   // |msg3| and |msg2|). Now move |handle3| into |handle_swp|.
   handle_swp = std::move(handle3);
-  ASSERT_EQ(0x89u, msg2_size[0]);  // |msg2| should be finalized at this point.
+  ASSERT_EQ(0x89u, *msg2_size);  // |msg2| should be finalized at this point.
 
   // At this point writing into handle_swp should actually write into |msg3|.
   ASSERT_EQ(msg3, &*handle_swp);
   handle_swp->AppendBytes(2 /* field_id */, kTestBytes, 8 /* size */);
   MessageHandle<FakeRootMessage> another_handle(ignored_msg);
   handle_swp = std::move(another_handle);
-  ASSERT_EQ(0x90u, msg3_size[0]);  // |msg3| should be finalized at this point.
+  ASSERT_EQ(0x90u, *msg3_size);  // |msg3| should be finalized at this point.
 
 #if PERFETTO_DCHECK_IS_ON()
   // In developer builds w/ PERFETTO_DCHECK on a finalized message should
@@ -383,33 +399,32 @@ TEST_F(MessageTest, MessageHandle) {
   {
     auto* nested_msg_1 = NewMessage()->BeginNestedMessage<FakeChildMessage>(3);
     MessageHandle<FakeChildMessage> child_handle_1(nested_msg_1);
-    uint8_t* size_msg_1 = nested_msg_1->size_field();
-    memset(size_msg_1, 0, proto_utils::kMessageLengthFieldSize);
+    SetSizeField(nested_msg_1);
+    uint8_t* size_msg_1 = nested_msg_1->size_field().buf_[0];
     child_handle_1->AppendVarInt(1, 0x11);
 
     auto* nested_msg_2 = NewMessage()->BeginNestedMessage<FakeChildMessage>(2);
-    size_msg_2 = nested_msg_2->size_field();
-    memset(size_msg_2, 0, proto_utils::kMessageLengthFieldSize);
+    SetSizeField(nested_msg_2);
+    size_msg_2 = nested_msg_2->size_field().buf_[0];
     MessageHandle<FakeChildMessage> child_handle_2(nested_msg_2);
     child_handle_2->AppendVarInt(2, 0xFF);
 
     // |nested_msg_1| should not be finalized yet.
-    ASSERT_EQ(0u, size_msg_1[0]);
+    ASSERT_EQ(0u, *size_msg_1);
 
     // This move should cause |nested_msg_1| to be finalized, but not
     // |nested_msg_2|, which will be finalized only after the current scope.
     child_handle_1 = std::move(child_handle_2);
-    ASSERT_EQ(0x82u, size_msg_1[0]);
-    ASSERT_EQ(0u, size_msg_2[0]);
+    ASSERT_EQ(0x82u, *size_msg_1);
+    ASSERT_EQ(0u, *size_msg_2);
   }
-  ASSERT_EQ(0x83u, size_msg_2[0]);
+  ASSERT_EQ(0x83u, *size_msg_2);
 }
 
 TEST_F(MessageTest, MoveMessageHandle) {
   FakeRootMessage* msg = NewMessage();
-  uint8_t msg_size[proto_utils::kMessageLengthFieldSize] = {};
-  msg->set_size_field(&msg_size[0]);
-
+  SetSizeField(msg);
+  uint8_t* msg_size = msg->size_field().buf_[0];
   // Test that the handle going out of scope causes the finalization of the
   // target message.
   {
@@ -417,9 +432,9 @@ TEST_F(MessageTest, MoveMessageHandle) {
     MessageHandle<FakeRootMessage> handle2{};
     handle1->AppendBytes(1 /* field_id */, kTestBytes, 1 /* size */);
     handle2 = std::move(handle1);
-    ASSERT_EQ(0u, msg_size[0]);
+    ASSERT_EQ(0u, *msg_size);
   }
-  ASSERT_EQ(0x83u, msg_size[0]);
+  ASSERT_EQ(0x83u, *msg_size);
 }
 
 }  // namespace
