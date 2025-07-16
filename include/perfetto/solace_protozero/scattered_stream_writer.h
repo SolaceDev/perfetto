@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_WRITER_H_
-#define INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_WRITER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_STREAM_WRITER_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_STREAM_WRITER_H_
 
 #include <assert.h>
 #include <stddef.h>
@@ -24,9 +24,12 @@
 
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/export.h"
-#include "perfetto/protozero/contiguous_memory_range.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/contiguous_memory_range.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
+namespace solace {
+// The solace::protozero namespace contains third-party code that was altered for
+// internal use at solace.
 namespace protozero {
 
 // This class deals with the following problem: append-only proto messages want
@@ -169,5 +172,6 @@ class PERFETTO_EXPORT ScatteredStreamWriter {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_WRITER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_STREAM_WRITER_H_

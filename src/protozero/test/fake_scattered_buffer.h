@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_
-#define SRC_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_
+#ifndef SRC_SOLACE_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_
+#define SRC_SOLACE_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "perfetto/protozero/scattered_stream_writer.h"
+#include "perfetto/solace_protozero/scattered_stream_writer.h"
 
+namespace solace {
 namespace protozero {
 
 // A simple ScatteredStreamWriter::Delegate implementation which just allocates
@@ -50,5 +51,6 @@ class FakeScatteredBuffer : public ScatteredStreamWriter::Delegate {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // SRC_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_
+#endif  // SRC_SOLACE_PROTOZERO_TEST_FAKE_SCATTERED_BUFFER_H_

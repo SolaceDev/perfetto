@@ -18,11 +18,12 @@
 
 #include "perfetto/base/logging.h"
 #include "perfetto/ext/base/hash.h"
-#include "perfetto/protozero/packed_repeated_fields.h"
-#include "perfetto/protozero/proto_decoder.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/packed_repeated_fields.h"
+#include "perfetto/solace_protozero/proto_decoder.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 #include "src/protozero/filtering/filter_bytecode_common.h"
 
+namespace solace {
 namespace protozero {
 
 void FilterBytecodeParser::Reset() {
@@ -230,3 +231,4 @@ FilterBytecodeParser::QueryResult FilterBytecodeParser::Query(
 }
 
 }  // namespace protozero
+}  // namespace solace

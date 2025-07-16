@@ -23,7 +23,7 @@ perfetto_component("protozero") {
   public_configs = [ "../../gn:default_config" ]
   public_deps = [
     "../../include/perfetto/base",
-    "../../include/perfetto/protozero",
+    "../../include/perfetto/solace_protozero",
   ]
   deps = [
     "../../gn:default_deps",

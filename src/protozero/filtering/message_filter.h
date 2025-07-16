@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
-#define SRC_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
 
 #include <stdint.h>
 
@@ -26,6 +26,7 @@
 #include "src/protozero/filtering/filter_bytecode_parser.h"
 #include "src/protozero/filtering/message_tokenizer.h"
 
+namespace solace {
 namespace protozero {
 
 // A class to filter binary-encoded proto messages using an allow-list of field
@@ -204,5 +205,6 @@ class MessageFilter {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_MESSAGE_FILTER_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_MESSAGE_FILTER_H_

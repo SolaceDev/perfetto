@@ -31,6 +31,7 @@
 
 #include "perfetto/ext/base/string_utils.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -169,22 +170,22 @@ class GeneratorJob {
       case FieldDescriptor::TYPE_ENUM:
       case FieldDescriptor::TYPE_SINT32:
       case FieldDescriptor::TYPE_SINT64:
-        return "::protozero::proto_utils::ProtoWireType::kVarInt";
+        return "solace::protozero::proto_utils::ProtoWireType::kVarInt";
 
       case FieldDescriptor::TYPE_FIXED32:
       case FieldDescriptor::TYPE_SFIXED32:
       case FieldDescriptor::TYPE_FLOAT:
-        return "::protozero::proto_utils::ProtoWireType::kFixed32";
+        return "solace::protozero::proto_utils::ProtoWireType::kFixed32";
 
       case FieldDescriptor::TYPE_FIXED64:
       case FieldDescriptor::TYPE_SFIXED64:
       case FieldDescriptor::TYPE_DOUBLE:
-        return "::protozero::proto_utils::ProtoWireType::kFixed64";
+        return "solace::protozero::proto_utils::ProtoWireType::kFixed64";
 
       case FieldDescriptor::TYPE_STRING:
       case FieldDescriptor::TYPE_MESSAGE:
       case FieldDescriptor::TYPE_BYTES:
-        return "::protozero::proto_utils::ProtoWireType::kLengthDelimited";
+        return "solace::protozero::proto_utils::ProtoWireType::kLengthDelimited";
 
       case FieldDescriptor::TYPE_GROUP:
         Abort("Groups not supported.");
@@ -203,21 +204,21 @@ class GeneratorJob {
       case FieldDescriptor::TYPE_ENUM:
       case FieldDescriptor::TYPE_SINT32:
       case FieldDescriptor::TYPE_SINT64:
-        return "::protozero::PackedVarInt";
+        return "solace::protozero::PackedVarInt";
 
       case FieldDescriptor::TYPE_FIXED32:
-        return "::protozero::PackedFixedSizeInt<uint32_t>";
+        return "solace::protozero::PackedFixedSizeInt<uint32_t>";
       case FieldDescriptor::TYPE_SFIXED32:
-        return "::protozero::PackedFixedSizeInt<int32_t>";
+        return "solace::protozero::PackedFixedSizeInt<int32_t>";
       case FieldDescriptor::TYPE_FLOAT:
-        return "::protozero::PackedFixedSizeInt<float>";
+        return "solace::protozero::PackedFixedSizeInt<float>";
 
       case FieldDescriptor::TYPE_FIXED64:
-        return "::protozero::PackedFixedSizeInt<uint64_t>";
+        return "solace::protozero::PackedFixedSizeInt<uint64_t>";
       case FieldDescriptor::TYPE_SFIXED64:
-        return "::protozero::PackedFixedSizeInt<int64_t>";
+        return "solace::protozero::PackedFixedSizeInt<int64_t>";
       case FieldDescriptor::TYPE_DOUBLE:
-        return "::protozero::PackedFixedSizeInt<double>";
+        return "solace::protozero::PackedFixedSizeInt<double>";
 
       case FieldDescriptor::TYPE_STRING:
       case FieldDescriptor::TYPE_MESSAGE:
@@ -464,11 +465,11 @@ class GeneratorJob {
         "#define $guard$\n\n"
         "#include <stddef.h>\n"
         "#include <stdint.h>\n\n"
-        "#include \"perfetto/protozero/field_writer.h\"\n"
-        "#include \"perfetto/protozero/message.h\"\n"
-        "#include \"perfetto/protozero/packed_repeated_fields.h\"\n"
-        "#include \"perfetto/protozero/proto_decoder.h\"\n"
-        "#include \"perfetto/protozero/proto_utils.h\"\n",
+        "#include \"perfetto/solace_protozero/field_writer.h\"\n"
+        "#include \"perfetto/solace_protozero/message.h\"\n"
+        "#include \"perfetto/solace_protozero/packed_repeated_fields.h\"\n"
+        "#include \"perfetto/solace_protozero/proto_decoder.h\"\n"
+        "#include \"perfetto/solace_protozero/proto_utils.h\"\n",
         "greeting", greeting, "guard", guard);
 
     // Print includes for public imports.
@@ -567,10 +568,10 @@ class GeneratorJob {
     const char* code_stub =
         "void $action$_$name$($cpp_type$ value) {\n"
         "  static constexpr uint32_t field_id = $field_metadata$::kFieldId;\n"
-        "  // Call the appropriate protozero::Message::Append(field_id, ...)\n"
+        "  // Call the appropriate solace::protozero::Message::Append(field_id, ...)\n"
         "  // method based on the type of the field.\n"
-        "  ::protozero::internal::FieldWriter<\n"
-        "    ::protozero::proto_utils::ProtoSchemaType::$proto_field_type$>\n"
+        "  solace::protozero::internal::FieldWriter<\n"
+        "    solace::protozero::proto_utils::ProtoSchemaType::$proto_field_type$>\n"
         "      ::Append(*this, field_id, value);\n"
         "}\n";
 
@@ -632,7 +633,7 @@ class GeneratorJob {
     std::string class_name = GetCppClassName(message) + "_Decoder";
     stub_h_->Print(
         "class $name$ : public "
-        "::protozero::TypedProtoDecoder</*MAX_FIELD_ID=*/$max$, "
+        "solace::protozero::TypedProtoDecoder</*MAX_FIELD_ID=*/$max$, "
         "/*HAS_NONPACKED_REPEATED_FIELDS=*/$rep$> {\n",
         "name", class_name, "max", std::to_string(max_field_id), "rep",
         has_nonpacked_repeated_fields ? "true" : "false");
@@ -648,7 +649,7 @@ class GeneratorJob {
         "raw.size()) {}\n",
         "name", class_name);
     stub_h_->Print(
-        "explicit $name$(const ::protozero::ConstBytes& raw) : "
+        "explicit $name$(const solace::protozero::ConstBytes& raw) : "
         "TypedProtoDecoder(raw.data, raw.size) {}\n",
         "name", class_name);
 
@@ -702,12 +703,12 @@ class GeneratorJob {
           break;
         case FieldDescriptor::TYPE_STRING:
           getter = "as_string";
-          cpp_type = "::protozero::ConstChars";
+          cpp_type = "solace::protozero::ConstChars";
           break;
         case FieldDescriptor::TYPE_MESSAGE:
         case FieldDescriptor::TYPE_BYTES:
           getter = "as_bytes";
-          cpp_type = "::protozero::ConstBytes";
+          cpp_type = "solace::protozero::ConstBytes";
           break;
         case FieldDescriptor::TYPE_GROUP:
           continue;
@@ -721,7 +722,7 @@ class GeneratorJob {
         const char* protozero_wire_type =
             FieldTypeToProtozeroWireType(field->type());
         stub_h_->Print(
-            "::protozero::PackedRepeatedFieldIterator<$wire_type$, $cpp_type$> "
+            "solace::protozero::PackedRepeatedFieldIterator<$wire_type$, $cpp_type$> "
             "$name$(bool* parse_error_ptr) const { return "
             "GetPackedRepeated<$wire_type$, $cpp_type$>($id$, "
             "parse_error_ptr); }\n",
@@ -729,7 +730,7 @@ class GeneratorJob {
             field->lowercase_name(), "id", std::to_string(field->number()));
       } else if (field->is_repeated()) {
         stub_h_->Print(
-            "::protozero::RepeatedFieldIterator<$cpp_type$> $name$() const { "
+            "solace::protozero::RepeatedFieldIterator<$cpp_type$> $name$() const { "
             "return "
             "GetRepeated<$cpp_type$>($id$); }\n",
             "name", field->lowercase_name(), "cpp_type", cpp_type, "id",
@@ -769,7 +770,7 @@ class GeneratorJob {
     GenerateDecoder(message);
 
     stub_h_->Print(
-        "class $name$ : public ::protozero::Message {\n"
+        "class $name$ : public solace::protozero::Message {\n"
         " public:\n",
         "name", GetCppClassName(message));
     stub_h_->Indent();
@@ -835,10 +836,10 @@ class GeneratorJob {
                              const FieldDescriptor* field) {
     const char* code_stub = R"(
 using $field_metadata_type$ =
-  ::protozero::proto_utils::FieldMetadata<
+  solace::protozero::proto_utils::FieldMetadata<
     $field_id$,
-    ::protozero::proto_utils::RepetitionType::$repetition_type$,
-    ::protozero::proto_utils::ProtoSchemaType::$proto_field_type$,
+    solace::protozero::proto_utils::RepetitionType::$repetition_type$,
+    solace::protozero::proto_utils::ProtoSchemaType::$proto_field_type$,
     $cpp_type$,
     $message_cpp_type$>;
 
@@ -992,8 +993,9 @@ bool ProtoZeroGenerator::Generate(const FileDescriptor* file,
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace
 
 int main(int argc, char* argv[]) {
-  ::protozero::ProtoZeroGenerator generator;
+  solace::protozero::ProtoZeroGenerator generator;
   return google::protobuf::compiler::PluginMain(argc, argv, &generator);
 }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/scattered_heap_buffer.h"
+#include "perfetto/solace_protozero/scattered_heap_buffer.h"
 
 #include <algorithm>
 
+namespace solace {
 namespace protozero {
 
 ScatteredHeapBuffer::Slice::Slice()
@@ -119,3 +120,4 @@ void ScatteredHeapBuffer::Reset() {
 }
 
 }  // namespace protozero
+}  // namespace solace

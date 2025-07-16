@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/message_arena.h"
+#include "perfetto/solace_protozero/message_arena.h"
 
 #include <atomic>
 #include <type_traits>
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/message_handle.h"
+#include "perfetto/solace_protozero/message_handle.h"
 
+namespace solace {
 namespace protozero {
 
 MessageArena::MessageArena() {
@@ -69,3 +70,4 @@ void MessageArena::DeleteLastMessageInternal() {
 }
 
 }  // namespace protozero
+}  // namespace solace

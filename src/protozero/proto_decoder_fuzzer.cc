@@ -18,8 +18,9 @@
 #include <stdint.h>
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/proto_decoder.h"
+#include "perfetto/solace_protozero/proto_decoder.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -36,9 +37,10 @@ int FuzzProtoDecoder(const uint8_t* data, size_t size) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return protozero::FuzzProtoDecoder(data, size);
+  return solace::protozero::FuzzProtoDecoder(data, size);
 }

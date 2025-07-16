@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/packed_repeated_fields.h"
+#include "perfetto/solace_protozero/packed_repeated_fields.h"
 
 #include "perfetto/ext/base/utils.h"
 
+namespace solace {
 namespace protozero {
 
 // static
@@ -44,3 +45,4 @@ void PackedBufferBase::Reset() {
 }
 
 }  // namespace protozero
+}  // namespace solace

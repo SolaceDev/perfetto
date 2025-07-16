@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_
-#define SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+namespace solace {
 namespace protozero {
 
 // Creates a filter bytecode that can be passed to the FilterBytecodeParser.
@@ -72,5 +73,6 @@ class FilterBytecodeGenerator {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_FILTER_BYTECODE_GENERATOR_H_

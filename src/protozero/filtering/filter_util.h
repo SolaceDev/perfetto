@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_FILTERING_FILTER_UTIL_H_
-#define SRC_PROTOZERO_FILTERING_FILTER_UTIL_H_
+#ifndef SRC_SOLACE_PROTOZERO_FILTERING_FILTER_UTIL_H_
+#define SRC_SOLACE_PROTOZERO_FILTERING_FILTER_UTIL_H_
 
 #include <stdint.h>
 
@@ -27,6 +27,7 @@
 // for an easy find/replace transformation when moving to Google3.
 #include <google/protobuf/descriptor.h>
 
+namespace solace {
 namespace protozero {
 
 // Parses a .proto message definition, recursing into its sub-messages, and
@@ -101,5 +102,6 @@ class FilterUtil {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // SRC_PROTOZERO_FILTERING_FILTER_UTIL_H_
+#endif  // SRC_SOLACE_PROTOZERO_FILTERING_FILTER_UTIL_H_

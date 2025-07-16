@@ -21,6 +21,7 @@
 
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -71,3 +72,4 @@ std::string FakeScatteredBuffer::GetBytesAsString(size_t start, size_t length) {
 }
 
 }  // namespace protozero
+}  // namespace solace

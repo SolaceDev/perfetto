@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/message.h"
+#include "perfetto/solace_protozero/message.h"
 
 #include <limits>
 #include <memory>
@@ -22,12 +22,13 @@
 #include <vector>
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/message_handle.h"
-#include "perfetto/protozero/root_message.h"
+#include "perfetto/solace_protozero/message_handle.h"
+#include "perfetto/solace_protozero/root_message.h"
 #include "src/base/test/utils.h"
 #include "src/protozero/test/fake_scattered_buffer.h"
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -439,3 +440,4 @@ TEST_F(MessageTest, MoveMessageHandle) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/static_buffer.h"
+#include "perfetto/solace_protozero/static_buffer.h"
 
 #include "perfetto/base/logging.h"
 
+namespace solace {
 namespace protozero {
 
 StaticBufferDelegate::~StaticBufferDelegate() = default;
@@ -33,3 +34,4 @@ ContiguousMemoryRange StaticBufferDelegate::GetNewBuffer() {
 }
 
 }  // namespace protozero
+}  // namespace solace

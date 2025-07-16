@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_
-#define INCLUDE_PERFETTO_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_
 
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 
+namespace solace {
 namespace protozero {
 
 // Keep this struct trivially constructible (no ctors, no default initializers).
@@ -34,5 +35,6 @@ struct ContiguousMemoryRange {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_CONTIGUOUS_MEMORY_RANGE_H_

@@ -20,9 +20,10 @@
 
 #include "perfetto/ext/base/hash.h"
 
-#include "perfetto/protozero/packed_repeated_fields.h"
+#include "perfetto/solace_protozero/packed_repeated_fields.h"
 #include "src/protozero/filtering/filter_bytecode_parser.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -86,9 +87,10 @@ int FuzzBytecodeParser(const uint8_t* data, size_t size) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return protozero::FuzzBytecodeParser(data, size);
+  return solace::protozero::FuzzBytecodeParser(data, size);
 }

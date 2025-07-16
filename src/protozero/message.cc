@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/message.h"
+#include "perfetto/solace_protozero/message.h"
 
 #include <atomic>
 #include <type_traits>
 
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/message_arena.h"
-#include "perfetto/protozero/message_handle.h"
+#include "perfetto/solace_protozero/message_arena.h"
+#include "perfetto/solace_protozero/message_handle.h"
 
 #if !PERFETTO_IS_LITTLE_ENDIAN()
 // The memcpy() for float and double below needs to be adjusted if we want to
@@ -30,6 +30,7 @@
 #error Unimplemented for big endian archs.
 #endif
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -167,3 +168,4 @@ void Message::EndNestedMessage() {
 }
 
 }  // namespace protozero
+}  // namespace solace

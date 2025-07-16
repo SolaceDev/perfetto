@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_CPP_MESSAGE_OBJ_H_
-#define INCLUDE_PERFETTO_PROTOZERO_CPP_MESSAGE_OBJ_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_CPP_MESSAGE_OBJ_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_CPP_MESSAGE_OBJ_H_
 
 #include <stdint.h>
 
@@ -24,6 +24,7 @@
 
 #include "perfetto/base/export.h"
 
+namespace solace {
 namespace protozero {
 
 // Base class for generated .gen.h classes, which are full C++ objects that
@@ -42,5 +43,6 @@ class PERFETTO_EXPORT CppMessageObj {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_CPP_MESSAGE_OBJ_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_CPP_MESSAGE_OBJ_H_

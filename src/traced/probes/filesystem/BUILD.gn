@@ -49,7 +49,7 @@ perfetto_unittest_source_set("unittests") {
     ":filesystem",
     "../../../../gn:default_deps",
     "../../../../gn:gtest_and_gmock",
-    "../../../../include/perfetto/protozero",
+    "../../../../include/perfetto/solace_protozero",
     "../../../../protos/perfetto/config/inode_file:zero",
     "../../../../src/base:test_support",
   ]

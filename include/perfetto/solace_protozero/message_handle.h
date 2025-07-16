@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_MESSAGE_HANDLE_H_
-#define INCLUDE_PERFETTO_PROTOZERO_MESSAGE_HANDLE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_HANDLE_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_HANDLE_H_
 
 #include <functional>
 
 #include "perfetto/base/export.h"
-#include "perfetto/protozero/message.h"
+#include "perfetto/solace_protozero/message.h"
 
+namespace solace {
 namespace protozero {
 
 class Message;
@@ -102,5 +103,6 @@ class MessageHandle : public MessageHandleBase {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_MESSAGE_HANDLE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_MESSAGE_HANDLE_H_

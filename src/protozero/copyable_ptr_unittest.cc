@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "perfetto/protozero/copyable_ptr.h"
+#include "perfetto/solace_protozero/copyable_ptr.h"
 
 #include "test/gtest_and_gmock.h"
 
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -116,3 +117,4 @@ TEST(CopyablePtrTest, DeepCompare) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

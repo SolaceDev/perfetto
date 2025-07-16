@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_FIELD_H_
-#define INCLUDE_PERFETTO_PROTOZERO_FIELD_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_FIELD_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_FIELD_H_
 
 #include <stdint.h>
 
@@ -23,9 +23,10 @@
 #include <vector>
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/contiguous_memory_range.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/contiguous_memory_range.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 struct ConstBytes {
@@ -208,5 +209,6 @@ class Field {
 static_assert(sizeof(Field) == 16, "Field struct too big");
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_FIELD_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_FIELD_H_

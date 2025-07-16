@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_PROTO_DECODER_H_
-#define INCLUDE_PERFETTO_PROTOZERO_PROTO_DECODER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_PROTO_DECODER_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_PROTO_DECODER_H_
 
 #include <stdint.h>
 #include <array>
@@ -24,9 +24,10 @@
 
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/field.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/field.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 // A generic protobuf decoder. Doesn't require any knowledge about the proto
@@ -418,7 +419,7 @@ class PERFETTO_EXPORT TypedProtoDecoderBase : public ProtoDecoder {
 // This constant is a tradeoff between having a larger stack frame and being
 // able to decode field IDs up to N (or N - num_fields repeated fields) without
 // falling back on the heap.
-#define PROTOZERO_DECODER_INITIAL_STACK_CAPACITY 100
+#define SOLACE_PROTOZERO_DECODER_INITIAL_STACK_CAPACITY 100
 
 // Template class instantiated by the auto-generated decoder classes declared in
 // xxx.pbzero.h files.
@@ -428,7 +429,7 @@ class TypedProtoDecoder : public TypedProtoDecoderBase {
   TypedProtoDecoder(const uint8_t* buffer, size_t length)
       : TypedProtoDecoderBase(on_stack_storage_,
                               /*num_fields=*/MAX_FIELD_ID + 1,
-                              PROTOZERO_DECODER_INITIAL_STACK_CAPACITY,
+                              SOLACE_PROTOZERO_DECODER_INITIAL_STACK_CAPACITY,
                               buffer,
                               length) {
     TypedProtoDecoderBase::ParseAllFields();
@@ -441,7 +442,7 @@ class TypedProtoDecoder : public TypedProtoDecoderBase {
     // dereference |fields_|, whether it's still using the stack or it fell
     // back on the heap. Because both terms of the if () are known at compile
     // time, the compiler elides the branch for ids < INITIAL_STACK_CAPACITY.
-    if (FIELD_ID < PROTOZERO_DECODER_INITIAL_STACK_CAPACITY) {
+    if (FIELD_ID < SOLACE_PROTOZERO_DECODER_INITIAL_STACK_CAPACITY) {
       return fields_[FIELD_ID];
     } else {
       // Otherwise use the slowpath Get() which will do a runtime check.
@@ -461,9 +462,10 @@ class TypedProtoDecoder : public TypedProtoDecoderBase {
   }
 
  private:
-  Field on_stack_storage_[PROTOZERO_DECODER_INITIAL_STACK_CAPACITY];
+  Field on_stack_storage_[SOLACE_PROTOZERO_DECODER_INITIAL_STACK_CAPACITY];
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_PROTO_DECODER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_PROTO_DECODER_H_

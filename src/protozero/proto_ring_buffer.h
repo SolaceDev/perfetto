@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef SRC_PROTOZERO_PROTO_RING_BUFFER_H_
-#define SRC_PROTOZERO_PROTO_RING_BUFFER_H_
+#ifndef SRC_SOLACE_PROTOZERO_PROTO_RING_BUFFER_H_
+#define SRC_SOLACE_PROTOZERO_PROTO_RING_BUFFER_H_
 
 #include <stdint.h>
 
 #include "perfetto/ext/base/paged_memory.h"
 
+namespace solace {
 namespace protozero {
 
 // This class buffers and tokenizes proto messages.
@@ -134,5 +135,6 @@ class ProtoRingBuffer {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // SRC_PROTOZERO_PROTO_RING_BUFFER_H_
+#endif  // SRC_SOLACE_PROTOZERO_PROTO_RING_BUFFER_H_

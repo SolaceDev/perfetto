@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_PACKED_REPEATED_FIELDS_H_
-#define INCLUDE_PERFETTO_PROTOZERO_PACKED_REPEATED_FIELDS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_PACKED_REPEATED_FIELDS_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_PACKED_REPEATED_FIELDS_H_
 
 #include <stdint.h>
 
@@ -24,8 +24,9 @@
 #include <type_traits>
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 // This file contains classes used when encoding packed repeated fields.
@@ -111,5 +112,6 @@ class PackedFixedSizeInt : public PackedBufferBase {
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_PACKED_REPEATED_FIELDS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_PACKED_REPEATED_FIELDS_H_

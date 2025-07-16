@@ -21,13 +21,14 @@
 #include "perfetto/ext/base/file_utils.h"
 #include "perfetto/ext/base/string_utils.h"
 #include "perfetto/ext/base/temp_file.h"
-#include "perfetto/protozero/proto_decoder.h"
-#include "perfetto/protozero/proto_utils.h"
-#include "perfetto/protozero/scattered_heap_buffer.h"
+#include "perfetto/solace_protozero/proto_decoder.h"
+#include "perfetto/solace_protozero/proto_utils.h"
+#include "perfetto/solace_protozero/scattered_heap_buffer.h"
 #include "protos/perfetto/trace/trace.pb.h"
 #include "src/protozero/filtering/filter_util.h"
 #include "src/protozero/filtering/message_filter.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -808,3 +809,4 @@ TEST(MessageFilterTest, RealTracePassthrough) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

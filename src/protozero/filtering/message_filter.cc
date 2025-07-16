@@ -17,8 +17,9 @@
 #include "src/protozero/filtering/message_filter.h"
 
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/proto_utils.h"
+#include "perfetto/solace_protozero/proto_utils.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -308,3 +309,4 @@ void MessageFilter::IncrementCurrentFieldUsage(uint32_t field_id,
 }
 
 }  // namespace protozero
+}  // namespace solace

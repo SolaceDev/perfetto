@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source_set("protozero") {
+source_set("solace_protozero") {
   public_deps = [ "../base" ]
   sources = [
     "contiguous_memory_range.h",

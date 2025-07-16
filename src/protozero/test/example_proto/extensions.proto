@@ -16,7 +16,7 @@
 
 syntax = "proto2";
 
-package protozero.test.protos;
+package solace.protozero.test.protos;
 
 message RealFakeEvent {
   optional uint32 base_int = 1;

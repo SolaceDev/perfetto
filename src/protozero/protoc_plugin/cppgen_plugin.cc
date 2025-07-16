@@ -35,6 +35,8 @@
 
 #include "perfetto/ext/base/string_utils.h"
 
+
+namespace solace {
 namespace protozero {
 namespace {
 
@@ -143,15 +145,15 @@ bool CppObjGenerator::Generate(const google::protobuf::FileDescriptor* file,
   h_printer.Print("#include <vector>\n");
   h_printer.Print("#include <string>\n");
   h_printer.Print("#include <type_traits>\n\n");
-  h_printer.Print("#include \"perfetto/protozero/cpp_message_obj.h\"\n");
-  h_printer.Print("#include \"perfetto/protozero/copyable_ptr.h\"\n");
+  h_printer.Print("#include \"perfetto/solace_protozero/cpp_message_obj.h\"\n");
+  h_printer.Print("#include \"perfetto/solace_protozero/copyable_ptr.h\"\n");
   h_printer.Print("#include \"perfetto/base/export.h\"\n\n");
 
-  cc_printer.Print("#include \"perfetto/protozero/message.h\"\n");
+  cc_printer.Print("#include \"perfetto/solace_protozero/message.h\"\n");
   cc_printer.Print(
-      "#include \"perfetto/protozero/packed_repeated_fields.h\"\n");
-  cc_printer.Print("#include \"perfetto/protozero/proto_decoder.h\"\n");
-  cc_printer.Print("#include \"perfetto/protozero/scattered_heap_buffer.h\"\n");
+      "#include \"perfetto/solace_protozero/packed_repeated_fields.h\"\n");
+  cc_printer.Print("#include \"perfetto/solace_protozero/proto_decoder.h\"\n");
+  cc_printer.Print("#include \"perfetto/solace_protozero/scattered_heap_buffer.h\"\n");
   cc_printer.Print(kHeader);
   cc_printer.Print("#if defined(__GNUC__) || defined(__clang__)\n");
   cc_printer.Print("#pragma GCC diagnostic push\n");
@@ -288,7 +290,7 @@ bool CppObjGenerator::Generate(const google::protobuf::FileDescriptor* file,
     }
   };
 
-  add_fwd_decl(kClass, "protozero::Message");
+  add_fwd_decl(kClass, "solace::protozero::Message");
   for (const Descriptor* msg : all_types) {
     add_fwd_decl(kClass, GetFullName(msg, true));
   }
@@ -419,17 +421,17 @@ std::string CppObjGenerator::GetPackedBuffer(
     const FieldDescriptor* field) const {
   switch (field->type()) {
     case FieldDescriptor::TYPE_FIXED32:
-      return "::protozero::PackedFixedSizeInt<uint32_t>";
+      return "solace::protozero::PackedFixedSizeInt<uint32_t>";
     case FieldDescriptor::TYPE_SFIXED32:
-      return "::protozero::PackedFixedSizeInt<int32_t>";
+      return "solace::protozero::PackedFixedSizeInt<int32_t>";
     case FieldDescriptor::TYPE_FIXED64:
-      return "::protozero::PackedFixedSizeInt<uint64_t>";
+      return "solace::protozero::PackedFixedSizeInt<uint64_t>";
     case FieldDescriptor::TYPE_SFIXED64:
-      return "::protozero::PackedFixedSizeInt<int64_t>";
+      return "solace::protozero::PackedFixedSizeInt<int64_t>";
     case FieldDescriptor::TYPE_DOUBLE:
-      return "::protozero::PackedFixedSizeInt<double>";
+      return "solace::protozero::PackedFixedSizeInt<double>";
     case FieldDescriptor::TYPE_FLOAT:
-      return "::protozero::PackedFixedSizeInt<float>";
+      return "solace::protozero::PackedFixedSizeInt<float>";
     case FieldDescriptor::TYPE_INT32:
     case FieldDescriptor::TYPE_SINT32:
     case FieldDescriptor::TYPE_UINT32:
@@ -437,7 +439,7 @@ std::string CppObjGenerator::GetPackedBuffer(
     case FieldDescriptor::TYPE_UINT64:
     case FieldDescriptor::TYPE_SINT64:
     case FieldDescriptor::TYPE_BOOL:
-      return "::protozero::PackedVarInt";
+      return "solace::protozero::PackedVarInt";
     case FieldDescriptor::TYPE_STRING:
     case FieldDescriptor::TYPE_BYTES:
     case FieldDescriptor::TYPE_MESSAGE:
@@ -454,11 +456,11 @@ std::string CppObjGenerator::GetPackedWireType(
     case FieldDescriptor::TYPE_FIXED32:
     case FieldDescriptor::TYPE_SFIXED32:
     case FieldDescriptor::TYPE_FLOAT:
-      return "::protozero::proto_utils::ProtoWireType::kFixed32";
+      return "solace::protozero::proto_utils::ProtoWireType::kFixed32";
     case FieldDescriptor::TYPE_FIXED64:
     case FieldDescriptor::TYPE_SFIXED64:
     case FieldDescriptor::TYPE_DOUBLE:
-      return "::protozero::proto_utils::ProtoWireType::kFixed64";
+      return "solace::protozero::proto_utils::ProtoWireType::kFixed64";
     case FieldDescriptor::TYPE_INT32:
     case FieldDescriptor::TYPE_SINT32:
     case FieldDescriptor::TYPE_UINT32:
@@ -466,7 +468,7 @@ std::string CppObjGenerator::GetPackedWireType(
     case FieldDescriptor::TYPE_UINT64:
     case FieldDescriptor::TYPE_SINT64:
     case FieldDescriptor::TYPE_BOOL:
-      return "::protozero::proto_utils::ProtoWireType::kVarInt";
+      return "solace::protozero::proto_utils::ProtoWireType::kVarInt";
     case FieldDescriptor::TYPE_STRING:
     case FieldDescriptor::TYPE_BYTES:
     case FieldDescriptor::TYPE_MESSAGE:
@@ -532,7 +534,7 @@ void CppObjGenerator::GenEnumAliases(const EnumDescriptor* enum_desc,
 void CppObjGenerator::GenClassDecl(const Descriptor* msg, Printer* p) const {
   std::string full_name = GetFullName(msg);
   p->Print(
-      "\nclass PERFETTO_EXPORT $n$ : public ::protozero::CppMessageObj {\n",
+      "\nclass PERFETTO_EXPORT $n$ : public solace::protozero::CppMessageObj {\n",
       "n", full_name);
   p->Print(" public:\n");
   p->Indent();
@@ -578,7 +580,7 @@ void CppObjGenerator::GenClassDecl(const Descriptor* msg, Printer* p) const {
   p->Print("bool ParseFromArray(const void*, size_t) override;\n");
   p->Print("std::string SerializeAsString() const override;\n");
   p->Print("std::vector<uint8_t> SerializeAsArray() const override;\n");
-  p->Print("void Serialize(::protozero::Message*) const;\n");
+  p->Print("void Serialize(solace::protozero::Message*) const;\n");
 
   // Generate accessors.
   for (int i = 0; i < msg->field_count(); i++) {
@@ -660,7 +662,7 @@ void CppObjGenerator::GenClassDecl(const Descriptor* msg, Printer* p) const {
     } else if (!field->is_repeated()) {
       std::string type = GetCppType(field, false);
       if (field->type() == TYPE_MESSAGE) {
-        type = "::protozero::CopyablePtr<" + type + ">";
+        type = "solace::protozero::CopyablePtr<" + type + ">";
         p->Print("$t$ $n$_;\n", "t", type, "n", field->lowercase_name());
       } else {
         p->Print("$t$ $n$_{};\n", "t", type, "n", field->lowercase_name());
@@ -739,7 +741,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
   p->Print("unknown_fields_.clear();\n");
   p->Print("bool packed_error = false;\n");
   p->Print("\n");
-  p->Print("::protozero::ProtoDecoder dec(raw, size);\n");
+  p->Print("solace::protozero::ProtoDecoder dec(raw, size);\n");
   p->Print("for (auto field = dec.ReadField(); field.valid(); ");
   p->Print("field = dec.ReadField()) {\n");
   p->Indent();
@@ -773,7 +775,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
           PERFETTO_FATAL("packed signed (zigzag) fields are not supported");
         }
         p->Print(
-            "for (::protozero::PackedRepeatedFieldIterator<$w$, $c$> "
+            "for (solace::protozero::PackedRepeatedFieldIterator<$w$, $c$> "
             "rep(field.data(), field.size(), &packed_error); rep; ++rep) {\n",
             "w", GetPackedWireType(field), "c", GetCppType(field, false));
         p->Print("  $n$_.emplace_back(*rep);\n", "n", field->lowercase_name());
@@ -806,7 +808,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
   // Generate the SerializeAsString() method definition.
   p->Print("std::string $f$::SerializeAsString() const {\n", "f", full_name);
   p->Indent();
-  p->Print("::protozero::HeapBuffered<::protozero::Message> msg;\n");
+  p->Print("solace::protozero::HeapBuffered<solace::protozero::Message> msg;\n");
   p->Print("Serialize(msg.get());\n");
   p->Print("return msg.SerializeAsString();\n");
   p->Outdent();
@@ -816,7 +818,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
   p->Print("std::vector<uint8_t> $f$::SerializeAsArray() const {\n", "f",
            full_name);
   p->Indent();
-  p->Print("::protozero::HeapBuffered<::protozero::Message> msg;\n");
+  p->Print("solace::protozero::HeapBuffered<solace::protozero::Message> msg;\n");
   p->Print("Serialize(msg.get());\n");
   p->Print("return msg.SerializeAsArray();\n");
   p->Outdent();
@@ -824,7 +826,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
 
   // Generate the Serialize() method that writes the fields into the passed
   // protozero |msg| write-only interface |msg|.
-  p->Print("void $f$::Serialize(::protozero::Message* msg) const {\n", "f",
+  p->Print("void $f$::Serialize(solace::protozero::Message* msg) const {\n", "f",
            full_name);
   p->Indent();
   for (int i = 0; i < msg->field_count(); i++) {
@@ -859,7 +861,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
       } else if (field->type() == TYPE_MESSAGE) {
         p->Print(args,
                  "$lvalue$.Serialize("
-                 "msg->BeginNestedMessage<::protozero::Message>($id$));\n");
+                 "msg->BeginNestedMessage<solace::protozero::Message>($id$));\n");
       } else {
         args["setter"] = GetProtozeroSetter(field);
         p->Print(args, "msg->$setter$($id$, $rvalue$);\n");
@@ -879,8 +881,9 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace
 
 int main(int argc, char** argv) {
-  ::protozero::CppObjGenerator generator;
+  solace::protozero::CppObjGenerator generator;
   return google::protobuf::compiler::PluginMain(argc, argv, &generator);
 }

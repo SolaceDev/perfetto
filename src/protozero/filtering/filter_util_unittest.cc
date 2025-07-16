@@ -21,6 +21,7 @@
 #include "src/protozero/filtering/filter_bytecode_parser.h"
 #include "src/protozero/filtering/filter_util.h"
 
+namespace solace {
 namespace protozero {
 
 namespace {
@@ -180,3 +181,4 @@ TEST(SchemaParserTest, FieldLookup) {
 
 }  // namespace
 }  // namespace protozero
+}  // namespace solace

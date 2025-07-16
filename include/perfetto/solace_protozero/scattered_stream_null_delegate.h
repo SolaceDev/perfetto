@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_
-#define INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_
+#define INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_
 
 #include <memory>
 #include <vector>
 
 #include "perfetto/base/export.h"
 #include "perfetto/base/logging.h"
-#include "perfetto/protozero/contiguous_memory_range.h"
-#include "perfetto/protozero/scattered_stream_writer.h"
+#include "perfetto/solace_protozero/contiguous_memory_range.h"
+#include "perfetto/solace_protozero/scattered_stream_writer.h"
 
+namespace solace {
 namespace protozero {
 
 class PERFETTO_EXPORT ScatteredStreamWriterNullDelegate
@@ -42,5 +43,6 @@ class PERFETTO_EXPORT ScatteredStreamWriterNullDelegate
 };
 
 }  // namespace protozero
+}  // namespace solace
 
-#endif  // INCLUDE_PERFETTO_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_PROTOZERO_SCATTERED_STREAM_NULL_DELEGATE_H_
