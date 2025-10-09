@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_ANDROID_UTILS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_ANDROID_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_ANDROID_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_ANDROID_UTILS_H_
 
 #include <string>
 
@@ -24,16 +24,16 @@
 namespace perfetto {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 // Returns the value of the Android system property named `name`. If the
 // property does not exist, returns an empty string (a non-existing property is
 // the same as a property with an empty value for this API).
 std::string GetAndroidProp(const char* name);
 
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_ANDROID_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_ANDROID_UTILS_H_

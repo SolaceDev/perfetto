@@ -27,8 +27,8 @@
 #include "perfetto/ext/base/thread_utils.h"
 #include "perfetto/ext/base/unix_task_runner.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <sys/prctl.h>
 #endif
 
@@ -48,10 +48,10 @@ ThreadTaskRunner& ThreadTaskRunner::operator=(ThreadTaskRunner&& other) {
 
 ThreadTaskRunner::~ThreadTaskRunner() {
   if (task_runner_) {
-    PERFETTO_CHECK(!task_runner_->QuitCalled());
+    PERFETTO_SOLACE_CHECK(!task_runner_->QuitCalled());
     task_runner_->Quit();
 
-    PERFETTO_DCHECK(thread_.joinable());
+    PERFETTO_SOLACE_DCHECK(thread_.joinable());
   }
   if (thread_.joinable())
     thread_.join();

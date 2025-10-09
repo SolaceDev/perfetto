@@ -41,7 +41,7 @@ struct TestSocket {
   inline void Destroy();
 };
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 const char* TestSocket::name() {
   uint64_t hash = 5381;
@@ -55,7 +55,7 @@ base::SockFamily TestSocket::family() {
 }
 void TestSocket::Destroy() {}
 
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 const char* TestSocket::name() {
   snprintf(buf_, sizeof(buf_), "@%s", test_name_);

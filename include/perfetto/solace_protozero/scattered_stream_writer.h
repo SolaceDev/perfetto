@@ -45,9 +45,9 @@ namespace protozero {
 // The purpose of this class is to abstract away the non-contiguous write logic.
 // This class knows how to deal with writes as long as they fall in the same
 // ContiguousMemoryRange and defers the chunk-chaining logic to the Delegate.
-class PERFETTO_EXPORT ScatteredStreamWriter {
+class PERFETTO_SOLACE_EXPORT ScatteredStreamWriter {
  public:
-  class PERFETTO_EXPORT Delegate {
+  class PERFETTO_SOLACE_EXPORT Delegate {
    public:
     virtual ~Delegate();
     virtual ContiguousMemoryRange GetNewBuffer() = 0;
@@ -121,7 +121,7 @@ class PERFETTO_EXPORT ScatteredStreamWriter {
 
   inline void WriteBytes(const uint8_t* src, size_t size) {
     uint8_t* const end = write_ptr_ + size;
-    if (PERFETTO_LIKELY(end <= cur_range_.end))
+    if (PERFETTO_SOLACE_LIKELY(end <= cur_range_.end))
       return WriteBytesUnsafe(src, size);
     WriteBytesSlowPath(src, size);
   }

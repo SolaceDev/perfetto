@@ -26,7 +26,7 @@ TmpDirTree::TmpDirTree() : tmp_dir_(base::TempDir::Create()) {}
 
 TmpDirTree::~TmpDirTree() {
   for (; !files_to_remove_.empty(); files_to_remove_.pop()) {
-    PERFETTO_CHECK(remove(AbsolutePath(files_to_remove_.top()).c_str()) == 0);
+    PERFETTO_SOLACE_CHECK(remove(AbsolutePath(files_to_remove_.top()).c_str()) == 0);
   }
   for (; !dirs_to_remove_.empty(); dirs_to_remove_.pop()) {
     base::Rmdir(AbsolutePath(dirs_to_remove_.top()));
@@ -39,7 +39,7 @@ std::string TmpDirTree::AbsolutePath(const std::string& relative_path) const {
 
 void TmpDirTree::AddDir(const std::string& relative_path) {
   dirs_to_remove_.push(relative_path);
-  PERFETTO_CHECK(base::Mkdir(AbsolutePath(relative_path)));
+  PERFETTO_SOLACE_CHECK(base::Mkdir(AbsolutePath(relative_path)));
 }
 
 void TmpDirTree::AddFile(const std::string& relative_path,
@@ -47,7 +47,7 @@ void TmpDirTree::AddFile(const std::string& relative_path,
   files_to_remove_.push(relative_path);
   base::ScopedFile fd(base::OpenFile(AbsolutePath(relative_path),
                                      O_WRONLY | O_CREAT | O_TRUNC, 0600));
-  PERFETTO_CHECK(base::WriteAll(fd.get(), content.c_str(), content.size()) ==
+  PERFETTO_SOLACE_CHECK(base::WriteAll(fd.get(), content.c_str(), content.size()) ==
                  static_cast<ssize_t>(content.size()));
 }
 

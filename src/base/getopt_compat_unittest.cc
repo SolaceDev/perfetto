@@ -25,7 +25,7 @@
 
 #include "perfetto/base/build_config.h"
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <getopt.h>
 #endif
 
@@ -52,7 +52,7 @@ struct OurGetopt {
   char*& optarg = getopt_compat::optarg;
 };
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 struct SystemGetopt {
   using LongOptionType = ::option;
   using GetoptFn = decltype(&::getopt);
@@ -74,7 +74,7 @@ class GetoptCompatTest : public testing::Test {
     // When calling getopt() several times, MacOS requires that optind is reset
     // to 1, while Linux requires optind to be reset to 0. Also MacOS requires
     // optreset to be set as well.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
     impl.optind = 1;
     optreset = 1;  // It has no corresponding variable in other OSes.
 #else
@@ -92,7 +92,7 @@ class GetoptCompatTest : public testing::Test {
   T impl;
 };
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 using GetoptTestTypes = ::testing::Types<OurGetopt>;
 #else
 using GetoptTestTypes = ::testing::Types<OurGetopt, SystemGetopt>;

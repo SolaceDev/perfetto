@@ -384,8 +384,8 @@ TEST_F(MessageTest, MessageHandle) {
   handle_swp = std::move(another_handle);
   ASSERT_EQ(0x90u, *msg3_size);  // |msg3| should be finalized at this point.
 
-#if PERFETTO_DCHECK_IS_ON()
-  // In developer builds w/ PERFETTO_DCHECK on a finalized message should
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
+  // In developer builds w/ PERFETTO_SOLACE_DCHECK on a finalized message should
   // invalidate the handle, in order to early catch bugs in the client code.
   FakeRootMessage* msg4 = NewMessage();
   MessageHandle<FakeRootMessage> handle4(msg4);

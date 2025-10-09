@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_TEMPLATE_UTIL_H_
-#define INCLUDE_PERFETTO_BASE_TEMPLATE_UTIL_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_TEMPLATE_UTIL_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_TEMPLATE_UTIL_H_
 
 #include <cstddef>
 #include <type_traits>
@@ -72,4 +72,4 @@ struct is_specialization<Ref<Args...>, Ref> : std::true_type {};
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_TEMPLATE_UTIL_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_TEMPLATE_UTIL_H_

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_THREAD_UTILS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_THREAD_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_UTILS_H_
 
 #include <string>
 
 #include "perfetto/base/build_config.h"
 #include "perfetto/ext/base/string_utils.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #include <pthread.h>
 #include <string.h>
 #include <algorithm>
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <sys/prctl.h>
 #endif
 
@@ -40,16 +40,16 @@
 namespace perfetto {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 // Sets the "comm" of the calling thread to the first 15 chars of the given
 // string.
 inline bool MaybeSetThreadName(const std::string& name) {
   char buf[16] = {};
   StringCopy(buf, name.c_str(), sizeof(buf));
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   return pthread_setname_np(buf) == 0;
 #else
   return pthread_setname_np(pthread_self(), buf) == 0;
@@ -58,7 +58,7 @@ inline bool MaybeSetThreadName(const std::string& name) {
 
 inline bool GetThreadName(std::string& out_result) {
   char buf[16] = {};
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   if (prctl(PR_GET_NAME, buf) != 0)
     return false;
 #else
@@ -81,4 +81,4 @@ inline bool GetThreadName(std::string&) {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_THREAD_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_UTILS_H_

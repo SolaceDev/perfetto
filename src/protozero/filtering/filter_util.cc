@@ -50,7 +50,7 @@ void MultiFileErrorCollectorImpl::AddError(const std::string& filename,
                                            int line,
                                            int column,
                                            const std::string& message) {
-  PERFETTO_ELOG("Error %s %d:%d: %s", filename.c_str(), line, column,
+  PERFETTO_SOLACE_ELOG("Error %s %d:%d: %s", filename.c_str(), line, column,
                 message.c_str());
 }
 
@@ -58,7 +58,7 @@ void MultiFileErrorCollectorImpl::AddWarning(const std::string& filename,
                                              int line,
                                              int column,
                                              const std::string& message) {
-  PERFETTO_ELOG("Warning %s %d:%d: %s", filename.c_str(), line, column,
+  PERFETTO_SOLACE_ELOG("Warning %s %d:%d: %s", filename.c_str(), line, column,
                 message.c_str());
 }
 
@@ -76,7 +76,7 @@ bool FilterUtil::LoadMessageDefinition(const std::string& proto_file,
   // Given that C:\foo\bar is a legit path on windows, fix it at this level
   // because the problem is really the protobuf compiler being too picky.
   static auto normalize_for_win = [](const std::string& path) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     return perfetto::base::ReplaceAll(path, "\\", "/");
 #else
     return path;
@@ -84,7 +84,7 @@ bool FilterUtil::LoadMessageDefinition(const std::string& proto_file,
   };
 
   google::protobuf::compiler::DiskSourceTree dst;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // If the path is absolute, maps "C:/" -> "C:/" (without hardcoding 'C').
   if (proto_file.size() > 3 && proto_file[1] == ':') {
     char win_drive[4];
@@ -106,14 +106,14 @@ bool FilterUtil::LoadMessageDefinition(const std::string& proto_file,
     // most times it's the right guess.
     root_msg = root_file->message_type(0);
     if (root_msg)
-      PERFETTO_LOG(
+      PERFETTO_SOLACE_LOG(
           "The guessed root message name is \"%s\". Pass -r com.MyName to "
           "override",
           root_msg->full_name().c_str());
   }
 
   if (!root_msg) {
-    PERFETTO_ELOG("Could not find the root message \"%s\" in %s",
+    PERFETTO_SOLACE_ELOG("Could not find the root message \"%s\" in %s",
                   root_message.c_str(), proto_file.c_str());
     return false;
   }
@@ -142,7 +142,7 @@ FilterUtil::Message* FilterUtil::ParseProtoDescriptor(
   for (int i = 0; i < proto->field_count(); ++i) {
     const auto* proto_field = proto->field(i);
     const uint32_t field_id = static_cast<uint32_t>(proto_field->number());
-    PERFETTO_CHECK(msg->fields.count(field_id) == 0);
+    PERFETTO_SOLACE_CHECK(msg->fields.count(field_id) == 0);
     auto& field = msg->fields[field_id];
     field.name = proto_field->name();
     field.type = proto_field->type_name();
@@ -211,7 +211,7 @@ void FilterUtil::Dedupe() {
       it = descriptors_.erase(it);
     }
   }
-  PERFETTO_LOG(
+  PERFETTO_SOLACE_LOG(
       "Deduplication removed %zu duped descriptors out of %zu descriptors from "
       "%zu fields",
       removed_count, initial_count, field_count);
@@ -253,7 +253,7 @@ std::string FilterUtil::GenerateFilterBytecode() {
       const Message::Field& field = it->second;
       if (field.nested_type) {
         // Append the index of the target submessage.
-        PERFETTO_CHECK(descr_to_idx.count(field.nested_type));
+        PERFETTO_SOLACE_CHECK(descr_to_idx.count(field.nested_type));
         uint32_t nested_msg_index = descr_to_idx[field.nested_type];
         bytecode_gen.AddNestedField(field_id, nested_msg_index);
         ++it;
@@ -292,7 +292,7 @@ std::string FilterUtil::LookupField(const std::string& varint_encoded_path) {
   while (ptr < end) {
     uint64_t varint;
     const uint8_t* next = proto_utils::ParseVarInt(ptr, end, &varint);
-    PERFETTO_CHECK(next != ptr);
+    PERFETTO_SOLACE_CHECK(next != ptr);
     fields.emplace_back(static_cast<uint32_t>(varint));
     ptr = next;
   }

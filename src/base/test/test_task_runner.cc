@@ -30,19 +30,19 @@ TestTaskRunner::TestTaskRunner() = default;
 TestTaskRunner::~TestTaskRunner() = default;
 
 void TestTaskRunner::Run() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   for (;;)
     task_runner_.Run();
 }
 
 void TestTaskRunner::RunUntilIdle() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   task_runner_.PostTask(std::bind(&TestTaskRunner::QuitIfIdle, this));
   task_runner_.Run();
 }
 
 void TestTaskRunner::QuitIfIdle() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   if (task_runner_.IsIdleForTesting()) {
     task_runner_.Quit();
     return;
@@ -52,9 +52,9 @@ void TestTaskRunner::QuitIfIdle() {
 
 void TestTaskRunner::RunUntilCheckpoint(const std::string& checkpoint,
                                         uint32_t timeout_ms) {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   if (checkpoints_.count(checkpoint) == 0) {
-    PERFETTO_FATAL("[TestTaskRunner] Checkpoint \"%s\" does not exist.\n",
+    PERFETTO_SOLACE_FATAL("[TestTaskRunner] Checkpoint \"%s\" does not exist.\n",
                    checkpoint.c_str());
   }
   if (checkpoints_[checkpoint])
@@ -64,7 +64,7 @@ void TestTaskRunner::RunUntilCheckpoint(const std::string& checkpoint,
       [this, checkpoint] {
         if (checkpoints_[checkpoint])
           return;
-        PERFETTO_FATAL("[TestTaskRunner] Failed to reach checkpoint \"%s\"\n",
+        PERFETTO_SOLACE_FATAL("[TestTaskRunner] Failed to reach checkpoint \"%s\"\n",
                        checkpoint.c_str());
       },
       timeout_ms);
@@ -75,11 +75,11 @@ void TestTaskRunner::RunUntilCheckpoint(const std::string& checkpoint,
 
 std::function<void()> TestTaskRunner::CreateCheckpoint(
     const std::string& checkpoint) {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
-  PERFETTO_DCHECK(checkpoints_.count(checkpoint) == 0);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK(checkpoints_.count(checkpoint) == 0);
   auto checkpoint_iter = checkpoints_.emplace(checkpoint, false);
   return [this, checkpoint_iter] {
-    PERFETTO_DCHECK_THREAD(thread_checker_);
+    PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
     checkpoint_iter.first->second = true;
     if (pending_checkpoint_ == checkpoint_iter.first->first) {
       pending_checkpoint_.clear();

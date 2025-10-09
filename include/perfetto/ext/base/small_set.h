@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_SMALL_SET_H_
-#define INCLUDE_PERFETTO_EXT_BASE_SMALL_SET_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_SET_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_SET_H_
 
 #include <array>
 
@@ -59,4 +59,4 @@ class SmallSet {
 
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_SMALL_SET_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_SET_H_

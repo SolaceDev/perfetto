@@ -24,7 +24,7 @@
 #include "perfetto/solace_protozero/message_arena.h"
 #include "perfetto/solace_protozero/message_handle.h"
 
-#if !PERFETTO_IS_LITTLE_ENDIAN()
+#if !PERFETTO_SOLACE_IS_LITTLE_ENDIAN()
 // The memcpy() for float and double below needs to be adjusted if we want to
 // support big endian CPUs. There doesn't seem to be a compelling need today.
 #error Unimplemented for big endian archs.
@@ -35,7 +35,7 @@ namespace protozero {
 
 namespace {
 
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
 std::atomic<uint32_t> g_generation;
 #endif
 
@@ -61,7 +61,7 @@ void Message::Reset(ScatteredStreamWriter* stream_writer, MessageArena* arena) {
   size_already_written_ = 0;
   nested_message_ = nullptr;
   finalized_ = false;
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   handle_ = nullptr;
   generation_ = g_generation.fetch_add(1, std::memory_order_relaxed);
 #endif
@@ -75,7 +75,7 @@ void Message::AppendBytes(uint32_t field_id, const void* src, size_t size) {
   if (nested_message_)
     EndNestedMessage();
 
-  PERFETTO_DCHECK(size < proto_utils::kMaxMessageLength);
+  PERFETTO_SOLACE_DCHECK(size < proto_utils::kMaxMessageLength);
   // Write the proto preamble (field id, type and length of the field).
   uint8_t buffer[proto_utils::kMaxSimpleFieldEncodedSize];
   uint8_t* pos = buffer;
@@ -96,7 +96,7 @@ size_t Message::AppendScatteredBytes(uint32_t field_id,
     size += ranges[i].size();
   }
 
-  PERFETTO_DCHECK(size < proto_utils::kMaxMessageLength);
+  PERFETTO_SOLACE_DCHECK(size < proto_utils::kMaxMessageLength);
 
   uint8_t buffer[proto_utils::kMaxSimpleFieldEncodedSize];
   uint8_t* pos = buffer;
@@ -123,14 +123,14 @@ uint32_t Message::Finalize() {
   // Write the length of the nested message a posteriori, using a leading-zero
   // redundant varint encoding.
   if (!size_field_.IsNull()) {
-    PERFETTO_DCHECK(!finalized_);
-    PERFETTO_DCHECK(size_ < proto_utils::kMaxMessageLength);
-    PERFETTO_DCHECK(size_ >= size_already_written_);
+    PERFETTO_SOLACE_DCHECK(!finalized_);
+    PERFETTO_SOLACE_DCHECK(size_ < proto_utils::kMaxMessageLength);
+    PERFETTO_SOLACE_DCHECK(size_ >= size_already_written_);
     size_field_.WriteRedundantVarInt(size_ - size_already_written_);
   }
 
   finalized_ = true;
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   if (handle_)
     handle_->reset_message();
 #endif

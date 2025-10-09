@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_STRING_UTILS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_STRING_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_UTILS_H_
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -144,7 +144,7 @@ inline void StringCopy(char* dst, const char* src, size_t dst_size) {
   }
 
   // We were left off at dst_size. We over copied 1 byte. Null terminate.
-  if (PERFETTO_LIKELY(dst_size > 0))
+  if (PERFETTO_SOLACE_LIKELY(dst_size > 0))
     dst[dst_size - 1] = 0;
 }
 
@@ -166,7 +166,7 @@ inline void StringCopy(char* dst, const char* src, size_t dst_size) {
 // NOTE: This means that the caller has no way to tell when truncation happens
 //   vs the edge case of *just* fitting in the buffer.
 size_t SprintfTrunc(char* dst, size_t dst_size, const char* fmt, ...)
-    PERFETTO_PRINTF_FORMAT(3, 4);
+    PERFETTO_SOLACE_PRINTF_FORMAT(3, 4);
 
 // A helper class to facilitate construction and usage of write-once stack
 // strings.
@@ -182,7 +182,7 @@ size_t SprintfTrunc(char* dst, size_t dst_size, const char* fmt, ...)
 template <size_t N>
 class StackString {
  public:
-  explicit PERFETTO_PRINTF_FORMAT(/* 1=this */ 2, 3)
+  explicit PERFETTO_SOLACE_PRINTF_FORMAT(/* 1=this */ 2, 3)
       StackString(const char* fmt, ...) {
     buf_[0] = '\0';
     va_list args;
@@ -206,4 +206,4 @@ class StackString {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_STRING_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_UTILS_H_

@@ -20,7 +20,7 @@
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/logging.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <io.h>
 #else
@@ -36,10 +36,10 @@ CtrlCHandlerFunction g_handler = nullptr;
 }
 
 void InstallCtrCHandler(CtrlCHandlerFunction handler) {
-  PERFETTO_CHECK(g_handler == nullptr);
+  PERFETTO_SOLACE_CHECK(g_handler == nullptr);
   g_handler = handler;
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   auto trampoline = [](DWORD type) -> int {
     if (type == CTRL_C_EVENT) {
       g_handler();
@@ -48,9 +48,9 @@ void InstallCtrCHandler(CtrlCHandlerFunction handler) {
     return false;
   };
   ::SetConsoleCtrlHandler(trampoline, true);
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   // Setup signal handler.
   struct sigaction sa {};
 

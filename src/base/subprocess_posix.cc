@@ -18,9 +18,9 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 
 #include <fcntl.h>
 #include <poll.h>
@@ -35,8 +35,8 @@
 #include <thread>
 #include <tuple>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <sys/prctl.h>
 #endif
 
@@ -64,8 +64,8 @@ struct ChildProcessArgs {
 // Don't add any dynamic allocation in this function. This will be invoked
 // under a fork(), potentially in a state where the allocator lock is held.
 void __attribute__((noreturn)) ChildProcess(ChildProcessArgs* args) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   // In no case we want a child process to outlive its parent process. This is
   // relevant for tests, so that a test failure/crash doesn't leave child
   // processes around that get reparented to init.
@@ -227,14 +227,14 @@ void Subprocess::Start() {
 
   // Spawn the child process that will exec().
   s_->pid = fork();
-  PERFETTO_CHECK(s_->pid >= 0);
+  PERFETTO_SOLACE_CHECK(s_->pid >= 0);
   if (s_->pid == 0) {
     // Close the parent-ends of the pipes.
     s_->stdin_pipe.wr.reset();
     s_->stdouterr_pipe.rd.reset();
     ChildProcess(&proc_args);
     // ChildProcess() doesn't return, not even in case of failures.
-    PERFETTO_FATAL("not reached");
+    PERFETTO_SOLACE_FATAL("not reached");
   }
 
   s_->status = kRunning;
@@ -260,8 +260,8 @@ void Subprocess::Start() {
   s_->waitpid_thread = std::thread([pid, exit_status_pipe_wr, rusage] {
     int pid_stat = -1;
     struct rusage usg {};
-    int wait_res = PERFETTO_EINTR(wait4(pid, &pid_stat, 0, &usg));
-    PERFETTO_CHECK(wait_res == pid);
+    int wait_res = PERFETTO_SOLACE_EINTR(wait4(pid, &pid_stat, 0, &usg));
+    PERFETTO_SOLACE_CHECK(wait_res == pid);
 
     auto tv_to_ms = [](const struct timeval& tv) {
       return static_cast<uint32_t>(tv.tv_sec * 1000 + tv.tv_usec / 1000);
@@ -274,9 +274,9 @@ void Subprocess::Start() {
     rusage->vol_ctx_switch = static_cast<uint32_t>(usg.ru_nvcsw);
     rusage->invol_ctx_switch = static_cast<uint32_t>(usg.ru_nivcsw);
 
-    base::ignore_result(PERFETTO_EINTR(
+    base::ignore_result(PERFETTO_SOLACE_EINTR(
         write(exit_status_pipe_wr, &pid_stat, sizeof(pid_stat))));
-    PERFETTO_CHECK(close(exit_status_pipe_wr) == 0 || errno == EINTR);
+    PERFETTO_SOLACE_CHECK(close(exit_status_pipe_wr) == 0 || errno == EINTR);
   });
 }
 
@@ -318,8 +318,8 @@ bool Subprocess::PollInternal(int poll_timeout_ms) {
     return false;
 
   auto nfds = static_cast<nfds_t>(num_fds);
-  int poll_res = PERFETTO_EINTR(poll(fds, nfds, poll_timeout_ms));
-  PERFETTO_CHECK(poll_res >= 0);
+  int poll_res = PERFETTO_SOLACE_EINTR(poll(fds, nfds, poll_timeout_ms));
+  PERFETTO_SOLACE_CHECK(poll_res >= 0);
 
   TryReadStdoutAndErr();
   TryPushStdin();
@@ -329,7 +329,7 @@ bool Subprocess::PollInternal(int poll_timeout_ms) {
 }
 
 bool Subprocess::Wait(int timeout_ms) {
-  PERFETTO_CHECK(s_->status != kNotStarted);
+  PERFETTO_SOLACE_CHECK(s_->status != kNotStarted);
 
   // Break out of the loop only after both conditions are satisfied:
   // - All stdout/stderr data has been read (if kBuffer).
@@ -361,15 +361,15 @@ void Subprocess::TryReadExitStatus() {
     return;
 
   int pid_stat = -1;
-  int64_t rsize = PERFETTO_EINTR(
+  int64_t rsize = PERFETTO_SOLACE_EINTR(
       read(*s_->exit_status_pipe.rd, &pid_stat, sizeof(pid_stat)));
   if (rsize < 0 && errno == EAGAIN)
     return;
 
   if (rsize > 0) {
-    PERFETTO_CHECK(rsize == sizeof(pid_stat));
+    PERFETTO_SOLACE_CHECK(rsize == sizeof(pid_stat));
   } else if (rsize < 0) {
-    PERFETTO_PLOG("Subprocess read(s_->exit_status_pipe) failed");
+    PERFETTO_SOLACE_PLOG("Subprocess read(s_->exit_status_pipe) failed");
   }
   s_->waitpid_thread.join();
   s_->exit_status_pipe.rd.reset();
@@ -380,7 +380,7 @@ void Subprocess::TryReadExitStatus() {
   } else if (WIFSIGNALED(pid_stat)) {
     s_->returncode = 128 + WTERMSIG(pid_stat);  // Follow bash convention.
   } else {
-    PERFETTO_FATAL("waitpid() returned an unexpected value (0x%x)", pid_stat);
+    PERFETTO_SOLACE_FATAL("waitpid() returned an unexpected value (0x%x)", pid_stat);
   }
 }
 
@@ -389,10 +389,10 @@ void Subprocess::TryPushStdin() {
   if (!s_->stdin_pipe.wr)
     return;
 
-  PERFETTO_DCHECK(args.input.empty() || s_->input_written < args.input.size());
+  PERFETTO_SOLACE_DCHECK(args.input.empty() || s_->input_written < args.input.size());
   if (!args.input.empty()) {
     int64_t wsize =
-        PERFETTO_EINTR(write(*s_->stdin_pipe.wr, &args.input[s_->input_written],
+        PERFETTO_SOLACE_EINTR(write(*s_->stdin_pipe.wr, &args.input[s_->input_written],
                              args.input.size() - s_->input_written));
     if (wsize < 0 && errno == EAGAIN)
       return;
@@ -402,11 +402,11 @@ void Subprocess::TryPushStdin() {
       // Just ignore it.
       s_->input_written += static_cast<size_t>(wsize);
     } else {
-      PERFETTO_PLOG("Subprocess write(stdin) failed");
+      PERFETTO_SOLACE_PLOG("Subprocess write(stdin) failed");
       s_->stdin_pipe.wr.reset();
     }
   }
-  PERFETTO_DCHECK(s_->input_written <= args.input.size());
+  PERFETTO_SOLACE_DCHECK(s_->input_written <= args.input.size());
   if (s_->input_written == args.input.size())
     s_->stdin_pipe.wr.reset();  // Close stdin.
 }
@@ -416,7 +416,7 @@ void Subprocess::TryReadStdoutAndErr() {
     return;
   char buf[4096];
   int64_t rsize =
-      PERFETTO_EINTR(read(*s_->stdouterr_pipe.rd, buf, sizeof(buf)));
+      PERFETTO_SOLACE_EINTR(read(*s_->stdouterr_pipe.rd, buf, sizeof(buf)));
   if (rsize < 0 && errno == EAGAIN)
     return;
 
@@ -425,7 +425,7 @@ void Subprocess::TryReadStdoutAndErr() {
   } else if (rsize == 0 /* EOF */) {
     s_->stdouterr_pipe.rd.reset();
   } else {
-    PERFETTO_PLOG("Subprocess read(stdout/err) failed");
+    PERFETTO_SOLACE_PLOG("Subprocess read(stdout/err) failed");
     s_->stdouterr_pipe.rd.reset();
   }
 }
@@ -434,10 +434,10 @@ void Subprocess::KillAndWaitForTermination(int sig_num) {
   kill(s_->pid, sig_num ? sig_num : SIGKILL);
   Wait();
   // TryReadExitStatus must have joined the thread.
-  PERFETTO_DCHECK(!s_->waitpid_thread.joinable());
+  PERFETTO_SOLACE_DCHECK(!s_->waitpid_thread.joinable());
 }
 
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // PERFETTO_OS_LINUX || PERFETTO_OS_ANDROID || PERFETTO_OS_APPLE
+#endif  // PERFETTO_SOLACE_OS_LINUX || PERFETTO_SOLACE_OS_ANDROID || PERFETTO_SOLACE_OS_APPLE

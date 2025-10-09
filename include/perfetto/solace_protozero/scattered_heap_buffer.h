@@ -31,10 +31,10 @@ namespace protozero {
 
 class Message;
 
-class PERFETTO_EXPORT ScatteredHeapBuffer
+class PERFETTO_SOLACE_EXPORT ScatteredHeapBuffer
     : public protozero::ScatteredStreamWriter::Delegate {
  public:
-  class PERFETTO_EXPORT Slice {
+  class PERFETTO_SOLACE_EXPORT Slice {
    public:
     Slice();
     explicit Slice(size_t size);
@@ -54,7 +54,7 @@ class PERFETTO_EXPORT ScatteredHeapBuffer
     size_t size() const { return size_; }
     size_t unused_bytes() const { return unused_bytes_; }
     void set_unused_bytes(size_t unused_bytes) {
-      PERFETTO_DCHECK(unused_bytes_ <= size_);
+      PERFETTO_SOLACE_DCHECK(unused_bytes_ <= size_);
       unused_bytes_ = unused_bytes;
     }
 
@@ -172,7 +172,7 @@ class HeapBuffered {
     shb_.Reset();
     writer_.Reset(protozero::ContiguousMemoryRange{});
     msg_.Reset(&writer_);
-    PERFETTO_DCHECK(empty());
+    PERFETTO_SOLACE_DCHECK(empty());
   }
 
  private:

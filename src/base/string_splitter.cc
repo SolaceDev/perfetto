@@ -41,7 +41,7 @@ StringSplitter::StringSplitter(StringSplitter* outer, char delimiter)
 }
 
 void StringSplitter::Initialize(char* str, size_t size) {
-  PERFETTO_DCHECK(!size || str);
+  PERFETTO_SOLACE_DCHECK(!size || str);
   next_ = str;
   end_ = str + size;
   cur_ = nullptr;

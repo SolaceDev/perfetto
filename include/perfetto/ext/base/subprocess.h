@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_SUBPROCESS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_SUBPROCESS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_SUBPROCESS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_SUBPROCESS_H_
 
 #include <condition_variable>
 #include <functional>
@@ -121,7 +121,7 @@ class Subprocess {
     // If non-empty this will cause an exec() when Start()/Call() are called.
     std::vector<std::string> exec_cmd;
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     // If non-empty, it changes the argv[0] argument passed to exec. If
     // unset, argv[0] == exec_cmd[0]. This is to handle cases like:
     // exec_cmd = {"/proc/self/exec"}, argv0: "my_custom_test_override".
@@ -239,7 +239,7 @@ class Subprocess {
     std::string output;  // Stdin+stderr. Only when kBuffer.
     std::unique_ptr<ResourceUsage> rusage{new ResourceUsage()};
     bool timed_out = false;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     std::thread stdouterr_thread;
     std::thread stdin_thread;
     ScopedPlatformHandle win_proc_handle;
@@ -255,7 +255,7 @@ class Subprocess {
 #endif
   };
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   static void StdinThread(MovableState*, std::string input);
   static void StdoutErrThread(MovableState*);
 #else
@@ -272,4 +272,4 @@ class Subprocess {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_SUBPROCESS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SUBPROCESS_H_

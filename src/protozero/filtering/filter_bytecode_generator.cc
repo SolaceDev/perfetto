@@ -38,7 +38,7 @@ void FilterBytecodeGenerator::EndMessage() {
 
 // Allows a simple field (varint, fixed32/64, string or bytes).
 void FilterBytecodeGenerator::AddSimpleField(uint32_t field_id) {
-  PERFETTO_CHECK(field_id > last_field_id_);
+  PERFETTO_SOLACE_CHECK(field_id > last_field_id_);
   bytecode_.push_back(field_id << 3 | kFilterOpcode_SimpleField);
   last_field_id_ = field_id;
   endmessage_called_ = false;
@@ -49,8 +49,8 @@ void FilterBytecodeGenerator::AddSimpleField(uint32_t field_id) {
 // AddSimpleFieldRange(N,1) is semantically equivalent to AddSimpleField(N).
 void FilterBytecodeGenerator::AddSimpleFieldRange(uint32_t range_start,
                                                   uint32_t range_len) {
-  PERFETTO_CHECK(range_start > last_field_id_);
-  PERFETTO_CHECK(range_len > 0);
+  PERFETTO_SOLACE_CHECK(range_start > last_field_id_);
+  PERFETTO_SOLACE_CHECK(range_len > 0);
   bytecode_.push_back(range_start << 3 | kFilterOpcode_SimpleFieldRange);
   bytecode_.push_back(range_len);
   last_field_id_ = range_start + range_len - 1;
@@ -64,7 +64,7 @@ void FilterBytecodeGenerator::AddSimpleFieldRange(uint32_t range_start,
 // index.
 void FilterBytecodeGenerator::AddNestedField(uint32_t field_id,
                                              uint32_t message_index) {
-  PERFETTO_CHECK(field_id > last_field_id_);
+  PERFETTO_SOLACE_CHECK(field_id > last_field_id_);
   bytecode_.push_back(field_id << 3 | kFilterOpcode_NestedField);
   bytecode_.push_back(message_index);
   last_field_id_ = field_id;
@@ -77,8 +77,8 @@ void FilterBytecodeGenerator::AddNestedField(uint32_t field_id,
 // varints (the opcodes) and a checksum.
 // The returned string can be passed as-is to FilterBytecodeParser.Load().
 std::string FilterBytecodeGenerator::Serialize() {
-  PERFETTO_CHECK(endmessage_called_);
-  PERFETTO_CHECK(max_msg_index_ < num_messages_);
+  PERFETTO_SOLACE_CHECK(endmessage_called_);
+  PERFETTO_SOLACE_CHECK(max_msg_index_ < num_messages_);
   protozero::PackedVarInt words;
   perfetto::base::Hash hasher;
   for (uint32_t word : bytecode_) {

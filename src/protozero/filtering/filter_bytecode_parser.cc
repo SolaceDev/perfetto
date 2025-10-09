@@ -64,7 +64,7 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
   uint32_t expected_csum = static_cast<uint32_t>(hasher.digest());
   if (expected_csum != words.back()) {
     if (!suppress_logs_for_fuzzer_) {
-      PERFETTO_ELOG("Filter bytecode checksum failed. Expected: %x, actual: %x",
+      PERFETTO_SOLACE_ELOG("Filter bytecode checksum failed. Expected: %x, actual: %x",
                     expected_csum, words.back());
     }
     return false;
@@ -78,15 +78,15 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
   uint32_t max_msg_index = 0;
 
   auto add_directly_indexed_field = [&](uint32_t field_id, uint32_t msg_id) {
-    PERFETTO_DCHECK(field_id > 0 && field_id < kDirectlyIndexLimit);
+    PERFETTO_SOLACE_DCHECK(field_id > 0 && field_id < kDirectlyIndexLimit);
     direct_indexed_fields.resize(std::max(direct_indexed_fields.size(),
                                           static_cast<size_t>(field_id) + 1));
     direct_indexed_fields[field_id] = kAllowed | msg_id;
   };
 
   auto add_range = [&](uint32_t id_start, uint32_t id_end, uint32_t msg_id) {
-    PERFETTO_DCHECK(id_end > id_start);
-    PERFETTO_DCHECK(id_start >= kDirectlyIndexLimit);
+    PERFETTO_SOLACE_DCHECK(id_end > id_start);
+    PERFETTO_SOLACE_DCHECK(id_start >= kDirectlyIndexLimit);
     ranges.emplace_back(id_start);
     ranges.emplace_back(id_end);
     ranges.emplace_back(kAllowed | msg_id);
@@ -99,7 +99,7 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
     const uint32_t field_id = word >> 3;
 
     if (field_id == 0 && opcode != kFilterOpcode_EndOfMessage) {
-      PERFETTO_DLOG("bytecode error @ word %zu, invalid field id (0)", i);
+      PERFETTO_SOLACE_DLOG("bytecode error @ word %zu, invalid field id (0)", i);
       return false;
     }
 
@@ -116,7 +116,7 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
       } else {  // FILTER_OPCODE_NESTED_FIELD
         // The next word in the bytecode contains the message index.
         if (!has_next_word) {
-          PERFETTO_DLOG("bytecode error @ word %zu: unterminated nested field",
+          PERFETTO_SOLACE_DLOG("bytecode error @ word %zu: unterminated nested field",
                         i);
           return false;
         }
@@ -134,7 +134,7 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
       }
     } else if (opcode == kFilterOpcode_SimpleFieldRange) {
       if (!has_next_word) {
-        PERFETTO_DLOG("bytecode error @ word %zu: unterminated range", i);
+        PERFETTO_SOLACE_DLOG("bytecode error @ word %zu: unterminated range", i);
         return false;
       }
       const uint32_t range_len = words[++i];
@@ -148,7 +148,7 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
       // and add only the remaining range as a non-indexed range.
       for (; id < range_end && id < kDirectlyIndexLimit; ++id)
         add_directly_indexed_field(id, kAllowed | kSimpleField);
-      PERFETTO_DCHECK(id >= kDirectlyIndexLimit || id == range_end);
+      PERFETTO_SOLACE_DCHECK(id >= kDirectlyIndexLimit || id == range_end);
       if (id < range_end)
         add_range(id, range_end, kSimpleField);
     } else if (opcode == kFilterOpcode_EndOfMessage) {
@@ -167,13 +167,13 @@ bool FilterBytecodeParser::LoadInternal(const uint8_t* bytecode_data,
       direct_indexed_fields.clear();
       ranges.clear();
     } else {
-      PERFETTO_DLOG("bytecode error @ word %zu: invalid opcode (%x)", i, word);
+      PERFETTO_SOLACE_DLOG("bytecode error @ word %zu: invalid opcode (%x)", i, word);
       return false;
     }
   }  // (for word in bytecode).
 
   if (max_msg_index > 0 && max_msg_index >= message_offset_.size()) {
-    PERFETTO_DLOG(
+    PERFETTO_SOLACE_DLOG(
         "bytecode error: a message index (%u) is out of range "
         "(num_messages=%zu)",
         max_msg_index, message_offset_.size());
@@ -199,17 +199,17 @@ FilterBytecodeParser::QueryResult FilterBytecodeParser::Query(
   // These are DCHECKs and not just CHECKS because the |words_| is populated
   // by the LoadInternal call above. These cannot be violated with a malformed
   // bytecode.
-  PERFETTO_DCHECK(start_offset < words_.size());
+  PERFETTO_SOLACE_DCHECK(start_offset < words_.size());
   const uint32_t* word = &words_[start_offset];
   const uint32_t end_off = message_offset_[msg_index + 1];
   const uint32_t* const end = words_.data() + end_off;
-  PERFETTO_DCHECK(end > word && end <= words_.data() + words_.size());
+  PERFETTO_SOLACE_DCHECK(end > word && end <= words_.data() + words_.size());
   const uint32_t num_directly_indexed = *(word++);
-  PERFETTO_DCHECK(num_directly_indexed <= kDirectlyIndexLimit);
-  PERFETTO_DCHECK(word + num_directly_indexed <= end);
+  PERFETTO_SOLACE_DCHECK(num_directly_indexed <= kDirectlyIndexLimit);
+  PERFETTO_SOLACE_DCHECK(word + num_directly_indexed <= end);
   uint32_t field_state = 0;
-  if (PERFETTO_LIKELY(field_id < num_directly_indexed)) {
-    PERFETTO_DCHECK(&word[field_id] < end);
+  if (PERFETTO_SOLACE_LIKELY(field_id < num_directly_indexed)) {
+    PERFETTO_SOLACE_DCHECK(&word[field_id] < end);
     field_state = word[field_id];
   } else {
     for (word = word + num_directly_indexed; word + 2 < end;) {
@@ -225,7 +225,7 @@ FilterBytecodeParser::QueryResult FilterBytecodeParser::Query(
 
   res.allowed = (field_state & kAllowed) != 0;
   res.nested_msg_index = field_state & ~kAllowed;
-  PERFETTO_DCHECK(res.simple_field() ||
+  PERFETTO_SOLACE_DCHECK(res.simple_field() ||
                   res.nested_msg_index < message_offset_.size() - 1);
   return res;
 }

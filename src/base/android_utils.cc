@@ -20,7 +20,7 @@
 
 #include <string>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <sys/system_properties.h>
 #endif
 
@@ -30,7 +30,7 @@
 namespace perfetto {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 std::string GetAndroidProp(const char* name) {
   std::string ret;
@@ -56,7 +56,7 @@ std::string GetAndroidProp(const char* name) {
   return ret;
 }
 
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 }  // namespace base
 }  // namespace perfetto

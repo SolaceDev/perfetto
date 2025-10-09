@@ -32,7 +32,7 @@ namespace protozero {
 
 using namespace proto_utils;
 
-#if !PERFETTO_IS_LITTLE_ENDIAN()
+#if !PERFETTO_SOLACE_IS_LITTLE_ENDIAN()
 #error Unimplemented for big endian archs.
 #endif
 
@@ -47,7 +47,7 @@ struct ParseFieldResult {
 
 // Parses one field and returns the field itself and a pointer to the next
 // field to parse. If parsing fails, the returned |next| == |buffer|.
-PERFETTO_ALWAYS_INLINE ParseFieldResult
+PERFETTO_SOLACE_ALWAYS_INLINE ParseFieldResult
 ParseOneField(const uint8_t* const buffer, const uint8_t* const end) {
   ParseFieldResult res{ParseFieldResult::kAbort, buffer, Field{}};
 
@@ -60,15 +60,15 @@ ParseOneField(const uint8_t* const buffer, const uint8_t* const end) {
   const uint8_t* pos = buffer;
 
   // If we've already hit the end, just return an invalid field.
-  if (PERFETTO_UNLIKELY(pos >= end))
+  if (PERFETTO_SOLACE_UNLIKELY(pos >= end))
     return res;
 
   uint64_t preamble = 0;
-  if (PERFETTO_LIKELY(*pos < 0x80)) {  // Fastpath for fields with ID < 16.
+  if (PERFETTO_SOLACE_LIKELY(*pos < 0x80)) {  // Fastpath for fields with ID < 16.
     preamble = *(pos++);
   } else {
     const uint8_t* next = ParseVarInt(pos, end, &preamble);
-    if (PERFETTO_UNLIKELY(pos == next))
+    if (PERFETTO_SOLACE_UNLIKELY(pos == next))
       return res;
     pos = next;
   }
@@ -90,7 +90,7 @@ ParseOneField(const uint8_t* const buffer, const uint8_t* const end) {
       // parse the number. This is because we are out of space in the buffer.
       // Set the id to zero and return but don't update the offset so a future
       // read can read this field.
-      if (PERFETTO_UNLIKELY(new_pos == pos))
+      if (PERFETTO_SOLACE_UNLIKELY(new_pos == pos))
         return res;
 
       break;
@@ -99,7 +99,7 @@ ParseOneField(const uint8_t* const buffer, const uint8_t* const end) {
     case static_cast<uint8_t>(ProtoWireType::kLengthDelimited): {
       uint64_t payload_length;
       new_pos = ParseVarInt(pos, end, &payload_length);
-      if (PERFETTO_UNLIKELY(new_pos == pos))
+      if (PERFETTO_SOLACE_UNLIKELY(new_pos == pos))
         return res;
 
       // ParseVarInt guarantees that |new_pos| <= |end| when it succeeds;
@@ -115,7 +115,7 @@ ParseOneField(const uint8_t* const buffer, const uint8_t* const end) {
 
     case static_cast<uint8_t>(ProtoWireType::kFixed64): {
       new_pos = pos + sizeof(uint64_t);
-      if (PERFETTO_UNLIKELY(new_pos > end))
+      if (PERFETTO_SOLACE_UNLIKELY(new_pos > end))
         return res;
       memcpy(&int_value, pos, sizeof(uint64_t));
       break;
@@ -123,28 +123,28 @@ ParseOneField(const uint8_t* const buffer, const uint8_t* const end) {
 
     case static_cast<uint8_t>(ProtoWireType::kFixed32): {
       new_pos = pos + sizeof(uint32_t);
-      if (PERFETTO_UNLIKELY(new_pos > end))
+      if (PERFETTO_SOLACE_UNLIKELY(new_pos > end))
         return res;
       memcpy(&int_value, pos, sizeof(uint32_t));
       break;
     }
 
     default:
-      PERFETTO_DLOG("Invalid proto field type: %u", field_type);
+      PERFETTO_SOLACE_DLOG("Invalid proto field type: %u", field_type);
       return res;
   }
 
   res.next = new_pos;
 
-  if (PERFETTO_UNLIKELY(field_id > std::numeric_limits<uint16_t>::max())) {
-    PERFETTO_DLOG("Skipping field %" PRIu32 " because its id > 0xFFFF",
+  if (PERFETTO_SOLACE_UNLIKELY(field_id > std::numeric_limits<uint16_t>::max())) {
+    PERFETTO_SOLACE_DLOG("Skipping field %" PRIu32 " because its id > 0xFFFF",
                   field_id);
     res.parse_res = ParseFieldResult::kSkip;
     return res;
   }
 
-  if (PERFETTO_UNLIKELY(size > proto_utils::kMaxMessageLength)) {
-    PERFETTO_DLOG("Skipping field %" PRIu32 " because it's too big (%" PRIu64
+  if (PERFETTO_SOLACE_UNLIKELY(size > proto_utils::kMaxMessageLength)) {
+    PERFETTO_SOLACE_DLOG("Skipping field %" PRIu32 " because it's too big (%" PRIu64
                   " KB)",
                   field_id, size / 1024);
     res.parse_res = ParseFieldResult::kSkip;
@@ -173,13 +173,13 @@ Field ProtoDecoder::FindField(uint32_t field_id) {
   return res;
 }
 
-PERFETTO_ALWAYS_INLINE
+PERFETTO_SOLACE_ALWAYS_INLINE
 Field ProtoDecoder::ReadField() {
   ParseFieldResult res;
   do {
     res = ParseOneField(read_ptr_, end_);
     read_ptr_ = res.next;
-  } while (PERFETTO_UNLIKELY(res.parse_res == ParseFieldResult::kSkip));
+  } while (PERFETTO_SOLACE_UNLIKELY(res.parse_res == ParseFieldResult::kSkip));
   return res.field;
 }
 
@@ -188,17 +188,17 @@ void TypedProtoDecoderBase::ParseAllFields() {
   ParseFieldResult res;
   for (;;) {
     res = ParseOneField(cur, end_);
-    PERFETTO_DCHECK(res.parse_res != ParseFieldResult::kOk || res.next != cur);
+    PERFETTO_SOLACE_DCHECK(res.parse_res != ParseFieldResult::kOk || res.next != cur);
     cur = res.next;
-    if (PERFETTO_UNLIKELY(res.parse_res == ParseFieldResult::kSkip))
+    if (PERFETTO_SOLACE_UNLIKELY(res.parse_res == ParseFieldResult::kSkip))
       continue;
-    if (PERFETTO_UNLIKELY(res.parse_res == ParseFieldResult::kAbort))
+    if (PERFETTO_SOLACE_UNLIKELY(res.parse_res == ParseFieldResult::kAbort))
       break;
 
-    PERFETTO_DCHECK(res.parse_res == ParseFieldResult::kOk);
-    PERFETTO_DCHECK(res.field.valid());
+    PERFETTO_SOLACE_DCHECK(res.parse_res == ParseFieldResult::kOk);
+    PERFETTO_SOLACE_DCHECK(res.field.valid());
     auto field_id = res.field.id();
-    if (PERFETTO_UNLIKELY(field_id >= num_fields_))
+    if (PERFETTO_SOLACE_UNLIKELY(field_id >= num_fields_))
       continue;
 
     // There are two reasons why we might want to expand the heap capacity:
@@ -206,12 +206,12 @@ void TypedProtoDecoderBase::ParseAllFields() {
     //    INITIAL_STACK_CAPACITY. In this case ExpandHeapStorage() ensures to
     //    allocate at least (num_fields_ + 1) slots.
     // 2. We are writing a repeated field but ran out of capacity.
-    if (PERFETTO_UNLIKELY(field_id >= size_ || size_ >= capacity_))
+    if (PERFETTO_SOLACE_UNLIKELY(field_id >= size_ || size_ >= capacity_))
       ExpandHeapStorage();
 
-    PERFETTO_DCHECK(field_id < size_);
+    PERFETTO_SOLACE_DCHECK(field_id < size_);
     Field* fld = &fields_[field_id];
-    if (PERFETTO_LIKELY(!fld->valid())) {
+    if (PERFETTO_SOLACE_LIKELY(!fld->valid())) {
       // This is the first time we see this field.
       *fld = std::move(res.field);
     } else {
@@ -224,7 +224,7 @@ void TypedProtoDecoderBase::ParseAllFields() {
       //    supposed to return the last value of X, not the first one.
       // This is so that the RepeatedFieldIterator will iterate in the right
       // order, see comments on RepeatedFieldIterator.
-      PERFETTO_DCHECK(size_ < capacity_);
+      PERFETTO_SOLACE_DCHECK(size_ < capacity_);
       fields_[size_++] = *fld;
       *fld = std::move(res.field);
     }
@@ -240,7 +240,7 @@ void TypedProtoDecoderBase::ExpandHeapStorage() {
   // has > INITIAL_STACK_CAPACITY fields.
   const uint32_t min_capacity = num_fields_ + 2048;  // Any num >= +1 will do.
   const uint32_t new_capacity = std::max(capacity_ * 2, min_capacity);
-  PERFETTO_CHECK(new_capacity > size_ && new_capacity > num_fields_);
+  PERFETTO_SOLACE_CHECK(new_capacity > size_ && new_capacity > num_fields_);
   std::unique_ptr<Field[]> new_storage(new Field[new_capacity]);
 
   static_assert(std::is_trivially_constructible<Field>::value,

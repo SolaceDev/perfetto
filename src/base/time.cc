@@ -19,7 +19,7 @@
 #include "perfetto/base/build_config.h"
 #include "perfetto/base/logging.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #else
 #include <unistd.h>
@@ -28,7 +28,7 @@
 namespace perfetto {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 TimeNanos GetWallTimeNs() {
   LARGE_INTEGER freq;
@@ -60,13 +60,13 @@ void SleepMicroseconds(unsigned interval_us) {
   ::Sleep(static_cast<DWORD>((interval_us + 999) / 1000));
 }
 
-#else  // PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#else  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 void SleepMicroseconds(unsigned interval_us) {
   ::usleep(static_cast<useconds_t>(interval_us));
 }
 
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 std::string GetTimeFmt(const std::string& fmt) {
   time_t raw_time;
@@ -74,7 +74,7 @@ std::string GetTimeFmt(const std::string& fmt) {
   struct tm* local_tm;
   local_tm = localtime(&raw_time);
   char buf[128];
-  PERFETTO_CHECK(strftime(buf, 80, fmt.c_str(), local_tm) > 0);
+  PERFETTO_SOLACE_CHECK(strftime(buf, 80, fmt.c_str(), local_tm) > 0);
   return buf;
 }
 

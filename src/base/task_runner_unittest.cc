@@ -373,7 +373,7 @@ TEST_F(TaskRunnerTest, FileDescriptorWatchFairness) {
   }
 }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 // This tests UNIX-specific behavior on pipe closure.
 TEST_F(TaskRunnerTest, FileDescriptorClosedEvent) {

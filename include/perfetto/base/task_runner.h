@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_TASK_RUNNER_H_
-#define INCLUDE_PERFETTO_BASE_TASK_RUNNER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_TASK_RUNNER_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_TASK_RUNNER_H_
 
 #include <stdint.h>
 
@@ -37,7 +37,7 @@ namespace base {
 // memory barrier between tasks.
 //
 // All methods of this interface can be called from any thread.
-class PERFETTO_EXPORT TaskRunner {
+class PERFETTO_SOLACE_EXPORT TaskRunner {
  public:
   virtual ~TaskRunner();
 
@@ -75,4 +75,4 @@ class PERFETTO_EXPORT TaskRunner {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_TASK_RUNNER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_TASK_RUNNER_H_

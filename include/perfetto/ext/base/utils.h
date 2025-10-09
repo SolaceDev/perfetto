@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_UTILS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_UTILS_H_
 
 #include <errno.h>
 #include <stddef.h>
@@ -31,13 +31,13 @@
 #include "perfetto/base/compiler.h"
 #include "perfetto/ext/base/sys_types.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 // Even if Windows has errno.h, the all syscall-restart behavior does not apply.
 // Trying to handle EINTR can cause more harm than good if errno is left stale.
 // Chromium does the same.
-#define PERFETTO_EINTR(x) (x)
+#define PERFETTO_SOLACE_EINTR(x) (x)
 #else
-#define PERFETTO_EINTR(x)                                   \
+#define PERFETTO_SOLACE_EINTR(x)                                   \
   ([&] {                                                    \
     decltype(x) eintr_wrapper_result;                       \
     do {                                                    \
@@ -78,7 +78,7 @@ struct FreeDeleter {
 
 template <typename T>
 constexpr T AssumeLittleEndian(T value) {
-#if !PERFETTO_IS_LITTLE_ENDIAN()
+#if !PERFETTO_SOLACE_IS_LITTLE_ENDIAN()
   static_assert(false, "Unimplemented on big-endian archs");
 #endif
   return value;
@@ -166,7 +166,7 @@ class OnScopeExitWrapper {
 };
 
 template <typename Func>
-PERFETTO_WARN_UNUSED_RESULT OnScopeExitWrapper<Func> OnScopeExit(Func f) {
+PERFETTO_SOLACE_WARN_UNUSED_RESULT OnScopeExitWrapper<Func> OnScopeExit(Func f) {
   return OnScopeExitWrapper<Func>(std::move(f));
 }
 
@@ -180,4 +180,4 @@ inline std::string HexDump(const std::string& data,
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UTILS_H_

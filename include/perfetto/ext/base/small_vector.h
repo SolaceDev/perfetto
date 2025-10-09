@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_SMALL_VECTOR_H_
-#define INCLUDE_PERFETTO_EXT_BASE_SMALL_VECTOR_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_VECTOR_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_VECTOR_H_
 
 #include <algorithm>
 #include <type_traits>
@@ -38,7 +38,7 @@ class SmallVector {
 
   ~SmallVector() {
     clear();
-    if (PERFETTO_UNLIKELY(is_using_heap()))
+    if (PERFETTO_SOLACE_UNLIKELY(is_using_heap()))
       AlignedFree(begin_);
     begin_ = end_ = end_of_storage_ = nullptr;
   }
@@ -54,7 +54,7 @@ class SmallVector {
       end_of_storage_ = other.end_of_storage_;
     } else {
       const size_t other_size = other.size();
-      PERFETTO_DCHECK(other_size <= capacity());
+      PERFETTO_SOLACE_DCHECK(other_size <= capacity());
       for (size_t i = 0; i < other_size; i++) {
         // Move the entries and destroy the ones in the moved-from object.
         new (&begin_[i]) T(std::move(other.begin_[i]));
@@ -86,7 +86,7 @@ class SmallVector {
   }
 
   SmallVector& operator=(const SmallVector& other) {
-    if (PERFETTO_UNLIKELY(this == &other))
+    if (PERFETTO_SOLACE_UNLIKELY(this == &other))
       return *this;
     this->~SmallVector();
     new (this) SmallVector<T, kSize>(other);
@@ -111,35 +111,35 @@ class SmallVector {
   }
 
   T& back() {
-    PERFETTO_DCHECK(!empty());
+    PERFETTO_SOLACE_DCHECK(!empty());
     return end_[-1];
   }
   const T& back() const {
-    PERFETTO_DCHECK(!empty());
+    PERFETTO_SOLACE_DCHECK(!empty());
     return end_[-1];
   }
 
   T& operator[](size_t index) {
-    PERFETTO_DCHECK(index < size());
+    PERFETTO_SOLACE_DCHECK(index < size());
     return begin_[index];
   }
 
   const T& operator[](size_t index) const {
-    PERFETTO_DCHECK(index < size());
+    PERFETTO_SOLACE_DCHECK(index < size());
     return begin_[index];
   }
 
   template <typename... Args>
   void emplace_back(Args&&... args) {
     T* end = end_;
-    if (PERFETTO_UNLIKELY(end == end_of_storage_))
+    if (PERFETTO_SOLACE_UNLIKELY(end == end_of_storage_))
       end = Grow();
     new (end) T(std::forward<Args>(args)...);
     end_ = end + 1;
   }
 
   void pop_back() {
-    PERFETTO_DCHECK(!empty());
+    PERFETTO_SOLACE_DCHECK(!empty());
     back().~T();
     --end_;
   }
@@ -151,7 +151,7 @@ class SmallVector {
   }
 
  private:
-  PERFETTO_NO_INLINE T* Grow(size_t desired_capacity = 0) {
+  PERFETTO_SOLACE_NO_INLINE T* Grow(size_t desired_capacity = 0) {
     size_t cur_size = size();
     size_t new_capacity = desired_capacity;
     if (desired_capacity <= cur_size)
@@ -185,4 +185,4 @@ class SmallVector {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_SMALL_VECTOR_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_VECTOR_H_

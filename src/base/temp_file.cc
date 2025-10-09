@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <direct.h>
 #include <fileapi.h>
@@ -35,11 +35,11 @@
 #include "perfetto/ext/base/file_utils.h"
 #include "perfetto/ext/base/string_utils.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 namespace {
 std::string GetTempName() {
   char name[] = "perfetto-XXXXXX";
-  PERFETTO_CHECK(_mktemp_s(name, sizeof(name)) == 0);
+  PERFETTO_SOLACE_CHECK(_mktemp_s(name, sizeof(name)) == 0);
   return name;
 }
 }  // namespace
@@ -50,7 +50,7 @@ namespace base {
 
 std::string GetSysTempDir() {
   const char* tmpdir = nullptr;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   if ((tmpdir = getenv("TMP")))
     return tmpdir;
   if ((tmpdir = getenv("TEMP")))
@@ -59,7 +59,7 @@ std::string GetSysTempDir() {
 #else
   if ((tmpdir = getenv("TMPDIR")))
     return base::StripSuffix(tmpdir, "/");
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   return "/data/local/tmp";
 #else
   return "/tmp";
@@ -70,7 +70,7 @@ std::string GetSysTempDir() {
 // static
 TempFile TempFile::Create() {
   TempFile temp_file;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   temp_file.path_ = GetSysTempDir() + "\\" + GetTempName();
   // Several tests want to read-back the temp file while still open. On Windows,
   // that requires FILE_SHARE_READ. FILE_SHARE_READ is NOT settable when using
@@ -80,7 +80,7 @@ TempFile TempFile::Create() {
       ::CreateFileA(temp_file.path_.c_str(), GENERIC_READ | GENERIC_WRITE,
                     FILE_SHARE_DELETE | FILE_SHARE_READ, nullptr, CREATE_ALWAYS,
                     FILE_ATTRIBUTE_TEMPORARY, nullptr);
-  PERFETTO_CHECK(PlatformHandleChecker::IsValid(h));
+  PERFETTO_SOLACE_CHECK(PlatformHandleChecker::IsValid(h));
   // According to MSDN, when using _open_osfhandle the caller must not call
   // CloseHandle(). Ownership is moved to the file descriptor, which then needs
   // to be closed with just with _close().
@@ -89,8 +89,8 @@ TempFile TempFile::Create() {
   temp_file.path_ = GetSysTempDir() + "/perfetto-XXXXXXXX";
   temp_file.fd_.reset(mkstemp(&temp_file.path_[0]));
 #endif
-  if (PERFETTO_UNLIKELY(!temp_file.fd_)) {
-    PERFETTO_FATAL("Could not create temp file %s", temp_file.path_.c_str());
+  if (PERFETTO_SOLACE_UNLIKELY(!temp_file.fd_)) {
+    PERFETTO_SOLACE_FATAL("Could not create temp file %s", temp_file.path_.c_str());
   }
   return temp_file;
 }
@@ -116,12 +116,12 @@ ScopedFile TempFile::ReleaseFD() {
 void TempFile::Unlink() {
   if (path_.empty())
     return;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // If the FD is still open DeleteFile will mark the file as pending deletion
   // and delete it only when the process exists.
-  PERFETTO_CHECK(DeleteFileA(path_.c_str()));
+  PERFETTO_SOLACE_CHECK(DeleteFileA(path_.c_str()));
 #else
-  PERFETTO_CHECK(unlink(path_.c_str()) == 0);
+  PERFETTO_SOLACE_CHECK(unlink(path_.c_str()) == 0);
 #endif
   path_.clear();
 }
@@ -132,12 +132,12 @@ TempFile& TempFile::operator=(TempFile&&) = default;
 // static
 TempDir TempDir::Create() {
   TempDir temp_dir;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   temp_dir.path_ = GetSysTempDir() + "\\" + GetTempName();
-  PERFETTO_CHECK(_mkdir(temp_dir.path_.c_str()) == 0);
+  PERFETTO_SOLACE_CHECK(_mkdir(temp_dir.path_.c_str()) == 0);
 #else
   temp_dir.path_ = GetSysTempDir() + "/perfetto-XXXXXXXX";
-  PERFETTO_CHECK(mkdtemp(&temp_dir.path_[0]));
+  PERFETTO_SOLACE_CHECK(mkdtemp(&temp_dir.path_[0]));
 #endif
   return temp_dir;
 }
@@ -149,7 +149,7 @@ TempDir& TempDir::operator=(TempDir&&) = default;
 TempDir::~TempDir() {
   if (path_.empty())
     return;  // For objects that get std::move()d.
-  PERFETTO_CHECK(Rmdir(path_));
+  PERFETTO_SOLACE_CHECK(Rmdir(path_));
 }
 
 }  // namespace base

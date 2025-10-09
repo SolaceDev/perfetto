@@ -36,7 +36,7 @@ class TestTaskRunner : public TaskRunner {
   ~TestTaskRunner() override;
 
   void RunUntilIdle();
-  void PERFETTO_NORETURN Run();
+  void PERFETTO_SOLACE_NORETURN Run();
 
   std::function<void()> CreateCheckpoint(const std::string& checkpoint);
   void RunUntilCheckpoint(const std::string& checkpoint,

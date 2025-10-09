@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_TEMP_FILE_H_
-#define INCLUDE_PERFETTO_EXT_BASE_TEMP_FILE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_TEMP_FILE_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_TEMP_FILE_H_
 
 #include <string>
 
@@ -77,4 +77,4 @@ class TempDir {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_TEMP_FILE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_TEMP_FILE_H_

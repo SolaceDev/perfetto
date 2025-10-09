@@ -23,9 +23,9 @@
 #include "src/base/test/vm_test_utils.h"
 #include "test/gtest_and_gmock.h"
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE) && \
-    !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN) &&   \
-    !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE) && \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN) &&   \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
 #include <sys/resource.h>
 #endif
 
@@ -36,25 +36,25 @@ namespace {
 TEST(PagedMemoryTest, Basic) {
   const size_t kNumPages = 10;
   const size_t kSize = 4096 * kNumPages;
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
   void* ptr_raw = nullptr;
 #endif
   {
     PagedMemory mem = PagedMemory::Allocate(kSize);
     ASSERT_TRUE(mem.IsValid());
     ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(mem.Get()) % 4096);
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
     ptr_raw = mem.Get();
 #endif
     for (size_t i = 0; i < kSize / sizeof(uint64_t); i++)
       ASSERT_EQ(0u, *(reinterpret_cast<uint64_t*>(mem.Get()) + i));
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
     ASSERT_TRUE(vm_test_utils::IsMapped(ptr_raw, kSize));
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
     ASSERT_TRUE(mem.AdviseDontNeed(ptr_raw, kSize));
 
     // Make sure the pages were removed from the working set.
@@ -62,7 +62,7 @@ TEST(PagedMemoryTest, Basic) {
 #endif
   }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
   // Freed memory is necessarily not mapped in to the process.
   ASSERT_FALSE(vm_test_utils::IsMapped(ptr_raw, kSize));
 #endif
@@ -80,8 +80,8 @@ TEST(PagedMemoryTest, SubPageGranularity) {
     *ptr64 = i;
   }
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   // Do an AdviseDontNeed on the whole range, which is NOT an integer multiple
   // of the page size. The initial page must be cleared. The remaining 1024
   // might or might not be cleared depending on the OS implementation.
@@ -97,17 +97,17 @@ TEST(PagedMemoryTest, SubPageGranularity) {
 TEST(PagedMemoryTest, Uncommitted) {
   constexpr size_t kNumPages = 4096;
   constexpr size_t kSize = 4096 * kNumPages;
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
   char* ptr_raw = nullptr;
 #endif
   {
     PagedMemory mem = PagedMemory::Allocate(kSize, PagedMemory::kDontCommit);
     ASSERT_TRUE(mem.IsValid());
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
     ptr_raw = reinterpret_cast<char*>(mem.Get());
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     // Windows only commits the first 1024 pages.
     constexpr size_t kMappedSize = 4096 * 1024;
 
@@ -127,7 +127,7 @@ TEST(PagedMemoryTest, Uncommitted) {
          i < kSize / sizeof(uint64_t); i++) {
       ASSERT_EQ(0u, *(reinterpret_cast<uint64_t*>(mem.Get()) + i));
     }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
     // Fuchsia doesn't yet support paging. So this should be a no-op.
     mem.EnsureCommitted(kSize);
     for (size_t i = 0; i < kSize / sizeof(uint64_t); i++)
@@ -146,7 +146,7 @@ TEST(PagedMemoryTest, Uncommitted) {
 #endif
   }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
   // Freed memory is necessarily not mapped in to the process.
   ASSERT_FALSE(vm_test_utils::IsMapped(ptr_raw, kSize));
 #endif
@@ -184,9 +184,9 @@ TEST(PagedMemoryTest, GuardRegions) {
 // MacOS: because it doesn't seem to have an equivalent rlimit to bound mmap().
 // Fuchsia: doesn't support rlimit.
 // Sanitizers: they seem to try to shadow mmaped memory and fail due to OOMs.
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE) &&                                  \
-    !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN) &&                                    \
-    !PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA) && !defined(ADDRESS_SANITIZER) && \
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE) &&                                  \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN) &&                                    \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA) && !defined(ADDRESS_SANITIZER) && \
     !defined(LEAK_SANITIZER) && !defined(THREAD_SANITIZER) &&                  \
     !defined(MEMORY_SANITIZER)
 // Glibc headers hit this on RLIMIT_ macros.

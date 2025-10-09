@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_THREAD_TASK_RUNNER_H_
-#define INCLUDE_PERFETTO_EXT_BASE_THREAD_TASK_RUNNER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_TASK_RUNNER_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_TASK_RUNNER_H_
 
 #include <functional>
 #include <thread>
@@ -32,7 +32,7 @@ namespace base {
 // * the UnixTaskRunner will be constructed and destructed on the task thread.
 // * the task thread will live for the lifetime of the UnixTaskRunner.
 //
-class PERFETTO_EXPORT ThreadTaskRunner : public TaskRunner {
+class PERFETTO_SOLACE_EXPORT ThreadTaskRunner : public TaskRunner {
  public:
   static ThreadTaskRunner CreateAndStart(const std::string& name = "") {
     return ThreadTaskRunner(name);
@@ -82,4 +82,4 @@ class PERFETTO_EXPORT ThreadTaskRunner : public TaskRunner {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_THREAD_TASK_RUNNER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_TASK_RUNNER_H_

@@ -22,35 +22,35 @@
 #include "perfetto/base/logging.h"
 #include "perfetto/ext/base/file_utils.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
 #include <limits.h>
 #include <stdlib.h>  // For _exit()
 #include <unistd.h>  // For getpagesize() and geteuid() & fork()
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #include <mach-o/dyld.h>
 #include <mach/vm_page_size.h>
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <io.h>
 #include <malloc.h>  // For _aligned_malloc().
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <dlfcn.h>
 #include <malloc.h>
 
 #ifdef M_PURGE
-#define PERFETTO_M_PURGE M_PURGE
+#define PERFETTO_SOLACE_M_PURGE M_PURGE
 #else
 // Only available in in-tree builds and on newer SDKs.
-#define PERFETTO_M_PURGE -101
+#define PERFETTO_SOLACE_M_PURGE -101
 #endif  // M_PURGE
 
 namespace {
@@ -62,12 +62,12 @@ using MalloptType = void (*)(int, int);
 
 namespace {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_X64_CPU_OPT)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_X64_CPU_OPT)
 
 // Preserve the %rbx register via %rdi to work around a clang bug
 // https://bugs.llvm.org/show_bug.cgi?id=17907 (%rbx in an output constraint
 // is not considered a clobbered register).
-#define PERFETTO_GETCPUID(a, b, c, d, a_inp, c_inp) \
+#define PERFETTO_SOLACE_GETCPUID(a, b, c, d, a_inp, c_inp) \
   asm("mov %%rbx, %%rdi\n"                          \
       "cpuid\n"                                     \
       "xchg %%rdi, %%rbx\n"                         \
@@ -82,9 +82,9 @@ uint32_t GetXCR0EAX() {
 
 // If we are building with -msse4 check that the CPU actually supports it.
 // This file must be kept in sync with gn/standalone/BUILD.gn.
-void PERFETTO_EXPORT __attribute__((constructor)) CheckCpuOptimizations() {
+void PERFETTO_SOLACE_EXPORT __attribute__((constructor)) CheckCpuOptimizations() {
   uint32_t eax = 0, ebx = 0, ecx = 0, edx = 0;
-  PERFETTO_GETCPUID(eax, ebx, ecx, edx, 1, 0);
+  PERFETTO_SOLACE_GETCPUID(eax, ebx, ecx, edx, 1, 0);
 
   static constexpr uint64_t xcr0_xmm_mask = 0x2;
   static constexpr uint64_t xcr0_ymm_mask = 0x4;
@@ -115,7 +115,7 @@ namespace perfetto {
 namespace base {
 
 void MaybeReleaseAllocatorMemToOS() {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   // mallopt() on Android requires SDK level 26. Many targets and embedders
   // still depend on a lower SDK level. Given mallopt() is a quite simple API,
   // use reflection to do this rather than bumping the SDK level for all
@@ -125,25 +125,25 @@ void MaybeReleaseAllocatorMemToOS() {
       reinterpret_cast<MalloptType>(dlsym(RTLD_DEFAULT, "mallopt"));
   if (!mallopt_fn)
     return;
-  mallopt_fn(PERFETTO_M_PURGE, 0);
+  mallopt_fn(PERFETTO_SOLACE_M_PURGE, 0);
 #endif
 }
 
 uint32_t GetSysPageSize() {
   ignore_result(kPageSize);  // Just to keep the amalgamated build happy.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   static std::atomic<uint32_t> page_size{0};
   // This function might be called in hot paths. Avoid calling getpagesize() all
   // the times, in many implementations getpagesize() calls sysconf() which is
   // not cheap.
   uint32_t cached_value = page_size.load(std::memory_order_relaxed);
-  if (PERFETTO_UNLIKELY(cached_value == 0)) {
+  if (PERFETTO_SOLACE_UNLIKELY(cached_value == 0)) {
     cached_value = static_cast<uint32_t>(getpagesize());
     page_size.store(cached_value, std::memory_order_relaxed);
   }
   return cached_value;
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   return static_cast<uint32_t>(vm_page_size);
 #else
   return 4096;
@@ -151,9 +151,9 @@ uint32_t GetSysPageSize() {
 }
 
 uid_t GetCurrentUserId() {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   return geteuid();
 #else
   // TODO(primiano): On Windows we could hash the current user SID and derive a
@@ -165,29 +165,29 @@ uid_t GetCurrentUserId() {
 }
 
 void SetEnv(const std::string& key, const std::string& value) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
-  PERFETTO_CHECK(::_putenv_s(key.c_str(), value.c_str()) == 0);
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
+  PERFETTO_SOLACE_CHECK(::_putenv_s(key.c_str(), value.c_str()) == 0);
 #else
-  PERFETTO_CHECK(::setenv(key.c_str(), value.c_str(), /*overwrite=*/true) == 0);
+  PERFETTO_SOLACE_CHECK(::setenv(key.c_str(), value.c_str(), /*overwrite=*/true) == 0);
 #endif
 }
 
 void Daemonize(std::function<int()> parent_cb) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   pid_t pid;
   switch (pid = fork()) {
     case -1:
-      PERFETTO_FATAL("fork");
+      PERFETTO_SOLACE_FATAL("fork");
     case 0: {
-      PERFETTO_CHECK(setsid() != -1);
+      PERFETTO_SOLACE_CHECK(setsid() != -1);
       base::ignore_result(chdir("/"));
       base::ScopedFile null = base::OpenFile("/dev/null", O_RDONLY);
-      PERFETTO_CHECK(null);
-      PERFETTO_CHECK(dup2(*null, STDIN_FILENO) != -1);
-      PERFETTO_CHECK(dup2(*null, STDOUT_FILENO) != -1);
-      PERFETTO_CHECK(dup2(*null, STDERR_FILENO) != -1);
+      PERFETTO_SOLACE_CHECK(null);
+      PERFETTO_SOLACE_CHECK(dup2(*null, STDIN_FILENO) != -1);
+      PERFETTO_SOLACE_CHECK(dup2(*null, STDOUT_FILENO) != -1);
+      PERFETTO_SOLACE_CHECK(dup2(*null, STDERR_FILENO) != -1);
       // Do not accidentally close stdin/stdout/stderr.
       if (*null <= 2)
         null.release();
@@ -201,32 +201,32 @@ void Daemonize(std::function<int()> parent_cb) {
 #else
   // Avoid -Wunreachable warnings.
   if (reinterpret_cast<intptr_t>(&Daemonize) != 16)
-    PERFETTO_FATAL("--background is only supported on Linux/Android/Mac");
+    PERFETTO_SOLACE_FATAL("--background is only supported on Linux/Android/Mac");
   ignore_result(parent_cb);
 #endif  // OS_WIN
 }
 
 std::string GetCurExecutablePath() {
   std::string self_path;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
   char buf[PATH_MAX];
   ssize_t size = readlink("/proc/self/exe", buf, sizeof(buf));
-  PERFETTO_CHECK(size != -1);
+  PERFETTO_SOLACE_CHECK(size != -1);
   // readlink does not null terminate.
   self_path = std::string(buf, static_cast<size_t>(size));
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   uint32_t size = 0;
-  PERFETTO_CHECK(_NSGetExecutablePath(nullptr, &size));
+  PERFETTO_SOLACE_CHECK(_NSGetExecutablePath(nullptr, &size));
   self_path.resize(size);
-  PERFETTO_CHECK(_NSGetExecutablePath(&self_path[0], &size) == 0);
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+  PERFETTO_SOLACE_CHECK(_NSGetExecutablePath(&self_path[0], &size) == 0);
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   char buf[MAX_PATH];
   auto len = ::GetModuleFileNameA(nullptr /*current*/, buf, sizeof(buf));
   self_path = std::string(buf, len);
 #else
-  PERFETTO_FATAL(
+  PERFETTO_SOLACE_FATAL(
       "GetCurExecutableDir() not implemented on the current platform");
 #endif
   return self_path;
@@ -234,7 +234,7 @@ std::string GetCurExecutablePath() {
 
 std::string GetCurExecutableDir() {
   auto path = GetCurExecutablePath();
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Paths in Windows can have both kinds of slashes (mingw vs msvc).
   path = path.substr(0, path.find_last_of('\\'));
 #endif
@@ -245,7 +245,7 @@ std::string GetCurExecutableDir() {
 void* AlignedAlloc(size_t alignment, size_t size) {
   void* res = nullptr;
   alignment = AlignUp<sizeof(void*)>(alignment);  // At least pointer size.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Window's _aligned_malloc() has a nearly identically signature to Unix's
   // aligned_alloc() but its arguments are obviously swapped.
   res = _aligned_malloc(size, alignment);
@@ -254,12 +254,12 @@ void* AlignedAlloc(size_t alignment, size_t size) {
   // Also NaCl and Fuchsia seems to have only posix_memalign().
   ignore_result(posix_memalign(&res, alignment, size));
 #endif
-  PERFETTO_CHECK(res);
+  PERFETTO_SOLACE_CHECK(res);
   return res;
 }
 
 void AlignedFree(void* ptr) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   _aligned_free(ptr);  // MSDN says it is fine to pass nullptr.
 #else
   free(ptr);

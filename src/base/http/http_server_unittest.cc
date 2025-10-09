@@ -68,7 +68,7 @@ class HttpCli {
     sock.SetBlocking(false);
     task_runner_->AddFileDescriptorWatch(sock.watch_handle(), [&] {
       char buf[1024]{};
-      auto rsize = PERFETTO_EINTR(sock.Receive(buf, sizeof(buf)));
+      auto rsize = PERFETTO_SOLACE_EINTR(sock.Receive(buf, sizeof(buf)));
       if (rsize < 0)
         return;
       rxbuf.append(buf, static_cast<size_t>(rsize));

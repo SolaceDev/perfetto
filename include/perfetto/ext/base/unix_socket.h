@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_UNIX_SOCKET_H_
-#define INCLUDE_PERFETTO_EXT_BASE_UNIX_SOCKET_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_SOCKET_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_SOCKET_H_
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -42,7 +42,7 @@ namespace base {
 // to them (which in Perfetto is a PlatformHandle), and that can be used in
 // WaitForMultipleObjects, hence in base::TaskRunner.AddFileDescriptorWatch().
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 // uintptr_t really reads as SOCKET here (Windows headers typedef to that).
 // As usual we don't just use SOCKET here to avoid leaking Windows.h includes
 // in our headers.
@@ -73,7 +73,7 @@ enum class SockPeerCredMode {
   // hit a DCHECK and return kInvalidUid/Pid in release builds.
   kIgnore = 1,
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   kDefault = kIgnore,
 #else
   kDefault = kReadOnConnect,
@@ -90,7 +90,7 @@ class UnixSocketRaw {
   // Creates a new unconnected unix socket.
   static UnixSocketRaw CreateMayFail(SockFamily family, SockType type);
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Crates a pair of connected sockets.
   static std::pair<UnixSocketRaw, UnixSocketRaw> CreatePairPosix(SockFamily,
                                                                  SockType);
@@ -125,7 +125,7 @@ class UnixSocketRaw {
   // On UNIX this is just the socket FD. On Windows, we need to create a
   // dedicated event object.
   PlatformHandle watch_handle() const {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     return *event_handle_;
 #else
     return *fd_;
@@ -150,7 +150,7 @@ class UnixSocketRaw {
                   ScopedFile* fd_vec = nullptr,
                   size_t max_files = 0);
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // UNIX-specific helpers to deal with SCM_RIGHTS.
 
   // Re-enter sendmsg until all the data has been sent or an error occurs.
@@ -170,7 +170,7 @@ class UnixSocketRaw {
   UnixSocketRaw& operator=(const UnixSocketRaw&) = delete;
 
   ScopedSocketHandle fd_;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   ScopedPlatformHandle event_handle_;
 #endif
   SockFamily family_ = SockFamily::kUnix;
@@ -217,7 +217,7 @@ class UnixSocketRaw {
 //                             | (failure or Shutdown())
 //                             V
 //                       OnDisconnect()
-class PERFETTO_EXPORT UnixSocket {
+class PERFETTO_SOLACE_EXPORT UnixSocket {
  public:
   class EventListener {
    public:
@@ -307,10 +307,10 @@ class PERFETTO_EXPORT UnixSocket {
   void Shutdown(bool notify);
 
   void SetTxTimeout(uint32_t timeout_ms) {
-    PERFETTO_CHECK(sock_raw_.SetTxTimeout(timeout_ms));
+    PERFETTO_SOLACE_CHECK(sock_raw_.SetTxTimeout(timeout_ms));
   }
   void SetRxTimeout(uint32_t timeout_ms) {
-    PERFETTO_CHECK(sock_raw_.SetRxTimeout(timeout_ms));
+    PERFETTO_SOLACE_CHECK(sock_raw_.SetRxTimeout(timeout_ms));
   }
   // Returns true is the message was queued, false if there was no space in the
   // output buffer, in which case the client should retry or give up.
@@ -355,24 +355,24 @@ class PERFETTO_EXPORT UnixSocket {
   // User ID of the peer, as returned by the kernel. If the client disconnects
   // and the socket goes into the kDisconnected state, it retains the uid of
   // the last peer.
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   uid_t peer_uid_posix(bool skip_check_for_testing = false) const {
-    PERFETTO_DCHECK((!is_listening() && peer_uid_ != kInvalidUid) ||
+    PERFETTO_SOLACE_DCHECK((!is_listening() && peer_uid_ != kInvalidUid) ||
                     skip_check_for_testing);
 
     return peer_uid_;
   }
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   // Process ID of the peer, as returned by the kernel. If the client
   // disconnects and the socket goes into the kDisconnected state, it
   // retains the pid of the last peer.
   //
   // This is only available on Linux / Android.
   pid_t peer_pid_linux(bool skip_check_for_testing = false) const {
-    PERFETTO_DCHECK((!is_listening() && peer_pid_ != kInvalidPid) ||
+    PERFETTO_SOLACE_DCHECK((!is_listening() && peer_pid_ != kInvalidPid) ||
                     skip_check_for_testing);
     return peer_pid_;
   }
@@ -398,7 +398,7 @@ class PERFETTO_EXPORT UnixSocket {
   // Called once by the corresponding public static factory methods.
   void DoConnect(const std::string& socket_name);
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   void ReadPeerCredentialsPosix();
 #endif
 
@@ -409,11 +409,11 @@ class PERFETTO_EXPORT UnixSocket {
   State state_ = State::kDisconnected;
   SockPeerCredMode peer_cred_mode_ = SockPeerCredMode::kDefault;
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   uid_t peer_uid_ = kInvalidUid;
 #endif
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   pid_t peer_pid_ = kInvalidPid;
 #endif
   EventListener* const event_listener_;
@@ -424,4 +424,4 @@ class PERFETTO_EXPORT UnixSocket {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_UNIX_SOCKET_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_SOCKET_H_

@@ -18,7 +18,7 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 #include <stdio.h>
 
@@ -41,7 +41,7 @@ const int Subprocess::kTimeoutSignal = static_cast<int>(STATUS_TIMEOUT);
 
 void Subprocess::Start() {
   if (args.exec_cmd.empty()) {
-    PERFETTO_ELOG("Subprocess.exec_cmd cannot be empty on Windows");
+    PERFETTO_SOLACE_ELOG("Subprocess.exec_cmd cannot be empty on Windows");
     return;
   }
 
@@ -63,12 +63,12 @@ void Subprocess::Start() {
 
   s_->stdin_pipe = Pipe::Create();
   // Allow the child process to inherit the other end of the pipe.
-  PERFETTO_CHECK(
+  PERFETTO_SOLACE_CHECK(
       ::SetHandleInformation(*s_->stdin_pipe.rd, HANDLE_FLAG_INHERIT, 1));
 
   if (args.stderr_mode == kBuffer || args.stdout_mode == kBuffer) {
     s_->stdouterr_pipe = Pipe::Create();
-    PERFETTO_CHECK(
+    PERFETTO_SOLACE_CHECK(
         ::SetHandleInformation(*s_->stdouterr_pipe.wr, HANDLE_FLAG_INHERIT, 1));
   }
 
@@ -77,7 +77,7 @@ void Subprocess::Start() {
     nul_handle.reset(::CreateFileA("NUL", GENERIC_WRITE, FILE_SHARE_WRITE,
                                    nullptr, OPEN_EXISTING,
                                    FILE_ATTRIBUTE_NORMAL, nullptr));
-    PERFETTO_CHECK(::SetHandleInformation(*nul_handle, HANDLE_FLAG_INHERIT, 1));
+    PERFETTO_SOLACE_CHECK(::SetHandleInformation(*nul_handle, HANDLE_FLAG_INHERIT, 1));
   }
 
   PROCESS_INFORMATION proc_info{};
@@ -91,11 +91,11 @@ void Subprocess::Start() {
   } else if (args.stderr_mode == kDevNull) {
     start_info.hStdError = *nul_handle;
   } else if (args.stderr_mode == kFd) {
-    PERFETTO_CHECK(
+    PERFETTO_SOLACE_CHECK(
         ::SetHandleInformation(*args.out_fd, HANDLE_FLAG_INHERIT, 1));
     start_info.hStdError = *args.out_fd;
   } else {
-    PERFETTO_CHECK(false);
+    PERFETTO_SOLACE_CHECK(false);
   }
 
   if (args.stdout_mode == kInherit) {
@@ -105,11 +105,11 @@ void Subprocess::Start() {
   } else if (args.stdout_mode == kDevNull) {
     start_info.hStdOutput = *nul_handle;
   } else if (args.stdout_mode == kFd) {
-    PERFETTO_CHECK(
+    PERFETTO_SOLACE_CHECK(
         ::SetHandleInformation(*args.out_fd, HANDLE_FLAG_INHERIT, 1));
     start_info.hStdOutput = *args.out_fd;
   } else {
-    PERFETTO_CHECK(false);
+    PERFETTO_SOLACE_CHECK(false);
   }
 
   start_info.hStdInput = *s_->stdin_pipe.rd;
@@ -138,7 +138,7 @@ void Subprocess::Start() {
     s_->status = kTerminated;
     s_->stdin_pipe.wr.reset();
     s_->stdouterr_pipe.rd.reset();
-    PERFETTO_ELOG("CreateProcess failed: %lx, cmd: %s", GetLastError(),
+    PERFETTO_SOLACE_ELOG("CreateProcess failed: %lx, cmd: %s", GetLastError(),
                   &cmd[0]);
     return;
   }
@@ -152,7 +152,7 @@ void Subprocess::Start() {
   s_->stdin_thread = std::thread(&Subprocess::StdinThread, s, args.input);
 
   if (args.stderr_mode == kBuffer || args.stdout_mode == kBuffer) {
-    PERFETTO_DCHECK(s_->stdouterr_pipe.rd);
+    PERFETTO_SOLACE_DCHECK(s_->stdouterr_pipe.rd);
     s_->stdouterr_thread = std::thread(&Subprocess::StdoutErrThread, s);
   }
 }
@@ -171,7 +171,7 @@ void Subprocess::StdinThread(MovableState* s, std::string input) {
       // accepting input.
       auto err = ::GetLastError();
       if (err != ERROR_BROKEN_PIPE)
-        PERFETTO_PLOG("Subprocess WriteFile(stdin) failed %lx", err);
+        PERFETTO_SOLACE_PLOG("Subprocess WriteFile(stdin) failed %lx", err);
       break;
     }
   }  // while(...)
@@ -189,7 +189,7 @@ void Subprocess::StdoutErrThread(MovableState* s) {
     if (!res) {
       auto err = GetLastError();
       if (err != ERROR_BROKEN_PIPE)
-        PERFETTO_PLOG("Subprocess ReadFile(stdouterr) failed %ld", err);
+        PERFETTO_SOLACE_PLOG("Subprocess ReadFile(stdouterr) failed %ld", err);
     }
 
     if (rsize > 0) {
@@ -217,7 +217,7 @@ Subprocess::Status Subprocess::Poll() {
 }
 
 bool Subprocess::Wait(int timeout_ms) {
-  PERFETTO_CHECK(s_->status != kNotStarted);
+  PERFETTO_SOLACE_CHECK(s_->status != kNotStarted);
   const bool wait_forever = timeout_ms == 0;
   const int64_t wait_start_ms = base::GetWallTimeMs().count();
 
@@ -243,7 +243,7 @@ bool Subprocess::Wait(int timeout_ms) {
     bool process_exited = !s_->win_proc_handle;
     if (!process_exited) {
       DWORD exit_code = STILL_ACTIVE;
-      PERFETTO_CHECK(::GetExitCodeProcess(*s_->win_proc_handle, &exit_code));
+      PERFETTO_SOLACE_CHECK(::GetExitCodeProcess(*s_->win_proc_handle, &exit_code));
       if (exit_code != STILL_ACTIVE) {
         s_->returncode = static_cast<int>(exit_code);
         s_->status = kTerminated;
@@ -252,7 +252,7 @@ bool Subprocess::Wait(int timeout_ms) {
         process_exited = true;
       }
     } else {
-      PERFETTO_DCHECK(s_->status != kRunning);
+      PERFETTO_SOLACE_DCHECK(s_->status != kRunning);
     }
     if (!process_exited) {
       wait_handles[num_handles++] = *s_->win_proc_handle;
@@ -274,7 +274,7 @@ bool Subprocess::Wait(int timeout_ms) {
     }  // lock(s_->mutex)
 
     if (num_handles == 0) {
-      PERFETTO_DCHECK(process_exited && stdouterr_complete);
+      PERFETTO_SOLACE_DCHECK(process_exited && stdouterr_complete);
       break;
     }
 
@@ -291,11 +291,11 @@ bool Subprocess::Wait(int timeout_ms) {
 
     auto wait_res =
         ::WaitForMultipleObjects(num_handles, wait_handles, false, wait_ms);
-    PERFETTO_CHECK(wait_res != WAIT_FAILED);
+    PERFETTO_SOLACE_CHECK(wait_res != WAIT_FAILED);
   }
 
-  PERFETTO_DCHECK(!s_->win_proc_handle);
-  PERFETTO_DCHECK(!s_->win_thread_handle);
+  PERFETTO_SOLACE_DCHECK(!s_->win_proc_handle);
+  PERFETTO_SOLACE_DCHECK(!s_->win_thread_handle);
 
   if (s_->stdin_thread.joinable())  // Might not exist if CreateProcess failed.
     s_->stdin_thread.join();
@@ -316,11 +316,11 @@ void Subprocess::KillAndWaitForTermination(int exit_code) {
   ::TerminateProcess(*s_->win_proc_handle, code);
   Wait();
   // TryReadExitStatus must have joined the threads.
-  PERFETTO_DCHECK(!s_->stdin_thread.joinable());
-  PERFETTO_DCHECK(!s_->stdouterr_thread.joinable());
+  PERFETTO_SOLACE_DCHECK(!s_->stdin_thread.joinable());
+  PERFETTO_SOLACE_DCHECK(!s_->stdouterr_thread.joinable());
 }
 
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // PERFETTO_OS_WIN
+#endif  // PERFETTO_SOLACE_OS_WIN

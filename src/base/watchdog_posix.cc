@@ -16,7 +16,7 @@
 
 #include "perfetto/ext/base/watchdog.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)
 
 #include <fcntl.h>
 #include <poll.h>
@@ -68,23 +68,23 @@ bool ReadProcStat(int fd, ProcStat* out) {
   char c[512];
   size_t c_pos = 0;
   while (c_pos < sizeof(c) - 1) {
-    ssize_t rd = PERFETTO_EINTR(read(fd, c + c_pos, sizeof(c) - c_pos));
+    ssize_t rd = PERFETTO_SOLACE_EINTR(read(fd, c + c_pos, sizeof(c) - c_pos));
     if (rd < 0) {
-      PERFETTO_ELOG("Failed to read stat file to enforce resource limits.");
+      PERFETTO_SOLACE_ELOG("Failed to read stat file to enforce resource limits.");
       return false;
     }
     if (rd == 0)
       break;
     c_pos += static_cast<size_t>(rd);
   }
-  PERFETTO_CHECK(c_pos < sizeof(c));
+  PERFETTO_SOLACE_CHECK(c_pos < sizeof(c));
   c[c_pos] = '\0';
 
   if (sscanf(c,
              "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu "
              "%lu %*d %*d %*d %*d %*d %*d %*u %*u %ld",
              &out->utime, &out->stime, &out->rss_pages) != 3) {
-    PERFETTO_ELOG("Invalid stat format: %s", c);
+    PERFETTO_SOLACE_ELOG("Invalid stat format: %s", c);
     return false;
   }
   return true;
@@ -95,10 +95,10 @@ Watchdog::Watchdog(uint32_t polling_interval_ms)
 
 Watchdog::~Watchdog() {
   if (!thread_.joinable()) {
-    PERFETTO_DCHECK(!enabled_);
+    PERFETTO_SOLACE_DCHECK(!enabled_);
     return;
   }
-  PERFETTO_DCHECK(enabled_);
+  PERFETTO_SOLACE_DCHECK(enabled_);
   enabled_ = false;
 
   // Rearm the timer to 1ns from now. This will cause the watchdog thread to
@@ -160,23 +160,23 @@ void Watchdog::RearmTimerFd_Locked() {
   // If |timers_| is empty (it == end()) |ts.it_value| will remain
   // zero-initialized and that will disarm the timer in the call below.
   int res = timerfd_settime(*timer_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);
-  PERFETTO_DCHECK(res == 0);
+  PERFETTO_SOLACE_DCHECK(res == 0);
 }
 
 void Watchdog::Start() {
   std::lock_guard<std::mutex> guard(mutex_);
   if (thread_.joinable()) {
-    PERFETTO_DCHECK(enabled_);
+    PERFETTO_SOLACE_DCHECK(enabled_);
   } else {
-    PERFETTO_DCHECK(!enabled_);
+    PERFETTO_SOLACE_DCHECK(!enabled_);
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
     // Kick the thread to start running but only on Android or Linux.
     timer_fd_.reset(
         timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK));
     if (!timer_fd_) {
-      PERFETTO_PLOG(
+      PERFETTO_SOLACE_PLOG(
           "timerfd_create failed, the Perfetto watchdog is not available");
       return;
     }
@@ -191,7 +191,7 @@ void Watchdog::SetMemoryLimit(uint64_t bytes, uint32_t window_ms) {
   // Update the fields under the lock.
   std::lock_guard<std::mutex> guard(mutex_);
 
-  PERFETTO_CHECK(IsMultipleOf(window_ms, polling_interval_ms_) || bytes == 0);
+  PERFETTO_SOLACE_CHECK(IsMultipleOf(window_ms, polling_interval_ms_) || bytes == 0);
 
   size_t size = bytes == 0 ? 0 : window_ms / polling_interval_ms_ + 1;
   memory_window_bytes_.Reset(size);
@@ -201,8 +201,8 @@ void Watchdog::SetMemoryLimit(uint64_t bytes, uint32_t window_ms) {
 void Watchdog::SetCpuLimit(uint32_t percentage, uint32_t window_ms) {
   std::lock_guard<std::mutex> guard(mutex_);
 
-  PERFETTO_CHECK(percentage <= 100);
-  PERFETTO_CHECK(IsMultipleOf(window_ms, polling_interval_ms_) ||
+  PERFETTO_SOLACE_CHECK(percentage <= 100);
+  PERFETTO_SOLACE_CHECK(IsMultipleOf(window_ms, polling_interval_ms_) ||
                  percentage == 0);
 
   size_t size = percentage == 0 ? 0 : window_ms / polling_interval_ms_ + 1;
@@ -216,11 +216,11 @@ void Watchdog::ThreadMain() {
 
   base::ScopedFile stat_fd(base::OpenFile("/proc/self/stat", O_RDONLY));
   if (!stat_fd) {
-    PERFETTO_ELOG("Failed to open stat file to enforce resource limits.");
+    PERFETTO_SOLACE_ELOG("Failed to open stat file to enforce resource limits.");
     return;
   }
 
-  PERFETTO_DCHECK(timer_fd_);
+  PERFETTO_SOLACE_DCHECK(timer_fd_);
 
   constexpr uint8_t kFdCount = 1;
   struct pollfd fds[kFdCount]{};
@@ -240,7 +240,7 @@ void Watchdog::ThreadMain() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         continue;
       }
-      PERFETTO_FATAL("watchdog poll() failed");
+      PERFETTO_SOLACE_FATAL("watchdog poll() failed");
     }
 
     // If we get here either:
@@ -248,8 +248,8 @@ void Watchdog::ThreadMain() {
     // 2. A timer expired, in which case we shall crash.
 
     uint64_t expired = 0;  // Must be exactly 8 bytes.
-    auto res = PERFETTO_EINTR(read(*timer_fd_, &expired, sizeof(expired)));
-    PERFETTO_DCHECK((res < 0 && (errno == EAGAIN)) ||
+    auto res = PERFETTO_SOLACE_EINTR(read(*timer_fd_, &expired, sizeof(expired)));
+    PERFETTO_SOLACE_DCHECK((res < 0 && (errno == EAGAIN)) ||
                     (res == sizeof(expired) && expired > 0));
     const auto now = GetWallTimeMs();
 
@@ -300,7 +300,7 @@ void Watchdog::SerializeLogsAndKillThread(int tid,
 
   // We are about to die. Serialize the logs into the crash buffer so the
   // debuggerd crash handler picks them up and attaches to the bugreport.
-  // In the case of a PERFETTO_CHECK/PERFETTO_FATAL this is done in logging.h.
+  // In the case of a PERFETTO_SOLACE_CHECK/PERFETTO_SOLACE_FATAL this is done in logging.h.
   // But in the watchdog case, we don't hit that codepath and must do ourselves.
   MaybeSerializeLastLogsForCrashReporting();
 
@@ -335,7 +335,7 @@ bool Watchdog::CheckMemory_Locked(uint64_t rss_bytes) {
   if (memory_window_bytes_.Push(rss_bytes)) {
     if (memory_window_bytes_.Mean() >
         static_cast<double>(memory_limit_bytes_)) {
-      PERFETTO_ELOG(
+      PERFETTO_SOLACE_ELOG(
           "Memory watchdog trigger. Memory window of %f bytes is above the "
           "%" PRIu64 " bytes limit.",
           memory_window_bytes_.Mean(), memory_limit_bytes_);
@@ -362,7 +362,7 @@ bool Watchdog::CheckCpu_Locked(uint64_t cpu_time) {
     double percentage = static_cast<double>(difference_ticks) /
                         static_cast<double>(window_interval_ticks) * 100;
     if (percentage > cpu_limit_percentage_) {
-      PERFETTO_ELOG("CPU watchdog trigger. %f%% CPU use is above the %" PRIu32
+      PERFETTO_SOLACE_ELOG("CPU watchdog trigger. %f%% CPU use is above the %" PRIu32
                     "%% CPU limit.",
                     percentage, cpu_limit_percentage_);
       return true;
@@ -411,7 +411,7 @@ Watchdog::Timer::Timer(Watchdog* watchdog,
   timer_data_.deadline = GetWallTimeMs() + std::chrono::milliseconds(ms);
   timer_data_.thread_id = GetThreadId();
   timer_data_.crash_reason = crash_reason;
-  PERFETTO_DCHECK(watchdog_);
+  PERFETTO_SOLACE_DCHECK(watchdog_);
   watchdog_->AddFatalTimer(timer_data_);
 }
 
@@ -430,4 +430,4 @@ Watchdog::Timer::Timer(Timer&& other) noexcept {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)

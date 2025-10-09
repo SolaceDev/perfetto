@@ -60,8 +60,8 @@ struct Delegate {
 bool Enable(std::function<void()> read_task,
             base::TaskRunner* task_runner,
             uint32_t tags) {
-  PERFETTO_DCHECK(read_task);
-  PERFETTO_DCHECK(task_runner->RunsTasksOnCurrentThread());
+  PERFETTO_SOLACE_DCHECK(read_task);
+  PERFETTO_SOLACE_DCHECK(task_runner->RunsTasksOnCurrentThread());
   if (g_enabled_tags.load(std::memory_order_acquire))
     return false;
 
@@ -77,7 +77,7 @@ bool Enable(std::function<void()> read_task,
 void Disable() {
   g_enabled_tags.store(0, std::memory_order_release);
   Delegate* dg = Delegate::GetInstance();
-  PERFETTO_DCHECK(!dg->task_runner ||
+  PERFETTO_SOLACE_DCHECK(!dg->task_runner ||
                   dg->task_runner->RunsTasksOnCurrentThread());
   dg->task_runner = nullptr;
   dg->read_task = nullptr;
@@ -102,9 +102,9 @@ Record* RingBuffer::AppendNewRecord() {
   // older value, we'll just hit the slow-path a bit earlier if it happens.
   auto rd_index = rd_index_.load(std::memory_order_relaxed);
 
-  PERFETTO_DCHECK(wr_index >= rd_index);
+  PERFETTO_SOLACE_DCHECK(wr_index >= rd_index);
   auto size = wr_index - rd_index;
-  if (PERFETTO_LIKELY(size < kCapacity / 2))
+  if (PERFETTO_SOLACE_LIKELY(size < kCapacity / 2))
     return At(wr_index);
 
   // Slow-path: Enqueue the read task and handle overruns.
@@ -122,7 +122,7 @@ Record* RingBuffer::AppendNewRecord() {
     }
   }
 
-  if (PERFETTO_LIKELY(size < kCapacity))
+  if (PERFETTO_SOLACE_LIKELY(size < kCapacity))
     return At(wr_index);
 
   has_overruns_.store(true, std::memory_order_release);
@@ -131,7 +131,7 @@ Record* RingBuffer::AppendNewRecord() {
   // In the case of overflows, threads will race writing on the same memory
   // location and TSan will rightly complain. This is fine though because nobody
   // will read the bankruptcy record and it's designed to contain garbage.
-  PERFETTO_ANNOTATE_BENIGN_RACE_SIZED(&bankruptcy_record_, sizeof(Record),
+  PERFETTO_SOLACE_ANNOTATE_BENIGN_RACE_SIZED(&bankruptcy_record_, sizeof(Record),
                                       "nothing reads bankruptcy_record_")
   return &bankruptcy_record_;
 }

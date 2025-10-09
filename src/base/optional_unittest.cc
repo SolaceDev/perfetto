@@ -938,7 +938,7 @@ TEST(OptionalTest, AssignOverload) {
     explicit Test3(Optional<Test1>&& test1)
         : state(State::MOVE_CONSTRUCTED_FROM_OPTIONAL_TEST1) {
       // In the following senarios, given |test1| should always have value.
-      PERFETTO_DCHECK(test1.has_value());
+      PERFETTO_SOLACE_DCHECK(test1.has_value());
       test1->state = Test1::State::MOVED;
     }
     Test3& operator=(const Test1&) {
@@ -957,7 +957,7 @@ TEST(OptionalTest, AssignOverload) {
     Test3& operator=(Optional<Test1>&& test1) {
       state = State::MOVE_ASSIGNED_FROM_OPTIONAL_TEST1;
       // In the following senarios, given |test1| should always have value.
-      PERFETTO_DCHECK(test1.has_value());
+      PERFETTO_SOLACE_DCHECK(test1.has_value());
       test1->state = Test1::State::MOVED;
       return *this;
     }

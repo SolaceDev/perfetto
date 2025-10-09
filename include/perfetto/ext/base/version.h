@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_VERSION_H_
-#define INCLUDE_PERFETTO_EXT_BASE_VERSION_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_VERSION_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_VERSION_H_
 
 namespace perfetto {
 namespace base {
@@ -26,4 +26,4 @@ const char* GetVersionString();
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_VERSION_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_VERSION_H_

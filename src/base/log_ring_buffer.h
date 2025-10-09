@@ -82,7 +82,7 @@ class LogRingBuffer {
     slot = slot % kLogRingBufEntries;
 
     char* const msg = events_[slot];
-    PERFETTO_ANNOTATE_BENIGN_RACE_SIZED(msg, kLogRingBufMsgLen,
+    PERFETTO_SOLACE_ANNOTATE_BENIGN_RACE_SIZED(msg, kLogRingBufMsgLen,
                                         "see comments in log_ring_buffer.h")
     snprintf(msg, kLogRingBufMsgLen, "%.*s%.*s %.*s",
              static_cast<int>(tstamp.size()), tstamp.data(),
@@ -127,7 +127,7 @@ class LogRingBuffer {
       }
     }
     // Ensure that the output string is null-terminated.
-    PERFETTO_DCHECK(dst_written <= len);
+    PERFETTO_SOLACE_DCHECK(dst_written <= len);
     if (dst_written == len) {
       // In case of truncation we replace the last char with \0. But the return
       // value is the number of chars without \0, hence the --.

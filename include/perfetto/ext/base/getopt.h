@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_GETOPT_H_
-#define INCLUDE_PERFETTO_EXT_BASE_GETOPT_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_GETOPT_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_GETOPT_H_
 
 // This is the header that should be included in all places that need getopt.h.
 // This either routes on the sysroot getopt.h, for OSes that have one (all but
@@ -23,7 +23,7 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include "perfetto/ext/base/getopt_compat.h"
 
 // getopt_compat.h puts everything in a nested namespace, to allow
@@ -48,4 +48,4 @@ constexpr auto required_argument =
 #include <getopt.h>
 #endif
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_GETOPT_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_GETOPT_H_

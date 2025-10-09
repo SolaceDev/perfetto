@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_STRING_WRITER_H_
-#define INCLUDE_PERFETTO_EXT_BASE_STRING_WRITER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_WRITER_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_WRITER_H_
 
 #include <string.h>
 
@@ -41,14 +41,14 @@ class StringWriter {
 
   // Appends n instances of a char to the buffer.
   void AppendChar(char in, size_t n = 1) {
-    PERFETTO_DCHECK(pos_ + n <= size_);
+    PERFETTO_SOLACE_DCHECK(pos_ + n <= size_);
     memset(&buffer_[pos_], in, n);
     pos_ += n;
   }
 
   // Appends a length delimited string to the buffer.
   void AppendString(const char* in, size_t n) {
-    PERFETTO_DCHECK(pos_ + n <= size_);
+    PERFETTO_SOLACE_DCHECK(pos_ + n <= size_);
     memcpy(&buffer_[pos_], in, n);
     pos_ += n;
   }
@@ -100,7 +100,7 @@ class StringWriter {
     // print hex ints. Reevaluate this in the future if we do print them more.
     size_t res =
         base::SprintfTrunc(buffer_ + pos_, size_ - pos_, "%" PRIx64, value);
-    PERFETTO_DCHECK(pos_ + res <= size_);
+    PERFETTO_SOLACE_DCHECK(pos_ + res <= size_);
     pos_ += res;
   }
 
@@ -109,7 +109,7 @@ class StringWriter {
     // TODO(lalitm): trying to optimize this is premature given we almost never
     // print doubles. Reevaluate this in the future if we do print them more.
     size_t res = base::SprintfTrunc(buffer_ + pos_, size_ - pos_, "%lf", value);
-    PERFETTO_DCHECK(pos_ + res <= size_);
+    PERFETTO_SOLACE_DCHECK(pos_ + res <= size_);
     pos_ += res;
   }
 
@@ -122,7 +122,7 @@ class StringWriter {
   }
 
   StringView GetStringView() {
-    PERFETTO_DCHECK(pos_ <= size_);
+    PERFETTO_SOLACE_DCHECK(pos_ <= size_);
     return StringView(buffer_, pos_);
   }
 
@@ -146,7 +146,7 @@ class StringWriter {
     // rounding down of digits10.
     constexpr auto kMaxDigits = std::numeric_limits<uint64_t>::digits10 + 2;
     constexpr auto kSizeNeeded = kMaxDigits > padding ? kMaxDigits : padding;
-    PERFETTO_DCHECK(pos_ + kSizeNeeded <= size_);
+    PERFETTO_SOLACE_DCHECK(pos_ + kSizeNeeded <= size_);
 
     char data[kSizeNeeded];
 
@@ -180,4 +180,4 @@ class StringWriter {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_STRING_WRITER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_WRITER_H_

@@ -62,7 +62,7 @@ class Field {
 
   proto_utils::ProtoWireType type() const {
     auto res = static_cast<proto_utils::ProtoWireType>(type_);
-    PERFETTO_DCHECK(res == proto_utils::ProtoWireType::kVarInt ||
+    PERFETTO_SOLACE_DCHECK(res == proto_utils::ProtoWireType::kVarInt ||
                     res == proto_utils::ProtoWireType::kLengthDelimited ||
                     res == proto_utils::ProtoWireType::kFixed32 ||
                     res == proto_utils::ProtoWireType::kFixed64);
@@ -70,48 +70,48 @@ class Field {
   }
 
   bool as_bool() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt);
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt);
     return static_cast<bool>(int_value_);
   }
 
   uint32_t as_uint32() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
                     type() == proto_utils::ProtoWireType::kFixed32);
     return static_cast<uint32_t>(int_value_);
   }
 
   int32_t as_int32() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
                     type() == proto_utils::ProtoWireType::kFixed32);
     return static_cast<int32_t>(int_value_);
   }
 
   int32_t as_sint32() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt);
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt);
     return proto_utils::ZigZagDecode(static_cast<uint32_t>(int_value_));
   }
 
   uint64_t as_uint64() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
                     type() == proto_utils::ProtoWireType::kFixed32 ||
                     type() == proto_utils::ProtoWireType::kFixed64);
     return int_value_;
   }
 
   int64_t as_int64() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt ||
                     type() == proto_utils::ProtoWireType::kFixed32 ||
                     type() == proto_utils::ProtoWireType::kFixed64);
     return static_cast<int64_t>(int_value_);
   }
 
   int64_t as_sint64() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt);
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kVarInt);
     return proto_utils::ZigZagDecode(static_cast<uint64_t>(int_value_));
   }
 
   float as_float() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kFixed32);
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kFixed32);
     float res;
     uint32_t value32 = static_cast<uint32_t>(int_value_);
     memcpy(&res, &value32, sizeof(res));
@@ -119,14 +119,14 @@ class Field {
   }
 
   double as_double() const {
-    PERFETTO_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kFixed64);
+    PERFETTO_SOLACE_DCHECK(!valid() || type() == proto_utils::ProtoWireType::kFixed64);
     double res;
     memcpy(&res, &int_value_, sizeof(res));
     return res;
   }
 
   ConstChars as_string() const {
-    PERFETTO_DCHECK(!valid() ||
+    PERFETTO_SOLACE_DCHECK(!valid() ||
                     type() == proto_utils::ProtoWireType::kLengthDelimited);
     return ConstChars{reinterpret_cast<const char*>(data()), size_};
   }
@@ -134,19 +134,19 @@ class Field {
   std::string as_std_string() const { return as_string().ToStdString(); }
 
   ConstBytes as_bytes() const {
-    PERFETTO_DCHECK(!valid() ||
+    PERFETTO_SOLACE_DCHECK(!valid() ||
                     type() == proto_utils::ProtoWireType::kLengthDelimited);
     return ConstBytes{data(), size_};
   }
 
   const uint8_t* data() const {
-    PERFETTO_DCHECK(!valid() ||
+    PERFETTO_SOLACE_DCHECK(!valid() ||
                     type() == proto_utils::ProtoWireType::kLengthDelimited);
     return reinterpret_cast<const uint8_t*>(int_value_);
   }
 
   size_t size() const {
-    PERFETTO_DCHECK(!valid() ||
+    PERFETTO_SOLACE_DCHECK(!valid() ||
                     type() == proto_utils::ProtoWireType::kLengthDelimited);
     return size_;
   }

@@ -28,7 +28,7 @@
 namespace solace {
 namespace protozero {
 
-class PERFETTO_EXPORT ScatteredStreamWriterNullDelegate
+class PERFETTO_SOLACE_EXPORT ScatteredStreamWriterNullDelegate
     : public ScatteredStreamWriter::Delegate {
  public:
   explicit ScatteredStreamWriterNullDelegate(size_t chunk_size);

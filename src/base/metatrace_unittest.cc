@@ -178,7 +178,7 @@ TEST_F(MetatraceTest, InterleavedReadWrites) {
       // type_and_id marker and the value being valid. Fixing this properly
       // would require making all accesses to the metatrace object as
       // std::atomic and read them with memory_order_relaxed, which is overkill.
-      PERFETTO_ANNOTATE_BENIGN_RACE_SIZED(&it->counter_value, sizeof(int), "")
+      PERFETTO_SOLACE_ANNOTATE_BENIGN_RACE_SIZED(&it->counter_value, sizeof(int), "")
       int32_t counter_value = it->counter_value;
       EXPECT_EQ(counter_value, last + 1);
       last = counter_value;

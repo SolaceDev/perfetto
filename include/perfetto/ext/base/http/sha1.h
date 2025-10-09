@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_HTTP_SHA1_H_
-#define INCLUDE_PERFETTO_EXT_BASE_HTTP_SHA1_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_HTTP_SHA1_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_HTTP_SHA1_H_
 
 #include <stddef.h>
 
@@ -34,4 +34,4 @@ SHA1Digest SHA1Hash(const void* data, size_t size);
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_HTTP_SHA1_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_HTTP_SHA1_H_

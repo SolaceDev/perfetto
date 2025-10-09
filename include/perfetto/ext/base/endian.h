@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_ENDIAN_H_
-#define INCLUDE_PERFETTO_EXT_BASE_ENDIAN_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_ENDIAN_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_ENDIAN_H_
 
 #include <stdint.h>
 #include <stdlib.h>  // For MSVC
@@ -23,14 +23,14 @@
 #include "perfetto/base/build_config.h"
 #include "perfetto/base/compiler.h"
 
-#if !PERFETTO_IS_LITTLE_ENDIAN()
+#if !PERFETTO_SOLACE_IS_LITTLE_ENDIAN()
 #error "endian.h supports only little-endian archs"
 #endif
 
 namespace perfetto {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_COMPILER_MSVC)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_COMPILER_MSVC)
 inline uint16_t HostToBE16(uint16_t x) {
   return _byteswap_ushort(x);
 }
@@ -55,4 +55,4 @@ inline uint64_t HostToBE64(uint64_t x) {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_ENDIAN_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_ENDIAN_H_

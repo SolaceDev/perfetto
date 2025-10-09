@@ -48,7 +48,7 @@ Uuid Uuidv4() {
 Uuid::Uuid() {}
 
 Uuid::Uuid(const std::string& s) {
-  PERFETTO_CHECK(s.size() == data_.size());
+  PERFETTO_SOLACE_CHECK(s.size() == data_.size());
   memcpy(data_.data(), s.data(), s.size());
 }
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_FLAT_SET_H_
-#define INCLUDE_PERFETTO_BASE_FLAT_SET_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_FLAT_SET_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_FLAT_SET_H_
 
 #include <algorithm>
 #include <vector>
@@ -97,4 +97,4 @@ class FlatSet {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_FLAT_SET_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_FLAT_SET_H_

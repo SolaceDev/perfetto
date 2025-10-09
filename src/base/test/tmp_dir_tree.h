@@ -39,11 +39,11 @@ class TmpDirTree {
   std::string AbsolutePath(const std::string& relative_path) const;
 
   // Creates a directory at `relative_path`. All the parent directories should
-  // have been created. PERFETTO_CHECK()s that the operation succeeds.
+  // have been created. PERFETTO_SOLACE_CHECK()s that the operation succeeds.
   void AddDir(const std::string& relative_path);
 
   // Creates a file at `relative_path` which contains `content`. All the parent
-  // directories should have been created. PERFETTO_CHECK()s that the operation
+  // directories should have been created. PERFETTO_SOLACE_CHECK()s that the operation
   // succeeds.
   void AddFile(const std::string& relative_path, const std::string& content);
 

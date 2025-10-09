@@ -31,7 +31,7 @@
 #include "perfetto/ext/base/scoped_file.h"
 #include "perfetto/ext/base/utils.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <direct.h>
 #include <io.h>
@@ -45,7 +45,7 @@ namespace base {
 namespace {
 constexpr size_t kBufSize = 2048;
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 // Wrap FindClose to: (1) make the return unix-style; (2) deal with stdcall.
 int CloseFindHandle(HANDLE h) {
   return FindClose(h) ? 0 : -1;
@@ -55,10 +55,10 @@ int CloseFindHandle(HANDLE h) {
 }  // namespace
 
 ssize_t Read(int fd, void* dst, size_t dst_size) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   return _read(fd, dst, static_cast<unsigned>(dst_size));
 #else
-  return PERFETTO_EINTR(read(fd, dst, dst_size));
+  return PERFETTO_SOLACE_EINTR(read(fd, dst, dst_size));
 #endif
 }
 
@@ -88,7 +88,7 @@ bool ReadFileDescriptor(int fd, std::string* out) {
 }
 
 bool ReadPlatformHandle(PlatformHandle h, std::string* out) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Do not override existing data in string.
   size_t i = out->size();
 
@@ -134,7 +134,7 @@ ssize_t WriteAll(int fd, const void* buf, size_t count) {
     // write() on windows takes an unsigned int size.
     uint32_t bytes_left = static_cast<uint32_t>(
         std::min(count - written, static_cast<size_t>(UINT32_MAX)));
-    ssize_t wr = PERFETTO_EINTR(
+    ssize_t wr = PERFETTO_SOLACE_EINTR(
         write(fd, static_cast<const char*>(buf) + written, bytes_left));
     if (wr == 0)
       break;
@@ -146,7 +146,7 @@ ssize_t WriteAll(int fd, const void* buf, size_t count) {
 }
 
 ssize_t WriteAllHandle(PlatformHandle h, const void* buf, size_t count) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   DWORD wsize = 0;
   if (::WriteFile(h, buf, static_cast<DWORD>(count), &wsize, nullptr)) {
     return wsize;
@@ -159,19 +159,19 @@ ssize_t WriteAllHandle(PlatformHandle h, const void* buf, size_t count) {
 }
 
 bool FlushFile(int fd) {
-  PERFETTO_DCHECK(fd != 0);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
-  return !PERFETTO_EINTR(fdatasync(fd));
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
-  return !PERFETTO_EINTR(_commit(fd));
+  PERFETTO_SOLACE_DCHECK(fd != 0);
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
+  return !PERFETTO_SOLACE_EINTR(fdatasync(fd));
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
+  return !PERFETTO_SOLACE_EINTR(_commit(fd));
 #else
-  return !PERFETTO_EINTR(fsync(fd));
+  return !PERFETTO_SOLACE_EINTR(fsync(fd));
 #endif
 }
 
 bool Mkdir(const std::string& path) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   return _mkdir(path.c_str()) == 0;
 #else
   return mkdir(path.c_str(), 0755) == 0;
@@ -179,7 +179,7 @@ bool Mkdir(const std::string& path) {
 }
 
 bool Rmdir(const std::string& path) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   return _rmdir(path.c_str()) == 0;
 #else
   return rmdir(path.c_str()) == 0;
@@ -191,8 +191,8 @@ int CloseFile(int fd) {
 }
 
 ScopedFile OpenFile(const std::string& path, int flags, FileOpenMode mode) {
-  PERFETTO_DCHECK((flags & O_CREAT) == 0 || mode != kFileModeInvalid);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+  PERFETTO_SOLACE_DCHECK((flags & O_CREAT) == 0 || mode != kFileModeInvalid);
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Always use O_BINARY on Windows, to avoid silly EOL translations.
   ScopedFile fd(_open(path.c_str(), flags | O_BINARY, mode));
 #else
@@ -203,7 +203,7 @@ ScopedFile OpenFile(const std::string& path, int flags, FileOpenMode mode) {
 }
 
 bool FileExists(const std::string& path) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   return _access(path.c_str(), 0) == 0;
 #else
   return access(path.c_str(), F_OK) == 0;
@@ -212,7 +212,7 @@ bool FileExists(const std::string& path) {
 
 // Declared in base/platform_handle.h.
 int ClosePlatformHandle(PlatformHandle handle) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Make the return value UNIX-style.
   return CloseHandle(handle) ? 0 : -1;
 #else
@@ -237,9 +237,9 @@ base::Status ListFilesRecursive(const std::string& dir_path,
   while (!dir_queue.empty()) {
     const std::string cur_dir = std::move(dir_queue.front());
     dir_queue.pop_front();
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_NACL)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_NACL)
     return base::ErrStatus("ListFilesRecursive not supported yet");
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     std::string glob_path = cur_dir + "*";
     // + 1 because we also have to count the NULL terminator.
     if (glob_path.length() + 1 > MAX_PATH)
@@ -263,7 +263,7 @@ base::Status ListFilesRecursive(const std::string& dir_path,
         dir_queue.push_back(subdir_path);
       } else {
         const std::string full_path = cur_dir + ffd.cFileName;
-        PERFETTO_CHECK(full_path.length() > root_dir_path.length());
+        PERFETTO_SOLACE_CHECK(full_path.length() > root_dir_path.length());
         output.push_back(full_path.substr(root_dir_path.length()));
       }
     } while (FindNextFileA(*hFind, &ffd));
@@ -282,7 +282,7 @@ base::Status ListFilesRecursive(const std::string& dir_path,
         dir_queue.push_back(cur_dir + dirent->d_name + '/');
       } else if (dirent->d_type == DT_REG) {
         const std::string full_path = cur_dir + dirent->d_name;
-        PERFETTO_CHECK(full_path.length() > root_dir_path.length());
+        PERFETTO_SOLACE_CHECK(full_path.length() > root_dir_path.length());
         output.push_back(full_path.substr(root_dir_path.length()));
       }
     }
@@ -299,7 +299,7 @@ std::string GetFileExtension(const std::string& filename) {
 }
 
 base::Optional<size_t> GetFileSize(const std::string& file_path) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   HANDLE file =
       CreateFileA(file_path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr,
                   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);

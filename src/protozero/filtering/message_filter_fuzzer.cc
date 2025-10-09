@@ -86,12 +86,12 @@ uint8_t kValidFilter[] = {
 
 int FuzzMessageFilter(const uint8_t* data, size_t size) {
   MessageFilter filter;
-  PERFETTO_CHECK(filter.LoadFilterBytecode(kValidFilter, sizeof(kValidFilter)));
+  PERFETTO_SOLACE_CHECK(filter.LoadFilterBytecode(kValidFilter, sizeof(kValidFilter)));
 
   auto res = filter.FilterMessage(data, size);
 
   // Either parsing fails or if it succeeds, the output data must be <= input.
-  PERFETTO_CHECK(res.error || res.size <= size);
+  PERFETTO_SOLACE_CHECK(res.error || res.size <= size);
   return 0;
 }
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_WEAK_PTR_H_
-#define INCLUDE_PERFETTO_EXT_BASE_WEAK_PTR_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_WEAK_PTR_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_WEAK_PTR_H_
 
 #include "perfetto/ext/base/thread_checker.h"
 
@@ -59,7 +59,7 @@ class WeakPtr {
   WeakPtr& operator=(WeakPtr&&) = default;
 
   T* get() const {
-    PERFETTO_DCHECK_THREAD(thread_checker);
+    PERFETTO_SOLACE_DCHECK_THREAD(thread_checker);
     return handle_ ? *handle_.get() : nullptr;
   }
   T* operator->() const { return get(); }
@@ -72,7 +72,7 @@ class WeakPtr {
   explicit WeakPtr(const std::shared_ptr<T*>& handle) : handle_(handle) {}
 
   std::shared_ptr<T*> handle_;
-  PERFETTO_THREAD_CHECKER(thread_checker)
+  PERFETTO_SOLACE_THREAD_CHECKER(thread_checker)
 };
 
 template <typename T>
@@ -80,11 +80,11 @@ class WeakPtrFactory {
  public:
   explicit WeakPtrFactory(T* owner)
       : weak_ptr_(std::shared_ptr<T*>(new T* {owner})) {
-    PERFETTO_DCHECK_THREAD(thread_checker);
+    PERFETTO_SOLACE_DCHECK_THREAD(thread_checker);
   }
 
   ~WeakPtrFactory() {
-    PERFETTO_DCHECK_THREAD(thread_checker);
+    PERFETTO_SOLACE_DCHECK_THREAD(thread_checker);
     *(weak_ptr_.handle_.get()) = nullptr;
   }
 
@@ -98,11 +98,11 @@ class WeakPtrFactory {
   // calling thread.
   void Reset(T* owner) {
     // Reset thread checker to current thread.
-    PERFETTO_DETACH_FROM_THREAD(thread_checker);
-    PERFETTO_DCHECK_THREAD(thread_checker);
+    PERFETTO_SOLACE_DETACH_FROM_THREAD(thread_checker);
+    PERFETTO_SOLACE_DCHECK_THREAD(thread_checker);
 
     // We should not have passed out any weak pointers yet at this point.
-    PERFETTO_DCHECK(weak_ptr_.handle_.use_count() == 1);
+    PERFETTO_SOLACE_DCHECK(weak_ptr_.handle_.use_count() == 1);
 
     weak_ptr_ = WeakPtr<T>(std::shared_ptr<T*>(new T* {owner}));
   }
@@ -112,10 +112,10 @@ class WeakPtrFactory {
   WeakPtrFactory& operator=(const WeakPtrFactory&) = delete;
 
   WeakPtr<T> weak_ptr_;
-  PERFETTO_THREAD_CHECKER(thread_checker)
+  PERFETTO_SOLACE_THREAD_CHECKER(thread_checker)
 };
 
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_WEAK_PTR_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WEAK_PTR_H_

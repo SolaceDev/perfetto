@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_STRING_VIEW_H_
-#define INCLUDE_PERFETTO_EXT_BASE_STRING_VIEW_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_VIEW_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_VIEW_H_
 
 #include <string.h>
 
@@ -39,20 +39,20 @@ class StringView {
   StringView(const StringView&) = default;
   StringView& operator=(const StringView&) = default;
   StringView(const char* data, size_t size) : data_(data), size_(size) {
-    PERFETTO_DCHECK(size == 0 || data != nullptr);
+    PERFETTO_SOLACE_DCHECK(size == 0 || data != nullptr);
   }
 
   // Allow implicit conversion from any class that has a |data| and |size| field
   // and has the kConvertibleToStringView trait (e.g., protozero::ConstChars).
   template <typename T, typename = std::enable_if<T::kConvertibleToStringView>>
   StringView(const T& x) : StringView(x.data, x.size) {
-    PERFETTO_DCHECK(x.size == 0 || x.data != nullptr);
+    PERFETTO_SOLACE_DCHECK(x.size == 0 || x.data != nullptr);
   }
 
   // Creates a StringView from a null-terminated C string.
   // Deliberately not "explicit".
   StringView(const char* cstr) : data_(cstr), size_(strlen(cstr)) {
-    PERFETTO_DCHECK(cstr != nullptr);
+    PERFETTO_SOLACE_DCHECK(cstr != nullptr);
   }
 
   // This instead has to be explicit, as creating a StringView out of a
@@ -67,7 +67,7 @@ class StringView {
   const char* end() const { return data_ + size_; }
 
   char at(size_t pos) const {
-    PERFETTO_DCHECK(pos < size_);
+    PERFETTO_SOLACE_DCHECK(pos < size_);
     return data_[pos];
   }
 
@@ -111,7 +111,7 @@ class StringView {
       return false;
     if (size() == 0)
       return true;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     return _strnicmp(data(), other.data(), size()) == 0;
 #else
     return strncasecmp(data(), other.data(), size()) == 0;
@@ -189,4 +189,4 @@ struct std::hash<::perfetto::base::StringView> {
   }
 };
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_STRING_VIEW_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_VIEW_H_

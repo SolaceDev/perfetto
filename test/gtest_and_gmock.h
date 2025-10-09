@@ -39,7 +39,7 @@
 #if defined(__clang__)
 #pragma GCC diagnostic ignored "-Wshift-sign-overflow"
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_NACL)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_NACL)
 // -Wcomma isn't supported on NaCL.
 #pragma GCC diagnostic ignored "-Wcomma"
 #endif  // PERFETTO_OS_NACL

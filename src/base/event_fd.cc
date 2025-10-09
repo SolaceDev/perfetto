@@ -19,11 +19,11 @@
 #include <errno.h>
 #include <stdint.h>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <synchapi.h>
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <sys/eventfd.h>
 #include <unistd.h>
 #else  // Mac, Fuchsia and other non-Linux UNIXes
@@ -40,7 +40,7 @@ namespace base {
 
 EventFd::~EventFd() = default;
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 EventFd::EventFd() {
   event_handle_.reset(
       CreateEventA(/*lpEventAttributes=*/nullptr, /*bManualReset=*/true,
@@ -49,34 +49,34 @@ EventFd::EventFd() {
 
 void EventFd::Notify() {
   if (!SetEvent(event_handle_.get()))  // 0: fail, !0: success, unlike UNIX.
-    PERFETTO_DFATAL("EventFd::Notify()");
+    PERFETTO_SOLACE_DFATAL("EventFd::Notify()");
 }
 
 void EventFd::Clear() {
   if (!ResetEvent(event_handle_.get()))  // 0: fail, !0: success, unlike UNIX.
-    PERFETTO_DFATAL("EventFd::Clear()");
+    PERFETTO_SOLACE_DFATAL("EventFd::Clear()");
 }
 
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 EventFd::EventFd() {
   event_handle_.reset(eventfd(/*initval=*/0, EFD_CLOEXEC | EFD_NONBLOCK));
-  PERFETTO_CHECK(event_handle_);
+  PERFETTO_SOLACE_CHECK(event_handle_);
 }
 
 void EventFd::Notify() {
   const uint64_t value = 1;
   ssize_t ret = write(event_handle_.get(), &value, sizeof(value));
   if (ret <= 0 && errno != EAGAIN)
-    PERFETTO_DFATAL("EventFd::Notify()");
+    PERFETTO_SOLACE_DFATAL("EventFd::Notify()");
 }
 
 void EventFd::Clear() {
   uint64_t value;
   ssize_t ret = read(event_handle_.get(), &value, sizeof(value));
   if (ret <= 0 && errno != EAGAIN)
-    PERFETTO_DFATAL("EventFd::Clear()");
+    PERFETTO_SOLACE_DFATAL("EventFd::Clear()");
 }
 
 #else
@@ -93,7 +93,7 @@ void EventFd::Notify() {
   const uint64_t value = 1;
   ssize_t ret = write(write_fd_.get(), &value, sizeof(uint8_t));
   if (ret <= 0 && errno != EAGAIN)
-    PERFETTO_DFATAL("EventFd::Notify()");
+    PERFETTO_SOLACE_DFATAL("EventFd::Notify()");
 }
 
 void EventFd::Clear() {
@@ -102,7 +102,7 @@ void EventFd::Clear() {
   char buffer[16];
   ssize_t ret = read(event_handle_.get(), &buffer[0], sizeof(buffer));
   if (ret <= 0 && errno != EAGAIN)
-    PERFETTO_DFATAL("EventFd::Clear()");
+    PERFETTO_SOLACE_DFATAL("EventFd::Clear()");
 }
 #endif
 

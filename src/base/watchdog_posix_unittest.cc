@@ -16,7 +16,7 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)
 
 #include "perfetto/ext/base/watchdog_posix.h"
 
@@ -52,4 +52,4 @@ TEST(WatchdogPosixTest, ParseProcStat) {
 }  // namespace base
 }  // namespace perfetto
 
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)

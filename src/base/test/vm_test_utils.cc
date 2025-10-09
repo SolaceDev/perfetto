@@ -24,15 +24,15 @@
 #include <errno.h>
 #include <string.h>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <vector>
 
 #include <Windows.h>
 #include <Psapi.h>
-#else  // PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#else  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <sys/mman.h>
 #include <sys/stat.h>
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 #include "perfetto/base/build_config.h"
 #include "perfetto/base/logging.h"
@@ -44,7 +44,7 @@ namespace vm_test_utils {
 
 bool IsMapped(void* start, size_t size) {
   const size_t page_size = GetSysPageSize();
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   int retries = 5;
   size_t number_of_entries = 4000;  // Just a guess.
   PSAPI_WORKING_SET_INFORMATION* ws_info = nullptr;
@@ -64,7 +64,7 @@ bool IsMapped(void* start, size_t size) {
     if (QueryWorkingSet(GetCurrentProcess(), &buffer[0], buffer_size))
       break;  // Success
 
-    PERFETTO_CHECK(GetLastError() == ERROR_BAD_LENGTH);
+    PERFETTO_SOLACE_CHECK(GetLastError() == ERROR_BAD_LENGTH);
 
     number_of_entries = ws_info->NumberOfEntries;
 
@@ -72,7 +72,7 @@ bool IsMapped(void* start, size_t size) {
     // take that into account. Increasing by 10% should generally be enough.
     number_of_entries = static_cast<size_t>(double(number_of_entries) * 1.1);
 
-    PERFETTO_CHECK(--retries > 0);  // If we're looping, eventually fail.
+    PERFETTO_SOLACE_CHECK(--retries > 0);  // If we're looping, eventually fail.
   }
 
   void* end = reinterpret_cast<char*>(start) + size;
@@ -88,16 +88,16 @@ bool IsMapped(void* start, size_t size) {
   if (pages_found * page_size == size)
     return true;
   return false;
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
   // Fuchsia doesn't yet support paging (b/119503290).
   ignore_result(page_size);
   return true;
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_NACL)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_NACL)
   // mincore isn't available on NaCL.
   ignore_result(page_size);
   return true;
 #else
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   using PageState = char;
   static constexpr PageState kIncoreMask = MINCORE_INCORE;
 #else
@@ -112,7 +112,7 @@ bool IsMapped(void* start, size_t size) {
   // MacOS instead returns 0 but leaves the page_states empty.
   if (res == -1 && errno == ENOMEM)
     return false;
-  PERFETTO_CHECK(res == 0);
+  PERFETTO_SOLACE_CHECK(res == 0);
   for (size_t i = 0; i < num_pages; i++) {
     if (!(page_states[i] & kIncoreMask))
       return false;

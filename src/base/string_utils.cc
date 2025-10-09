@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #include <xlocale.h>
 #endif
 
@@ -36,9 +36,9 @@ namespace base {
 
 // Locale-independant as possible version of strtod.
 double StrToD(const char* nptr, char** endptr) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   static auto c_locale = newlocale(LC_ALL, "C", nullptr);
   return strtod_l(nptr, endptr, c_locale);
 #else
@@ -104,7 +104,7 @@ std::string Join(const std::vector<std::string>& parts,
 
 std::vector<std::string> SplitString(const std::string& text,
                                      const std::string& delimiter) {
-  PERFETTO_CHECK(!delimiter.empty());
+  PERFETTO_SOLACE_CHECK(!delimiter.empty());
 
   std::vector<std::string> output;
   size_t start = 0;
@@ -196,7 +196,7 @@ std::string StripChars(const std::string& str,
 std::string ReplaceAll(std::string str,
                        const std::string& to_replace,
                        const std::string& replacement) {
-  PERFETTO_CHECK(!to_replace.empty());
+  PERFETTO_SOLACE_CHECK(!to_replace.empty());
   size_t pos = 0;
   while ((pos = str.find(to_replace, pos)) != std::string::npos) {
     str.replace(pos, to_replace.length(), replacement);
@@ -211,7 +211,7 @@ std::string TrimLeading(const std::string& str) {
 }
 
 size_t SprintfTrunc(char* dst, size_t dst_size, const char* fmt, ...) {
-  if (PERFETTO_UNLIKELY(dst_size) == 0)
+  if (PERFETTO_SOLACE_UNLIKELY(dst_size) == 0)
     return 0;
 
   va_list args;
@@ -219,13 +219,13 @@ size_t SprintfTrunc(char* dst, size_t dst_size, const char* fmt, ...) {
   int src_size = vsnprintf(dst, dst_size, fmt, args);
   va_end(args);
 
-  if (PERFETTO_UNLIKELY(src_size) <= 0) {
+  if (PERFETTO_SOLACE_UNLIKELY(src_size) <= 0) {
     dst[0] = '\0';
     return 0;
   }
 
   size_t res;
-  if (PERFETTO_LIKELY(src_size < static_cast<int>(dst_size))) {
+  if (PERFETTO_SOLACE_LIKELY(src_size < static_cast<int>(dst_size))) {
     // Most common case.
     res = static_cast<size_t>(src_size);
   } else {
@@ -233,8 +233,8 @@ size_t SprintfTrunc(char* dst, size_t dst_size, const char* fmt, ...) {
     res = dst_size - 1;
   }
 
-  PERFETTO_DCHECK(res < dst_size);
-  PERFETTO_DCHECK(dst[res] == '\0');
+  PERFETTO_SOLACE_DCHECK(res < dst_size);
+  PERFETTO_SOLACE_DCHECK(dst[res] == '\0');
   return res;
 }
 
