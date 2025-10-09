@@ -26,6 +26,7 @@
 #include <vector>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 enum class WatchdogCrashReason;  // Defined in watchdog.h.
@@ -198,5 +199,6 @@ class Watchdog {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_POSIX_H_

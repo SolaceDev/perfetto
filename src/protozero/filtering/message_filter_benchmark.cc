@@ -24,13 +24,13 @@
 static void BM_ProtozeroMessageFilter(benchmark::State& state) {
   std::string trace_data;
   static const char kTestTrace[] = "test/data/example_android_trace_30s.pb";
-  perfetto::base::ReadFile(perfetto::base::GetTestDataPath(kTestTrace),
+  perfetto::solace::base::ReadFile(perfetto::solace::base::GetTestDataPath(kTestTrace),
                            &trace_data);
   PERFETTO_SOLACE_CHECK(!trace_data.empty());
 
   std::string filter;
   static const char kFullTraceFilter[] = "test/data/full_trace_filter.bytecode";
-  perfetto::base::ReadFile(kFullTraceFilter, &filter);
+  perfetto::solace::base::ReadFile(kFullTraceFilter, &filter);
   PERFETTO_SOLACE_CHECK(!filter.empty());
 
   protozero::MessageFilter filt;

@@ -25,6 +25,7 @@
 #include "perfetto/base/platform_handle.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A generic interface to allow the library clients to interleave the execution
@@ -73,6 +74,7 @@ class PERFETTO_SOLACE_EXPORT TaskRunner {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_TASK_RUNNER_H_

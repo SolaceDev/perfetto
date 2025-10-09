@@ -51,14 +51,14 @@ struct Delegate {
     return instance;
   }
 
-  base::TaskRunner* task_runner = nullptr;
+  solace::base::TaskRunner* task_runner = nullptr;
   std::function<void()> read_task;
 };
 
 }  // namespace
 
 bool Enable(std::function<void()> read_task,
-            base::TaskRunner* task_runner,
+            solace::base::TaskRunner* task_runner,
             uint32_t tags) {
   PERFETTO_SOLACE_DCHECK(read_task);
   PERFETTO_SOLACE_DCHECK(task_runner->RunsTasksOnCurrentThread());

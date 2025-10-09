@@ -60,10 +60,10 @@ namespace {
 
 using namespace perfetto;
 using benchmark::Counter;
-using perfetto::base::AlreadyHashed;
-using perfetto::base::LinearProbe;
-using perfetto::base::QuadraticHalfProbe;
-using perfetto::base::QuadraticProbe;
+using perfetto::solace::base::AlreadyHashed;
+using perfetto::solace::base::LinearProbe;
+using perfetto::solace::base::QuadraticHalfProbe;
+using perfetto::solace::base::QuadraticProbe;
 
 // Our FlatHashMap doesn't have a STL-like interface, mainly because we use
 // columnar-oriented storage, not array-of-tuples, so we can't easily map into

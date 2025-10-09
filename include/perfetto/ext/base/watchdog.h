@@ -30,6 +30,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Used only to add more details to crash reporting.
@@ -74,6 +75,7 @@ inline void RunTaskWithWatchdogGuard(const std::function<void()>& task) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_H_

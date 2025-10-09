@@ -30,6 +30,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -166,4 +167,5 @@ void PagedMemory::EnsureCommitted(size_t committed_size) {
 #endif  // TRACK_COMMITTED_SIZE()
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

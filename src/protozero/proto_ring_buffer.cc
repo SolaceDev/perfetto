@@ -74,7 +74,7 @@ ProtoRingBuffer::Message TryReadMessage(const uint8_t* start,
 }  // namespace
 
 ProtoRingBuffer::ProtoRingBuffer()
-    : buf_(perfetto::base::PagedMemory::Allocate(kGrowBytes)) {}
+    : buf_(perfetto::solace::base::PagedMemory::Allocate(kGrowBytes)) {}
 ProtoRingBuffer::~ProtoRingBuffer() = default;
 
 void ProtoRingBuffer::Append(const void* data_void, size_t data_len) {
@@ -137,7 +137,7 @@ void ProtoRingBuffer::Append(const void* data_void, size_t data_len) {
         failed_ = true;
         return;
       }
-      auto new_buf = perfetto::base::PagedMemory::Allocate(new_size);
+      auto new_buf = perfetto::solace::base::PagedMemory::Allocate(new_size);
       memcpy(new_buf.Get(), buf_.Get(), buf_.size());
       buf_ = std::move(new_buf);
       avail = new_size - wr_;

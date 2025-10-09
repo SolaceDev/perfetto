@@ -35,6 +35,7 @@
 #include "perfetto/ext/base/scoped_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Handles creation and lifecycle management of subprocesses, taking care of
@@ -270,6 +271,7 @@ class Subprocess {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SUBPROCESS_H_

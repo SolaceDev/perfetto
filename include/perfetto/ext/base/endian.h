@@ -28,6 +28,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_COMPILER_MSVC)
@@ -53,6 +54,7 @@ inline uint64_t HostToBE64(uint64_t x) {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_ENDIAN_H_

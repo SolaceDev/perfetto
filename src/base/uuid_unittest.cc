@@ -21,6 +21,7 @@
 #include "perfetto/ext/base/optional.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -65,4 +66,5 @@ TEST(Uuid, UuidToPrettyString) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

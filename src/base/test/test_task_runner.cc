@@ -23,6 +23,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 TestTaskRunner::TestTaskRunner() = default;
@@ -112,4 +113,5 @@ bool TestTaskRunner::RunsTasksOnCurrentThread() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

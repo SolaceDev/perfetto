@@ -42,6 +42,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -428,6 +429,7 @@ Watchdog::Timer::Timer(Timer&& other) noexcept {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)

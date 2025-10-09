@@ -18,12 +18,14 @@
 #define INCLUDE_PERFETTO_SOLACE_EXT_BASE_VERSION_H_
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // The returned pointer is a static string is safe to pass around.
 const char* GetVersionString();
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_VERSION_H_

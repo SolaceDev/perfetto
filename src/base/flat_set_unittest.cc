@@ -25,6 +25,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -115,4 +116,5 @@ TEST(FlatSetTest, GoldenTest) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

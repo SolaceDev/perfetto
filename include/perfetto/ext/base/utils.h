@@ -48,6 +48,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Do not add new usages of kPageSize, consider using GetSysPageSize() below.
@@ -178,6 +179,7 @@ inline std::string HexDump(const std::string& data,
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UTILS_H_

@@ -38,6 +38,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -231,4 +232,5 @@ void MaybeSerializeLastLogsForCrashReporting() {
 #endif  // PERFETTO_SOLACE_ENABLE_LOG_RING_BUFFER
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

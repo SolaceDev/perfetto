@@ -26,6 +26,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
@@ -79,4 +80,5 @@ std::string GetTimeFmt(const std::string& fmt) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

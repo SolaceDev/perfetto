@@ -18,6 +18,7 @@
 #define INCLUDE_PERFETTO_SOLACE_EXT_BASE_CTRL_C_HANDLER_H_
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // On Linux/Android/Mac: installs SIGINT + SIGTERM signal handlers.
@@ -27,6 +28,7 @@ using CtrlCHandlerFunction = void (*)();
 void InstallCtrCHandler(CtrlCHandlerFunction);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_CTRL_C_HANDLER_H_

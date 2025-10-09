@@ -46,6 +46,7 @@ std::string GetTempName() {
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 std::string GetSysTempDir() {
@@ -153,4 +154,5 @@ TempDir::~TempDir() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

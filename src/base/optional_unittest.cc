@@ -33,6 +33,7 @@
 using ::testing::ElementsAre;
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -2204,6 +2205,7 @@ TEST(OptionalTest, Noexcept) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #if defined(__GNUC__) || defined(__clang__)

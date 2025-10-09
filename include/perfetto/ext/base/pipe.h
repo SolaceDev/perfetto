@@ -21,6 +21,7 @@
 #include "perfetto/ext/base/scoped_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class Pipe {
@@ -45,6 +46,7 @@ class Pipe {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_PIPE_H_

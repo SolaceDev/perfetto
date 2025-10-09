@@ -24,6 +24,7 @@
 #include "perfetto/ext/base/string_utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -94,4 +95,5 @@ size_t SerializeCrashKeys(char* dst, size_t len) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

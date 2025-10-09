@@ -37,6 +37,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -397,4 +398,5 @@ TYPED_TEST(GetoptCompatTest, OpterrHandling) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

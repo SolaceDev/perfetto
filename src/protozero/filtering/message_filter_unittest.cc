@@ -34,7 +34,7 @@ namespace protozero {
 namespace {
 
 TEST(MessageFilterTest, EndToEnd) {
-  auto schema = perfetto::base::TempFile::Create();
+  auto schema = perfetto::solace::base::TempFile::Create();
   static const char kSchema[] = R"(
   syntax = "proto2";
   message FilterSchema {
@@ -58,8 +58,8 @@ TEST(MessageFilterTest, EndToEnd) {
   };
   )";
 
-  perfetto::base::WriteAll(*schema, kSchema, strlen(kSchema));
-  perfetto::base::FlushFile(*schema);
+  perfetto::solace::base::WriteAll(*schema, kSchema, strlen(kSchema));
+  perfetto::solace::base::FlushFile(*schema);
 
   FilterUtil filter;
   ASSERT_TRUE(filter.LoadMessageDefinition(schema.path(), "", ""));
@@ -130,7 +130,7 @@ TEST(MessageFilterTest, EndToEnd) {
 }
 
 TEST(MessageFilterTest, ChangeRoot) {
-  auto schema = perfetto::base::TempFile::Create();
+  auto schema = perfetto::solace::base::TempFile::Create();
   static const char kSchema[] = R"(
   syntax = "proto2";
   message FilterSchema {
@@ -146,8 +146,8 @@ TEST(MessageFilterTest, ChangeRoot) {
   };
   )";
 
-  perfetto::base::WriteAll(*schema, kSchema, strlen(kSchema));
-  perfetto::base::FlushFile(*schema);
+  perfetto::solace::base::WriteAll(*schema, kSchema, strlen(kSchema));
+  perfetto::solace::base::FlushFile(*schema);
 
   FilterUtil filter;
   ASSERT_TRUE(filter.LoadMessageDefinition(schema.path(), "", ""));
@@ -199,7 +199,7 @@ TEST(MessageFilterTest, ChangeRoot) {
 
 TEST(MessageFilterTest, MalformedInput) {
   // Create and load a simple filter.
-  auto schema = perfetto::base::TempFile::Create();
+  auto schema = perfetto::solace::base::TempFile::Create();
   static const char kSchema[] = R"(
   syntax = "proto2";
   message FilterSchema {
@@ -212,8 +212,8 @@ TEST(MessageFilterTest, MalformedInput) {
     repeated Nested nest = 3;
   };
   )";
-  perfetto::base::WriteAll(*schema, kSchema, strlen(kSchema));
-  perfetto::base::FlushFile(*schema);
+  perfetto::solace::base::WriteAll(*schema, kSchema, strlen(kSchema));
+  perfetto::solace::base::FlushFile(*schema);
   FilterUtil filter;
   ASSERT_TRUE(filter.LoadMessageDefinition(schema.path(), "", ""));
   std::string bytecode = filter.GenerateFilterBytecode();

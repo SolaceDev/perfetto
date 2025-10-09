@@ -26,6 +26,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Uses inline storage first, switches to dynamic storage when it overflows.
@@ -183,6 +184,7 @@ class SmallVector {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SMALL_VECTOR_H_

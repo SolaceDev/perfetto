@@ -23,6 +23,7 @@
 #include "perfetto/ext/base/optional.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class Uuid {
@@ -67,6 +68,7 @@ class Uuid {
 Uuid Uuidv4();
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UUID_H_

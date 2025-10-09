@@ -20,6 +20,7 @@
 #include <string>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // C++ version of strtok(). Splits a string without making copies or any heap
@@ -69,6 +70,7 @@ class StringSplitter {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_SPLITTER_H_

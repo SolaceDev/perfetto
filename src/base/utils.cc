@@ -112,6 +112,7 @@ void PERFETTO_SOLACE_EXPORT __attribute__((constructor)) CheckCpuOptimizations()
 }  // namespace
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 void MaybeReleaseAllocatorMemToOS() {
@@ -290,4 +291,5 @@ std::string HexDump(const void* data_void, size_t len, size_t bytes_per_line) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

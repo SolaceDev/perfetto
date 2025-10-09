@@ -31,6 +31,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
@@ -97,6 +98,7 @@ base::Status ListFilesRecursive(const std::string& dir_path,
 Optional<size_t> GetFileSize(const std::string& path);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_FILE_UTILS_H_

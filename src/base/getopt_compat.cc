@@ -25,6 +25,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace getopt_compat {
 
@@ -231,4 +232,5 @@ int getopt(int argc, char** argv, const char* shortopts) {
 
 }  // namespace getopt_compat
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

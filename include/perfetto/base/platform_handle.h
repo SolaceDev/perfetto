@@ -20,6 +20,7 @@
 #include "perfetto/base/build_config.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // PlatformHandle should be used only for types that are HANDLE(s) in Windows.
@@ -56,6 +57,7 @@ struct PlatformHandleChecker {
 int ClosePlatformHandle(PlatformHandle);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_PLATFORM_HANDLE_H_

@@ -17,6 +17,7 @@
 #include "perfetto/ext/base/waitable_event.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 WaitableEvent::WaitableEvent() = default;
@@ -34,4 +35,5 @@ void WaitableEvent::Notify() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

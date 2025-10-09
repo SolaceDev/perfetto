@@ -26,6 +26,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // CircularQueue is a push-back-only / pop-front-only queue with the following
@@ -304,6 +305,7 @@ class CircularQueue {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_CIRCULAR_QUEUE_H_

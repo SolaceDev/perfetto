@@ -27,6 +27,7 @@
 #include "perfetto/ext/base/thread_annotations.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Defined out of line because a static constexpr requires static storage if
@@ -155,6 +156,7 @@ class LogRingBuffer {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // SRC_BASE_LOG_RING_BUFFER_H_

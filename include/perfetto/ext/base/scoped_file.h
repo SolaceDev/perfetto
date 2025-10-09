@@ -32,6 +32,7 @@
 #include "perfetto/base/platform_handle.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace internal {
@@ -117,6 +118,7 @@ using ScopedDir = ScopedResource<DIR*, closedir, nullptr>;
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SCOPED_FILE_H_

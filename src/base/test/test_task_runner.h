@@ -28,6 +28,7 @@
 #include "perfetto/ext/base/unix_task_runner.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class TestTaskRunner : public TaskRunner {
@@ -64,6 +65,7 @@ class TestTaskRunner : public TaskRunner {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // SRC_BASE_TEST_TEST_TASK_RUNNER_H_

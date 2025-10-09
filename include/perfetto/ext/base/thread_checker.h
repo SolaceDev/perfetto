@@ -29,6 +29,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
@@ -63,6 +64,7 @@ class PERFETTO_SOLACE_EXPORT ThreadChecker {
 #endif  // PERFETTO_SOLACE_DCHECK_IS_ON()
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_CHECKER_H_

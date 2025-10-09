@@ -50,10 +50,11 @@
 // The available events and tags are defined in metatrace_events.h .
 
 namespace perfetto {
-
+namespace solace {
 namespace base {
 class TaskRunner;
 }  // namespace base
+}  // namespace solace
 
 namespace metatrace {
 
@@ -74,14 +75,14 @@ extern std::atomic<uint64_t> g_enabled_timestamp;
 // file or into the trace itself.
 // Must be called on the |task_runner| passed.
 // |task_runner| must have static lifetime.
-bool Enable(std::function<void()> read_task, base::TaskRunner*, uint32_t tags);
+bool Enable(std::function<void()> read_task, solace::base::TaskRunner*, uint32_t tags);
 
 // Disables meta-tracing.
 // Must be called on the same |task_runner| as Enable().
 void Disable();
 
 inline uint64_t TraceTimeNowNs() {
-  return static_cast<uint64_t>(base::GetBootTimeNs().count());
+  return static_cast<uint64_t>(solace::base::GetBootTimeNs().count());
 }
 
 // Returns a relaxed view of whether metatracing is enabled for the given tag.
@@ -264,7 +265,7 @@ inline void TraceCounter(uint32_t tag, uint16_t id, int32_t value) {
   if (PERFETTO_SOLACE_LIKELY((enabled_tags & tag) == 0))
     return;
   Record* record = RingBuffer::AppendNewRecord();
-  record->thread_id = static_cast<uint32_t>(base::GetThreadId());
+  record->thread_id = static_cast<uint32_t>(solace::base::GetThreadId());
   record->set_timestamp(TraceTimeNowNs());
   record->counter_value = value;
   record->type_and_id.store(Record::kTypeCounter | id,
@@ -279,7 +280,7 @@ class ScopedEvent {
       return;
     event_id_ = event_id;
     record_ = RingBuffer::AppendNewRecord();
-    record_->thread_id = static_cast<uint32_t>(base::GetThreadId());
+    record_->thread_id = static_cast<uint32_t>(solace::base::GetThreadId());
     record_->set_timestamp(TraceTimeNowNs());
   }
 

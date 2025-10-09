@@ -66,7 +66,7 @@ SigHandler g_signals[] = {{SIGSEGV, {}}, {SIGILL, {}}, {SIGTRAP, {}},
 
 template <typename T>
 void Print(const T& str) {
-  perfetto::base::WriteAll(STDERR_FILENO, str, sizeof(str));
+  perfetto::solace::base::WriteAll(STDERR_FILENO, str, sizeof(str));
 }
 
 template <typename T>
@@ -74,7 +74,7 @@ void PrintHex(T n) {
   for (unsigned i = 0; i < sizeof(n) * 8; i += 4) {
     char nibble = static_cast<char>(n >> (sizeof(n) * 8 - i - 4)) & 0x0F;
     char c = (nibble < 10) ? '0' + nibble : 'A' + nibble - 10;
-    perfetto::base::WriteAll(STDERR_FILENO, &c, 1);
+    perfetto::solace::base::WriteAll(STDERR_FILENO, &c, 1);
   }
 }
 
@@ -199,7 +199,7 @@ void SignalHandler(int sig_num, siginfo_t* info, void* /*ucontext*/) {
         // might be moved.
         g_demangled_name = demangled;
       }
-      perfetto::base::WriteAll(STDERR_FILENO, sym.sym_name,
+      perfetto::solace::base::WriteAll(STDERR_FILENO, sym.sym_name,
                                strlen(sym.sym_name));
     } else {
       Print("0x");
@@ -207,7 +207,7 @@ void SignalHandler(int sig_num, siginfo_t* info, void* /*ucontext*/) {
     }
     if (sym.file_name[0]) {
       Print("\n     ");
-      perfetto::base::WriteAll(STDERR_FILENO, sym.file_name,
+      perfetto::solace::base::WriteAll(STDERR_FILENO, sym.file_name,
                                strlen(sym.file_name));
     }
     Print("\n");
@@ -237,6 +237,7 @@ void SignalHandler(int sig_num, siginfo_t* info, void* /*ucontext*/) {
 }  // namespace
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // The prototype for this function is in logging.h.
@@ -263,6 +264,7 @@ void EnableStacktraceOnCrashForDebug() {
   pthread_atfork(nullptr, nullptr, &RestoreSignalHandlers);
 }
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #pragma GCC diagnostic pop

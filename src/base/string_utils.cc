@@ -32,6 +32,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Locale-independant as possible version of strtod.
@@ -239,4 +240,5 @@ size_t SprintfTrunc(char* dst, size_t dst_size, const char* fmt, ...) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

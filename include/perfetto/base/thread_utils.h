@@ -39,6 +39,7 @@ __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
@@ -81,6 +82,7 @@ inline PlatformThreadId GetThreadId() {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_THREAD_UTILS_H_

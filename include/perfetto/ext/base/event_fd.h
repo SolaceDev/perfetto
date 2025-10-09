@@ -22,6 +22,7 @@
 #include "perfetto/ext/base/scoped_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A waitable event that can be used with poll/select.
@@ -59,6 +60,7 @@ class EventFd {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_EVENT_FD_H_

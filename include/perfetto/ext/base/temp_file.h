@@ -22,6 +22,7 @@
 #include "perfetto/ext/base/scoped_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 std::string GetSysTempDir();
@@ -75,6 +76,7 @@ class TempDir {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_TEMP_FILE_H_

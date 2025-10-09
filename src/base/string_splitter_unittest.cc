@@ -21,6 +21,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -366,4 +367,5 @@ l1w1 l1w2 l1w3
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

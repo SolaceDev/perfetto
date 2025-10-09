@@ -127,7 +127,7 @@ class ProtoRingBuffer {
   size_t avail() const { return buf_.size() - (wr_ - rd_); }
 
  private:
-  perfetto::base::PagedMemory buf_;
+  perfetto::solace::base::PagedMemory buf_;
   Message fastpath_{};
   bool failed_ = false;  // Set in case of an unrecoverable framing faiulre.
   size_t rd_ = 0;        // Offset of the read cursor in |buf_|.

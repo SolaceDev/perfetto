@@ -27,6 +27,7 @@
 #include "perfetto/ext/base/hash.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A string-like object that refers to a non-owned piece of memory.
@@ -180,11 +181,12 @@ inline bool operator<=(const StringView& x, const StringView& y) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 template <>
-struct std::hash<::perfetto::base::StringView> {
-  size_t operator()(const ::perfetto::base::StringView& sv) const {
+struct std::hash<::perfetto::solace::base::StringView> {
+  size_t operator()(const ::perfetto::solace::base::StringView& sv) const {
     return static_cast<size_t>(sv.Hash());
   }
 };

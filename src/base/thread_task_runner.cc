@@ -33,6 +33,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 ThreadTaskRunner::ThreadTaskRunner(ThreadTaskRunner&& other) noexcept
@@ -138,4 +139,5 @@ bool ThreadTaskRunner::RunsTasksOnCurrentThread() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

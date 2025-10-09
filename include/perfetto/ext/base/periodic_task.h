@@ -24,6 +24,7 @@
 #include "perfetto/ext/base/weak_ptr.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class TaskRunner;
@@ -81,6 +82,7 @@ class PeriodicTask {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_PERIODIC_TASK_H_

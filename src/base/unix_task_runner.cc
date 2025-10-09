@@ -34,6 +34,7 @@
 #include "perfetto/ext/base/watchdog.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 UnixTaskRunner::UnixTaskRunner() {
@@ -300,4 +301,5 @@ bool UnixTaskRunner::RunsTasksOnCurrentThread() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

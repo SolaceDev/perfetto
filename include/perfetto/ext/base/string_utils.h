@@ -29,6 +29,7 @@
 #include "perfetto/ext/base/string_view.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 inline char Lowercase(char c) {
@@ -204,6 +205,7 @@ class StackString {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_UTILS_H_

@@ -43,10 +43,10 @@ namespace {
 using namespace google::protobuf;
 using namespace google::protobuf::compiler;
 using namespace google::protobuf::io;
-using perfetto::base::SplitString;
-using perfetto::base::StripChars;
-using perfetto::base::StripSuffix;
-using perfetto::base::ToUpper;
+using perfetto::solace::base::SplitString;
+using perfetto::solace::base::StripChars;
+using perfetto::solace::base::StripSuffix;
+using perfetto::solace::base::ToUpper;
 
 static constexpr auto TYPE_MESSAGE = FieldDescriptor::TYPE_MESSAGE;
 static constexpr auto TYPE_SINT32 = FieldDescriptor::TYPE_SINT32;
@@ -558,7 +558,7 @@ void CppObjGenerator::GenClassDecl(const Descriptor* msg, Printer* p) const {
   for (int i = 0; i < msg->field_count(); i++) {
     const FieldDescriptor* field = msg->field(i);
     std::string name = field->camelcase_name();
-    name[0] = perfetto::base::Uppercase(name[0]);
+    name[0] = perfetto::solace::base::Uppercase(name[0]);
     p->Print("  k$n$FieldNumber = $num$,\n", "n", name, "num",
              std::to_string(field->number()));
   }

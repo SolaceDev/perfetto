@@ -22,6 +22,7 @@
 #include "perfetto/base/build_config.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
@@ -34,6 +35,7 @@ std::string GetAndroidProp(const char* name);
 #endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_ANDROID_UTILS_H_

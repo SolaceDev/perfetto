@@ -58,7 +58,7 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 namespace {
 
-using ::perfetto::base::ArraySize;
+using ::perfetto::solace::base::ArraySize;
 
 constexpr uint32_t kMaxMsgSize = ProtoRingBuffer::kMaxMsgSize;
 

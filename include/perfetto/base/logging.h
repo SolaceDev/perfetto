@@ -82,6 +82,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Constexpr functions to extract basename(__FILE__), e.g.: ../foo/f.c -> f.c .
@@ -143,29 +144,29 @@ inline void MaybeSerializeLastLogsForCrashReporting() {}
 #define PERFETTO_SOLACE_XLOG(level, fmt, ...)                                        \
   do {                                                                        \
     async_safe_format_log((ANDROID_LOG_DEBUG + level), "perfetto",            \
-                          "%s:%d " fmt, ::perfetto::base::Basename(__FILE__), \
+                          "%s:%d " fmt, ::perfetto::solace::base::Basename(__FILE__), \
                           __LINE__, ##__VA_ARGS__);                           \
   } while (0)
 #elif defined(PERFETTO_SOLACE_DISABLE_LOG)
-#define PERFETTO_SOLACE_XLOG(level, fmt, ...) ::perfetto::base::ignore_result(level, \
+#define PERFETTO_SOLACE_XLOG(level, fmt, ...) ::perfetto::solace::base::ignore_result(level, \
                                 fmt, ##__VA_ARGS__)
 #else
 #define PERFETTO_SOLACE_XLOG(level, fmt, ...)                                      \
-  ::perfetto::base::LogMessage(level, ::perfetto::base::Basename(__FILE__), \
+  ::perfetto::solace::base::LogMessage(level, ::perfetto::solace::base::Basename(__FILE__), \
                                __LINE__, fmt, ##__VA_ARGS__)
 #endif
 
 #if defined(_MSC_VER)
 #define PERFETTO_SOLACE_IMMEDIATE_CRASH()                               \
   do {                                                           \
-    ::perfetto::base::MaybeSerializeLastLogsForCrashReporting(); \
+    ::perfetto::solace::base::MaybeSerializeLastLogsForCrashReporting(); \
     __debugbreak();                                              \
     __assume(0);                                                 \
   } while (0)
 #else
 #define PERFETTO_SOLACE_IMMEDIATE_CRASH()                               \
   do {                                                           \
-    ::perfetto::base::MaybeSerializeLastLogsForCrashReporting(); \
+    ::perfetto::solace::base::MaybeSerializeLastLogsForCrashReporting(); \
     __builtin_trap();                                            \
     __builtin_unreachable();                                     \
   } while (0)
@@ -173,15 +174,15 @@ inline void MaybeSerializeLastLogsForCrashReporting() {}
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_VERBOSE_LOGS)
 #define PERFETTO_SOLACE_LOG(fmt, ...) \
-  PERFETTO_SOLACE_XLOG(::perfetto::base::kLogInfo, fmt, ##__VA_ARGS__)
+  PERFETTO_SOLACE_XLOG(::perfetto::solace::base::kLogInfo, fmt, ##__VA_ARGS__)
 #else  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_VERBOSE_LOGS)
-#define PERFETTO_SOLACE_LOG(...) ::perfetto::base::ignore_result(__VA_ARGS__)
+#define PERFETTO_SOLACE_LOG(...) ::perfetto::solace::base::ignore_result(__VA_ARGS__)
 #endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_VERBOSE_LOGS)
 
 #define PERFETTO_SOLACE_ILOG(fmt, ...) \
-  PERFETTO_SOLACE_XLOG(::perfetto::base::kLogImportant, fmt, ##__VA_ARGS__)
+  PERFETTO_SOLACE_XLOG(::perfetto::solace::base::kLogImportant, fmt, ##__VA_ARGS__)
 #define PERFETTO_SOLACE_ELOG(fmt, ...) \
-  PERFETTO_SOLACE_XLOG(::perfetto::base::kLogError, fmt, ##__VA_ARGS__)
+  PERFETTO_SOLACE_XLOG(::perfetto::solace::base::kLogError, fmt, ##__VA_ARGS__)
 #define PERFETTO_SOLACE_FATAL(fmt, ...)       \
   do {                                 \
     PERFETTO_SOLACE_PLOG(fmt, ##__VA_ARGS__); \
@@ -207,7 +208,7 @@ inline void MaybeSerializeLastLogsForCrashReporting() {}
 #if PERFETTO_SOLACE_DLOG_IS_ON()
 
 #define PERFETTO_SOLACE_DLOG(fmt, ...) \
-  PERFETTO_SOLACE_XLOG(::perfetto::base::kLogDebug, fmt, ##__VA_ARGS__)
+  PERFETTO_SOLACE_XLOG(::perfetto::solace::base::kLogDebug, fmt, ##__VA_ARGS__)
 
 #if defined(__GNUC__) || defined(__clang__)
 #define PERFETTO_SOLACE_DPLOG(x, ...) \
@@ -219,8 +220,8 @@ inline void MaybeSerializeLastLogsForCrashReporting() {}
 
 #else  // PERFETTO_SOLACE_DLOG_IS_ON()
 
-#define PERFETTO_SOLACE_DLOG(...) ::perfetto::base::ignore_result(__VA_ARGS__)
-#define PERFETTO_SOLACE_DPLOG(...) ::perfetto::base::ignore_result(__VA_ARGS__)
+#define PERFETTO_SOLACE_DLOG(...) ::perfetto::solace::base::ignore_result(__VA_ARGS__)
+#define PERFETTO_SOLACE_DPLOG(...) ::perfetto::solace::base::ignore_result(__VA_ARGS__)
 
 #endif  // PERFETTO_SOLACE_DLOG_IS_ON()
 
@@ -236,12 +237,13 @@ inline void MaybeSerializeLastLogsForCrashReporting() {}
   do {                     \
   } while (false && (x))
 
-#define PERFETTO_SOLACE_DFATAL(...) ::perfetto::base::ignore_result(__VA_ARGS__)
+#define PERFETTO_SOLACE_DFATAL(...) ::perfetto::solace::base::ignore_result(__VA_ARGS__)
 #define PERFETTO_SOLACE_DFATAL_OR_ELOG(...) PERFETTO_SOLACE_ELOG(__VA_ARGS__)
 
 #endif  // PERFETTO_SOLACE_DCHECK_IS_ON()
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_LOGGING_H_

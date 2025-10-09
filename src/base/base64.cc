@@ -17,6 +17,7 @@
 #include "perfetto/ext/base/base64.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -150,4 +151,5 @@ Optional<std::string> Base64Decode(const char* src, size_t src_size) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

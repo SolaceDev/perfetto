@@ -19,6 +19,7 @@
 #include <stdarg.h>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 Status ErrStatus(const char* format, ...) {
@@ -32,4 +33,5 @@ Status ErrStatus(const char* format, ...) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

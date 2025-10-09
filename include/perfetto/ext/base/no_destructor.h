@@ -21,6 +21,7 @@
 #include <utility>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Wrapper that can hold an object of type T, without invoking the contained
@@ -73,6 +74,7 @@ class NoDestructor {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_NO_DESTRUCTOR_H_

@@ -22,6 +22,7 @@
 // The rest lives in subprocess_posix.cc and subprocess_windows.cc.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 Subprocess::Args::Args(Args&&) noexcept = default;
@@ -77,4 +78,5 @@ std::string Subprocess::Args::GetCmdString() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -30,6 +30,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -218,4 +219,5 @@ TEST(PagedMemoryTest, Unchecked) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

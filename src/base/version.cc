@@ -28,6 +28,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 const char* GetVersionString() {
@@ -42,4 +43,5 @@ const char* GetVersionString() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -60,7 +60,7 @@ TEST(ProtoDecoderTest, ReadString) {
 TEST(ProtoDecoderTest, SkipVeryLargeFields) {
   const size_t kPayloadSize = 257 * 1024 * 1024;
   const uint64_t data_size = 4096 + kPayloadSize;
-  std::unique_ptr<uint8_t, perfetto::base::FreeDeleter> data(
+  std::unique_ptr<uint8_t, perfetto::solace::base::FreeDeleter> data(
       static_cast<uint8_t*>(malloc(data_size)));
   StaticBuffered<Message> message(data.get(), data_size);
 
@@ -231,7 +231,7 @@ TEST(ProtoDecoderTest, FixedData) {
        135, 999, ProtoWireType::kLengthDelimited, 131},
   };
 
-  for (size_t i = 0; i < perfetto::base::ArraySize(kFieldExpectations); ++i) {
+  for (size_t i = 0; i < perfetto::solace::base::ArraySize(kFieldExpectations); ++i) {
     const FieldExpectation& exp = kFieldExpectations[i];
     TypedProtoDecoder<999, 0> decoder(
         reinterpret_cast<const uint8_t*>(exp.encoded), exp.encoded_size);

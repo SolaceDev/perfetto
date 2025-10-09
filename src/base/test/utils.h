@@ -48,11 +48,13 @@
 #endif  // PERFETTO_SOLACE_DCHECK_IS_ON()
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 std::string GetTestDataPath(const std::string& path);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // SRC_BASE_TEST_UTILS_H_

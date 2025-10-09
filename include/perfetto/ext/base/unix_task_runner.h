@@ -36,6 +36,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Runs a task runner on the current thread.
@@ -128,6 +129,7 @@ class UnixTaskRunner : public TaskRunner {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_TASK_RUNNER_H_

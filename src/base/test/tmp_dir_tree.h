@@ -23,6 +23,7 @@
 #include "perfetto/ext/base/temp_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Helper to construct and automatically destroy temporary file hierarchies in
@@ -57,6 +58,7 @@ class TmpDirTree {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // SRC_BASE_TEST_TMP_DIR_TREE_H_

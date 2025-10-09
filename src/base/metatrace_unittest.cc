@@ -45,7 +45,7 @@ class MetatraceTest : public ::testing::Test {
   }
 
   MOCK_METHOD0(ReadCallback, void());
-  base::TestTaskRunner task_runner_;
+  solace::base::TestTaskRunner task_runner_;
 };
 
 TEST_F(MetatraceTest, TagEnablingLogic) {

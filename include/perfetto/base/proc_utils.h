@@ -34,6 +34,7 @@ __declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
@@ -54,6 +55,7 @@ inline PlatformProcessId GetProcessId() {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_PROC_UTILS_H_

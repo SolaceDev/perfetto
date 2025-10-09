@@ -33,16 +33,16 @@
 // Here we expose them into the root namespace, because we want offer a drop-in
 // replacement to the various main.cc, which can't know about the nested
 // namespace.
-using ::perfetto::base::getopt_compat::optarg;
-using ::perfetto::base::getopt_compat::opterr;
-using ::perfetto::base::getopt_compat::optind;
-using ::perfetto::base::getopt_compat::option;
-using ::perfetto::base::getopt_compat::optopt;
-constexpr auto getopt = ::perfetto::base::getopt_compat::getopt;
-constexpr auto getopt_long = ::perfetto::base::getopt_compat::getopt_long;
-constexpr auto no_argument = ::perfetto::base::getopt_compat::no_argument;
+using ::perfetto::solace::base::getopt_compat::optarg;
+using ::perfetto::solace::base::getopt_compat::opterr;
+using ::perfetto::solace::base::getopt_compat::optind;
+using ::perfetto::solace::base::getopt_compat::option;
+using ::perfetto::solace::base::getopt_compat::optopt;
+constexpr auto getopt = ::perfetto::solace::base::getopt_compat::getopt;
+constexpr auto getopt_long = ::perfetto::solace::base::getopt_compat::getopt_long;
+constexpr auto no_argument = ::perfetto::solace::base::getopt_compat::no_argument;
 constexpr auto required_argument =
-    ::perfetto::base::getopt_compat::required_argument;
+    ::perfetto::solace::base::getopt_compat::required_argument;
 
 #else
 #include <getopt.h>

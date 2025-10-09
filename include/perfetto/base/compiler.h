@@ -155,12 +155,14 @@ extern "C" void __asan_unpoison_memory_region(void const volatile*, size_t);
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 template <typename... T>
 inline void ignore_result(const T&...) {}
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_COMPILER_H_

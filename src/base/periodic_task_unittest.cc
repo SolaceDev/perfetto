@@ -26,6 +26,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -196,4 +197,5 @@ TEST(PeriodicTaskTest, ImmediateExecution) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

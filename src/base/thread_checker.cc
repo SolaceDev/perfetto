@@ -21,6 +21,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -65,4 +66,5 @@ void ThreadChecker::DetachFromThread() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

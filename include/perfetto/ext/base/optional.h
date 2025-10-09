@@ -24,6 +24,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Specification:
@@ -886,12 +887,13 @@ swap(Optional<T>& lhs, Optional<T>& rhs) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 template <class T>
-struct std::hash<perfetto::base::Optional<T>> {
-  size_t operator()(const perfetto::base::Optional<T>& opt) const {
-    return opt == perfetto::base::nullopt ? 0 : std::hash<T>()(*opt);
+struct std::hash<perfetto::solace::base::Optional<T>> {
+  size_t operator()(const perfetto::solace::base::Optional<T>& opt) const {
+    return opt == perfetto::solace::base::nullopt ? 0 : std::hash<T>()(*opt);
   }
 };
 

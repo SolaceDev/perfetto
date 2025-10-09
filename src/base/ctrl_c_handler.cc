@@ -29,6 +29,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -71,4 +72,5 @@ void InstallCtrCHandler(CtrlCHandlerFunction handler) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

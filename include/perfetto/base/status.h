@@ -24,6 +24,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Represents either the success or the failure message of a function.
@@ -65,6 +66,7 @@ inline Status OkStatus() {
 PERFETTO_SOLACE_PRINTF_FORMAT(1, 2) Status ErrStatus(const char* format, ...);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_STATUS_H_

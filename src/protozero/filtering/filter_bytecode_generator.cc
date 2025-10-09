@@ -80,7 +80,7 @@ std::string FilterBytecodeGenerator::Serialize() {
   PERFETTO_SOLACE_CHECK(endmessage_called_);
   PERFETTO_SOLACE_CHECK(max_msg_index_ < num_messages_);
   protozero::PackedVarInt words;
-  perfetto::base::Hash hasher;
+  perfetto::solace::base::Hash hasher;
   for (uint32_t word : bytecode_) {
     words.Append(word);
     hasher.Update(word);

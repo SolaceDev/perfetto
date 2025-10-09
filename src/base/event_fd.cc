@@ -36,6 +36,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 EventFd::~EventFd() = default;
@@ -107,4 +108,5 @@ void EventFd::Clear() {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -38,6 +38,7 @@
 // base/thread_utils.h.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
@@ -79,6 +80,7 @@ inline bool GetThreadName(std::string&) {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_UTILS_H_

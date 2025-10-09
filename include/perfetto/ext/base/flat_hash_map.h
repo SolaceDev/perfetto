@@ -26,6 +26,7 @@
 #include <limits>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // An open-addressing hashmap implementation.
@@ -389,6 +390,7 @@ class FlatHashMap {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_FLAT_HASH_MAP_H_

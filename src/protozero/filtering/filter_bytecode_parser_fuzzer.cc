@@ -36,7 +36,7 @@ void LoadBytecodeWithChecksum(FilterBytecodeParser* parser,
                               const uint8_t* data,
                               size_t size) {
   protozero::PackedVarInt words;
-  perfetto::base::Hash hasher;
+  perfetto::solace::base::Hash hasher;
   for (size_t i = 0; i < size; i += sizeof(uint32_t)) {
     uint32_t word = 0;
     memcpy(&word, data, sizeof(uint32_t));

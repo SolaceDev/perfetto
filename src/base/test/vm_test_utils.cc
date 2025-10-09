@@ -39,6 +39,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace vm_test_utils {
 
@@ -123,4 +124,5 @@ bool IsMapped(void* start, size_t size) {
 
 }  // namespace vm_test_utils
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

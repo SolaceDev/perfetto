@@ -41,12 +41,14 @@ using ssize_t = long;
 #endif  // OS_WIN
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 constexpr uid_t kInvalidUid = static_cast<uid_t>(-1);
 constexpr pid_t kInvalidPid = static_cast<pid_t>(-1);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SYS_TYPES_H_

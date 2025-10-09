@@ -62,6 +62,7 @@
 // The tests live in logging_unittest.cc.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 constexpr size_t kCrashKeyMaxStrSize = 32;
@@ -157,6 +158,7 @@ size_t SerializeCrashKeys(char* dst, size_t len);
 void UnregisterAllCrashKeysForTesting();
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_CRASH_KEYS_H_

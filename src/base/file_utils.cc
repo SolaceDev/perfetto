@@ -41,6 +41,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 constexpr size_t kBufSize = 2048;
@@ -328,4 +329,5 @@ base::Optional<size_t> GetFileSize(const std::string& file_path) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -37,6 +37,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 using TimeSeconds = std::chrono::seconds;
@@ -183,6 +184,7 @@ inline struct timespec ToPosixTimespec(TimeMillis time) {
 std::string GetTimeFmt(const std::string& fmt);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_BASE_TIME_H_

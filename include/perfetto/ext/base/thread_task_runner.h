@@ -23,6 +23,7 @@
 #include "perfetto/ext/base/unix_task_runner.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A UnixTaskRunner backed by a dedicated task thread. Shuts down the runner and
@@ -80,6 +81,7 @@ class PERFETTO_SOLACE_EXPORT ThreadTaskRunner : public TaskRunner {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_TASK_RUNNER_H_

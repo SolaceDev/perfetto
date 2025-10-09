@@ -34,6 +34,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // static
@@ -321,6 +322,7 @@ void Subprocess::KillAndWaitForTermination(int exit_code) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // PERFETTO_SOLACE_OS_WIN

@@ -57,6 +57,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // The CMSG_* macros use NULL instead of nullptr.
@@ -1042,4 +1043,5 @@ void UnixSocket::EventListener::OnDisconnect(UnixSocket*) {}
 void UnixSocket::EventListener::OnDataAvailable(UnixSocket*) {}
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

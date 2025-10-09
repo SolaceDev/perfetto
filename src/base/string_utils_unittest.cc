@@ -21,6 +21,7 @@
 #include "perfetto/ext/base/optional.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -425,4 +426,5 @@ TEST(StringUtilsTest, StackString) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

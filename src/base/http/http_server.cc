@@ -26,6 +26,7 @@
 #include "perfetto/ext/base/string_view.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -577,4 +578,5 @@ void HttpRequestHandler::OnWebsocketMessage(const WebsocketMessage&) {}
 void HttpRequestHandler::OnHttpConnectionClosed(HttpServerConnection*) {}
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

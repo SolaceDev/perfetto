@@ -33,6 +33,7 @@
 struct msghdr;
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Define the SocketHandle and ScopedSocketHandle types.
@@ -422,6 +423,7 @@ class PERFETTO_SOLACE_EXPORT UnixSocket {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_SOCKET_H_

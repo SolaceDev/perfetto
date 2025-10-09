@@ -30,6 +30,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -163,4 +164,5 @@ void PeriodicTask::ResetTimerFd() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -20,6 +20,7 @@
 #include "perfetto/ext/base/scoped_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 TmpDirTree::TmpDirTree() : tmp_dir_(base::TempDir::Create()) {}
@@ -52,4 +53,5 @@ void TmpDirTree::AddFile(const std::string& relative_path,
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

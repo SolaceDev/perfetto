@@ -48,6 +48,7 @@
 extern "C" char** environ;
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -438,6 +439,7 @@ void Subprocess::KillAndWaitForTermination(int sig_num) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // PERFETTO_SOLACE_OS_LINUX || PERFETTO_SOLACE_OS_ANDROID || PERFETTO_SOLACE_OS_APPLE

@@ -29,6 +29,7 @@
 #include "perfetto/ext/base/string_view.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A helper class which writes formatted data to a string buffer.
@@ -178,6 +179,7 @@ class StringWriter {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_STRING_WRITER_H_

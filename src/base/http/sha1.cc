@@ -22,6 +22,7 @@
 // From chrome_elf/sha1/sha1.cc.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -239,4 +240,5 @@ SHA1Digest SHA1Hash(const std::string& str) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

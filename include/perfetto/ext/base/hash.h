@@ -22,6 +22,7 @@
 #include <type_traits>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A helper class which computes a 64-bit hash of the input data.
@@ -67,6 +68,7 @@ struct AlreadyHashed {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_HASH_H_

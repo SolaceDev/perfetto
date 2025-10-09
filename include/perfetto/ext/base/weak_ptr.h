@@ -22,6 +22,7 @@
 #include <memory>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A simple WeakPtr for single-threaded cases.
@@ -116,6 +117,7 @@ class WeakPtrFactory {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WEAK_PTR_H_

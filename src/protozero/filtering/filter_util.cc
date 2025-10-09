@@ -77,7 +77,7 @@ bool FilterUtil::LoadMessageDefinition(const std::string& proto_file,
   // because the problem is really the protobuf compiler being too picky.
   static auto normalize_for_win = [](const std::string& path) {
 #if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
-    return perfetto::base::ReplaceAll(path, "\\", "/");
+    return perfetto::solace::base::ReplaceAll(path, "\\", "/");
 #else
     return path;
 #endif
@@ -219,7 +219,7 @@ void FilterUtil::Dedupe() {
 
 // Prints the list of messages and fields in a diff-friendly text format.
 void FilterUtil::PrintAsText() {
-  using perfetto::base::StripPrefix;
+  using perfetto::solace::base::StripPrefix;
   const std::string& root_name = descriptors_.front().full_name;
   std::string root_prefix = root_name.substr(0, root_name.rfind('.'));
   if (!root_prefix.empty())

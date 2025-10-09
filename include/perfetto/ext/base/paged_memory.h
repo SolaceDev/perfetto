@@ -30,6 +30,7 @@
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class PagedMemory {
@@ -99,6 +100,7 @@ class PagedMemory {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_PAGED_MEMORY_H_

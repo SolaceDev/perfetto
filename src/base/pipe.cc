@@ -31,6 +31,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 Pipe::Pipe() = default;
@@ -70,4 +71,5 @@ Pipe Pipe::Create(Flags flags) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
