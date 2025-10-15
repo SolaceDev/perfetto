@@ -20,13 +20,14 @@
 
 #include "perfetto/base/build_config.h"
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <unistd.h>
 #endif
 
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -65,7 +66,7 @@ TEST(TempFileTest, Create) {
   // The file should be deleted and closed now.
   ASSERT_FALSE(PathExists(path));
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Windows UCRT aborts when trying to write into a closed FD.
   ASSERT_EQ(-1, write(fd, "foo", 4));
 #endif
@@ -81,7 +82,7 @@ TEST(TempFileTest, CreateUnlinked) {
     ASSERT_GE(write(fd, "foo", 4), 0);
   }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Windows UCRT aborts when trying to write into a closed FD.
   ASSERT_EQ(-1, write(fd, "foo", 4));
 #endif
@@ -125,4 +126,5 @@ TEST(TempFileTest, TempDir) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -26,6 +26,7 @@
 #include "perfetto/ext/base/string_view.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -60,7 +61,7 @@ void HttpServer::Start(int port) {
                               SockType::kStream);
   bool ipv4_listening = sock4_ && sock4_->is_listening();
   if (!ipv4_listening) {
-    PERFETTO_PLOG("Failed to listen on IPv4 socket");
+    PERFETTO_SOLACE_PLOG("Failed to listen on IPv4 socket");
     sock4_.reset();
   }
 
@@ -68,7 +69,7 @@ void HttpServer::Start(int port) {
                               SockType::kStream);
   bool ipv6_listening = sock6_ && sock6_->is_listening();
   if (!ipv6_listening) {
-    PERFETTO_PLOG("Failed to listen on IPv6 socket");
+    PERFETTO_SOLACE_PLOG("Failed to listen on IPv6 socket");
     sock6_.reset();
   }
 }
@@ -80,14 +81,14 @@ void HttpServer::AddAllowedOrigin(const std::string& origin) {
 void HttpServer::OnNewIncomingConnection(
     UnixSocket*,  // The listening socket, irrelevant here.
     std::unique_ptr<UnixSocket> sock) {
-  PERFETTO_LOG("[HTTP] New connection");
+  PERFETTO_SOLACE_LOG("[HTTP] New connection");
   clients_.emplace_back(std::move(sock));
 }
 
 void HttpServer::OnConnect(UnixSocket*, bool) {}
 
 void HttpServer::OnDisconnect(UnixSocket* sock) {
-  PERFETTO_LOG("[HTTP] Client disconnected");
+  PERFETTO_SOLACE_LOG("[HTTP] Client disconnected");
   for (auto it = clients_.begin(); it != clients_.end(); ++it) {
     if (it->sock.get() == sock) {
       req_handler_->OnHttpConnectionClosed(&*it);
@@ -95,19 +96,19 @@ void HttpServer::OnDisconnect(UnixSocket* sock) {
       return;
     }
   }
-  PERFETTO_DFATAL("[HTTP] Untracked client in OnDisconnect()");
+  PERFETTO_SOLACE_DFATAL("[HTTP] Untracked client in OnDisconnect()");
 }
 
 void HttpServer::OnDataAvailable(UnixSocket* sock) {
   HttpServerConnection* conn = nullptr;
   for (auto it = clients_.begin(); it != clients_.end() && !conn; ++it)
     conn = (it->sock.get() == sock) ? &*it : nullptr;
-  PERFETTO_CHECK(conn);
+  PERFETTO_SOLACE_CHECK(conn);
 
   char* rxbuf = reinterpret_cast<char*>(conn->rxbuf.Get());
   for (;;) {
     size_t avail = conn->rxbuf_avail();
-    PERFETTO_CHECK(avail <= kMaxRequestSize);
+    PERFETTO_SOLACE_CHECK(avail <= kMaxRequestSize);
     if (avail == 0) {
       conn->SendResponseAndClose("413 Payload Too Large");
       return;
@@ -178,7 +179,7 @@ size_t HttpServer::ParseOneHttpRequest(HttpServerConnection* conn) {
       // Parse HTTP headers, e.g. "Content-Length: 1234".
       size_t col = line.find(':');
       if (col == StringView::npos) {
-        PERFETTO_DLOG("[HTTP] Malformed HTTP header: \"%s\"",
+        PERFETTO_SOLACE_DLOG("[HTTP] Malformed HTTP header: \"%s\"",
                       line.ToStdString().c_str());
         conn->SendResponseAndClose("400 Bad Request", {}, "Bad HTTP header");
         return 0;
@@ -208,7 +209,7 @@ size_t HttpServer::ParseOneHttpRequest(HttpServerConnection* conn) {
 
   // At this point |buf_view| has been stripped of the header and contains the
   // request body. We don't know yet if we have all the bytes for it or not.
-  PERFETTO_CHECK(buf_view.size() <= conn->rxbuf_used);
+  PERFETTO_SOLACE_CHECK(buf_view.size() <= conn->rxbuf_used);
   const size_t headers_size = conn->rxbuf_used - buf_view.size();
 
   if (body_size + headers_size >= kMaxRequestSize ||
@@ -224,7 +225,7 @@ size_t HttpServer::ParseOneHttpRequest(HttpServerConnection* conn) {
 
   http_req.body = buf_view.substr(0, body_size);
 
-  PERFETTO_LOG("[HTTP] %.*s %.*s [body=%zuB, origin=\"%.*s\"]",
+  PERFETTO_SOLACE_LOG("[HTTP] %.*s %.*s [body=%zuB, origin=\"%.*s\"]",
                static_cast<int>(http_req.method.size()), http_req.method.data(),
                static_cast<int>(http_req.uri.size()), http_req.uri.data(),
                http_req.body.size(), static_cast<int>(http_req.origin.size()),
@@ -265,7 +266,7 @@ bool HttpServer::IsOriginAllowed(StringView origin) {
   }
   if (!origin_error_logged_ && !origin.empty()) {
     origin_error_logged_ = true;
-    PERFETTO_ELOG(
+    PERFETTO_SOLACE_ELOG(
         "[HTTP] The origin \"%.*s\" is not allowed, Access-Control-Allow-Origin"
         " won't be emitted. If this request comes from a browser it will fail.",
         static_cast<int>(origin.size()), origin.data());
@@ -274,7 +275,7 @@ bool HttpServer::IsOriginAllowed(StringView origin) {
 }
 
 void HttpServerConnection::UpgradeToWebsocket(const HttpRequest& req) {
-  PERFETTO_CHECK(req.is_websocket_handshake);
+  PERFETTO_SOLACE_CHECK(req.is_websocket_handshake);
 
   // |origin_allowed_| is set to the req.origin only if it's in the allowlist.
   if (origin_allowed_.empty())
@@ -313,10 +314,10 @@ void HttpServerConnection::UpgradeToWebsocket(const HttpRequest& req) {
       "Connection: Upgrade",  //
       accept_hdr.c_str(),     //
   };
-  PERFETTO_DLOG("[HTTP] Handshaking WebSocket for %.*s",
+  PERFETTO_SOLACE_DLOG("[HTTP] Handshaking WebSocket for %.*s",
                 static_cast<int>(req.uri.size()), req.uri.data());
   for (const char* hdr : headers)
-    PERFETTO_DLOG("> %s", hdr);
+    PERFETTO_SOLACE_DLOG("> %s", hdr);
 
   SendResponseHeaders("101 Switching Protocols", headers,
                       HttpServerConnection::kOmitContentLength);
@@ -331,7 +332,7 @@ size_t HttpServer::ParseOneWebsocketFrame(HttpServerConnection* conn) {
   uint8_t* const end = rxbuf + frame_size;
 
   auto avail = [&] {
-    PERFETTO_CHECK(rd <= end);
+    PERFETTO_SOLACE_CHECK(rd <= end);
     return static_cast<size_t>(end - rd);
   };
 
@@ -384,7 +385,7 @@ size_t HttpServer::ParseOneWebsocketFrame(HttpServerConnection* conn) {
   }
 
   if (payload_len_u64 >= kMaxPayloadSize) {
-    PERFETTO_ELOG("[HTTP] Websocket payload too big (%" PRIu64 " > %zu)",
+    PERFETTO_SOLACE_ELOG("[HTTP] Websocket payload too big (%" PRIu64 " > %zu)",
                   payload_len_u64, kMaxPayloadSize);
     conn->Close();
     return 0;
@@ -395,7 +396,7 @@ size_t HttpServer::ParseOneWebsocketFrame(HttpServerConnection* conn) {
     // https://datatracker.ietf.org/doc/html/rfc6455#section-5.1
     // The server MUST close the connection upon receiving a frame that is
     // not masked.
-    PERFETTO_ELOG("[HTTP] Websocket inbound frames must be masked");
+    PERFETTO_SOLACE_ELOG("[HTTP] Websocket inbound frames must be masked");
     conn->Close();
     return 0;
   }
@@ -406,7 +407,7 @@ size_t HttpServer::ParseOneWebsocketFrame(HttpServerConnection* conn) {
   memcpy(mask, rd, sizeof(mask));
   rd += sizeof(mask);
 
-  PERFETTO_DLOG(
+  PERFETTO_SOLACE_DLOG(
       "[HTTP] Websocket fin=%d opcode=%u, payload_len=%zu (avail=%zu), "
       "mask=%02x%02x%02x%02x",
       fin, opcode, payload_len, avail(), mask[0], mask[1], mask[2], mask[3]);
@@ -420,7 +421,7 @@ size_t HttpServer::ParseOneWebsocketFrame(HttpServerConnection* conn) {
     payload_start[i] ^= mask[i % sizeof(mask)];
 
   if (opcode == kOpcodePing) {
-    PERFETTO_DLOG("[HTTP] Websocket PING");
+    PERFETTO_SOLACE_DLOG("[HTTP] Websocket PING");
     conn->SendWebsocketFrame(kOpcodePong, payload_start, payload_len);
   } else if (opcode == kOpcodeBinary || opcode == kOpcodeText ||
              opcode == kOpcodeContinuation) {
@@ -441,7 +442,7 @@ size_t HttpServer::ParseOneWebsocketFrame(HttpServerConnection* conn) {
   } else if (opcode == kOpcodeClose) {
     conn->Close();
   } else {
-    PERFETTO_LOG("Unsupported WebSocket opcode: %d", opcode);
+    PERFETTO_SOLACE_LOG("Unsupported WebSocket opcode: %d", opcode);
   }
   return static_cast<size_t>(rd - rxbuf) + payload_len;
 }
@@ -450,8 +451,8 @@ void HttpServerConnection::SendResponseHeaders(
     const char* http_code,
     std::initializer_list<const char*> headers,
     size_t content_length) {
-  PERFETTO_CHECK(!headers_sent_);
-  PERFETTO_CHECK(!is_websocket_);
+  PERFETTO_SOLACE_CHECK(!headers_sent_);
+  PERFETTO_SOLACE_CHECK(!is_websocket_);
   headers_sent_ = true;
   std::vector<char> resp_hdr;
   resp_hdr.reserve(512);
@@ -498,13 +499,13 @@ void HttpServerConnection::SendResponseHeaders(
 }
 
 void HttpServerConnection::SendResponseBody(const void* data, size_t len) {
-  PERFETTO_CHECK(!is_websocket_);
+  PERFETTO_SOLACE_CHECK(!is_websocket_);
   if (data == nullptr) {
-    PERFETTO_DCHECK(len == 0);
+    PERFETTO_SOLACE_DCHECK(len == 0);
     return;
   }
   content_len_actual_ += len;
-  PERFETTO_CHECK(content_len_actual_ <= content_len_headers_ ||
+  PERFETTO_SOLACE_CHECK(content_len_actual_ <= content_len_headers_ ||
                  content_len_headers_ == kOmitContentLength);
   sock->Send(data, len);
 }
@@ -533,7 +534,7 @@ void HttpServerConnection::SendWebsocketMessage(const void* data, size_t len) {
 void HttpServerConnection::SendWebsocketFrame(uint8_t opcode,
                                               const void* payload,
                                               size_t payload_len) {
-  PERFETTO_CHECK(is_websocket_);
+  PERFETTO_SOLACE_CHECK(is_websocket_);
 
   uint8_t hdr[10]{};
   uint32_t hdr_len = 0;
@@ -577,4 +578,5 @@ void HttpRequestHandler::OnWebsocketMessage(const WebsocketMessage&) {}
 void HttpRequestHandler::OnHttpConnectionClosed(HttpServerConnection*) {}
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

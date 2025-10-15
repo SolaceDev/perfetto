@@ -36,12 +36,12 @@ struct TestSocket {
   char buf_[64]{};
 
   // Inline to avoid multiple definition linker warnings (and avoid a .cc file).
-  inline base::SockFamily family();
+  inline solace::base::SockFamily family();
   inline const char* name();
   inline void Destroy();
 };
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 const char* TestSocket::name() {
   uint64_t hash = 5381;
@@ -50,19 +50,19 @@ const char* TestSocket::name() {
   snprintf(buf_, sizeof(buf_), "127.0.0.1:%" PRIu64, 40000 + (hash % 20000));
   return buf_;
 }
-base::SockFamily TestSocket::family() {
-  return base::SockFamily::kInet;
+solace::base::SockFamily TestSocket::family() {
+  return solace::base::SockFamily::kInet;
 }
 void TestSocket::Destroy() {}
 
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 
 const char* TestSocket::name() {
   snprintf(buf_, sizeof(buf_), "@%s", test_name_);
   return buf_;
 }
-base::SockFamily TestSocket::family() {
-  return base::SockFamily::kUnix;
+solace::base::SockFamily TestSocket::family() {
+  return solace::base::SockFamily::kUnix;
 }
 void TestSocket::Destroy() {}
 
@@ -72,8 +72,8 @@ const char* TestSocket::name() {
   snprintf(buf_, sizeof(buf_), "/tmp/%s.sock", test_name_);
   return buf_;
 }
-base::SockFamily TestSocket::family() {
-  return base::SockFamily::kUnix;
+solace::base::SockFamily TestSocket::family() {
+  return solace::base::SockFamily::kUnix;
 }
 void TestSocket::Destroy() {
   remove(name());

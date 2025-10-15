@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_PROC_UTILS_H_
-#define INCLUDE_PERFETTO_BASE_PROC_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_PROC_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_PROC_UTILS_H_
 
 #include <stdint.h>
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 extern "C" {
 // Prototype extracted from the Windows SDK to avoid including windows.h.
 __declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
 #include <zircon/process.h>
 #include <zircon/types.h>
 #else
@@ -34,14 +34,15 @@ __declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
 using PlatformProcessId = zx_handle_t;
 inline PlatformProcessId GetProcessId() {
   return zx_process_self();
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 using PlatformProcessId = uint64_t;
 inline PlatformProcessId GetProcessId() {
   return static_cast<uint64_t>(GetCurrentProcessId());
@@ -54,6 +55,7 @@ inline PlatformProcessId GetProcessId() {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_PROC_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_PROC_UTILS_H_

@@ -24,7 +24,7 @@ namespace solace {
 namespace protozero {
 
 MessageHandleBase::MessageHandleBase(Message* message) : message_(message) {
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   generation_ = message_ ? message->generation_ : 0;
   if (message_)
     message_->set_handle(this);
@@ -33,8 +33,8 @@ MessageHandleBase::MessageHandleBase(Message* message) : message_(message) {
 
 MessageHandleBase::~MessageHandleBase() {
   if (message_) {
-#if PERFETTO_DCHECK_IS_ON()
-    PERFETTO_DCHECK(generation_ == message_->generation_);
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
+    PERFETTO_SOLACE_DCHECK(generation_ == message_->generation_);
 #endif
     FinalizeMessage();
   }
@@ -57,7 +57,7 @@ MessageHandleBase& MessageHandleBase::operator=(MessageHandleBase&& other) {
 void MessageHandleBase::Move(MessageHandleBase&& other) {
   message_ = other.message_;
   other.message_ = nullptr;
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   if (message_) {
     generation_ = message_->generation_;
     message_->set_handle(this);

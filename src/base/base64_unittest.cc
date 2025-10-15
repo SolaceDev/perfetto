@@ -21,6 +21,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -358,4 +359,5 @@ TEST(Base64Test, Decode) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

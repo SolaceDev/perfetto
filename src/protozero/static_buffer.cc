@@ -27,7 +27,7 @@ ContiguousMemoryRange StaticBufferDelegate::GetNewBuffer() {
   if (get_new_buffer_called_once_) {
     // This is the 2nd time GetNewBuffer is called. The estimate is wrong. We
     // shouldn't try to grow the buffer after the initial call.
-    PERFETTO_FATAL("Static buffer too small");
+    PERFETTO_SOLACE_FATAL("Static buffer too small");
   }
   get_new_buffer_called_once_ = true;
   return range_;

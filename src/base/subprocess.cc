@@ -22,6 +22,7 @@
 // The rest lives in subprocess_posix.cc and subprocess_windows.cc.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 Subprocess::Args::Args(Args&&) noexcept = default;
@@ -55,14 +56,14 @@ Subprocess::~Subprocess() {
 }
 
 bool Subprocess::Call(int timeout_ms) {
-  PERFETTO_CHECK(s_->status == kNotStarted);
+  PERFETTO_SOLACE_CHECK(s_->status == kNotStarted);
   Start();
 
   if (!Wait(timeout_ms)) {
     s_->timed_out = true;
     KillAndWaitForTermination(kTimeoutSignal);
   }
-  PERFETTO_DCHECK(s_->status != kRunning);
+  PERFETTO_SOLACE_DCHECK(s_->status != kRunning);
   return s_->status == kTerminated && s_->returncode == 0;
 }
 
@@ -77,4 +78,5 @@ std::string Subprocess::Args::GetCmdString() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

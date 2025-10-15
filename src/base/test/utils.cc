@@ -26,6 +26,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 std::string GetTestDataPath(const std::string& path) {
@@ -41,4 +42,5 @@ std::string GetTestDataPath(const std::string& path) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

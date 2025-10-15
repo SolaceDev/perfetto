@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_STATUS_H_
-#define INCLUDE_PERFETTO_BASE_STATUS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_STATUS_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_STATUS_H_
 
 #include <string>
 
@@ -24,17 +24,18 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Represents either the success or the failure message of a function.
 // This can used as the return type of functions which would usually return an
 // bool for success or int for errno but also wants to add some string context
 // (ususally for logging).
-class PERFETTO_EXPORT Status {
+class PERFETTO_SOLACE_EXPORT Status {
  public:
   Status() : ok_(true) {}
   explicit Status(std::string msg) : ok_(false), message_(std::move(msg)) {
-    PERFETTO_CHECK(!message_.empty());
+    PERFETTO_SOLACE_CHECK(!message_.empty());
   }
 
   // Copy operations.
@@ -62,9 +63,10 @@ inline Status OkStatus() {
   return Status();
 }
 
-PERFETTO_PRINTF_FORMAT(1, 2) Status ErrStatus(const char* format, ...);
+PERFETTO_SOLACE_PRINTF_FORMAT(1, 2) Status ErrStatus(const char* format, ...);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_STATUS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_STATUS_H_

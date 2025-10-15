@@ -22,6 +22,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -229,4 +230,5 @@ INSTANTIATE_TEST_SUITE_P(SmallVectorTest,
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

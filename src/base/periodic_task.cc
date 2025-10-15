@@ -24,18 +24,19 @@
 #include "perfetto/base/time.h"
 #include "perfetto/ext/base/file_utils.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    (PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) && __ANDROID_API__ >= 19)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    (PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) && __ANDROID_API__ >= 19)
 #include <sys/timerfd.h>
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
 base::ScopedPlatformHandle CreateTimerFd(uint32_t period_ms) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    (PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) && __ANDROID_API__ >= 19)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    (PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) && __ANDROID_API__ >= 19)
   base::ScopedPlatformHandle tfd(
       timerfd_create(CLOCK_BOOTTIME, TFD_CLOEXEC | TFD_NONBLOCK));
   // The initial phase, aligned on wall clock.
@@ -68,11 +69,11 @@ PeriodicTask::~PeriodicTask() {
 }
 
 void PeriodicTask::Start(Args args) {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   Reset();
   if (args.period_ms == 0 || !args.task) {
-    PERFETTO_DCHECK(args.period_ms > 0);
-    PERFETTO_DCHECK(args.task);
+    PERFETTO_SOLACE_DCHECK(args.period_ms > 0);
+    PERFETTO_SOLACE_DCHECK(args.task);
     return;
   }
   args_ = std::move(args);
@@ -84,7 +85,7 @@ void PeriodicTask::Start(Args args) {
           *timer_fd_,
           std::bind(PeriodicTask::RunTaskAndPostNext, weak_this, generation_));
     } else {
-      PERFETTO_DPLOG("timerfd not supported, falling back on PostDelayedTask");
+      PERFETTO_SOLACE_DPLOG("timerfd not supported, falling back on PostDelayedTask");
     }
   }  // if (use_suspend_aware_timer).
 
@@ -96,9 +97,9 @@ void PeriodicTask::Start(Args args) {
 }
 
 void PeriodicTask::PostNextTask() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
-  PERFETTO_DCHECK(args_.period_ms > 0);
-  PERFETTO_DCHECK(!timer_fd_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK(args_.period_ms > 0);
+  PERFETTO_SOLACE_DCHECK(!timer_fd_);
   uint32_t delay_ms =
       args_.period_ms -
       static_cast<uint32_t>(base::GetWallTimeMs().count() % args_.period_ms);
@@ -116,10 +117,10 @@ void PeriodicTask::RunTaskAndPostNext(base::WeakPtr<PeriodicTask> thiz,
                                       uint32_t generation) {
   if (!thiz || !thiz->args_.task || generation != thiz->generation_)
     return;  // Destroyed or Reset() in the meanwhile.
-  PERFETTO_DCHECK_THREAD(thiz->thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thiz->thread_checker_);
   if (thiz->timer_fd_) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
-    PERFETTO_FATAL("timerfd for periodic tasks unsupported on Windows");
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
+    PERFETTO_SOLACE_FATAL("timerfd for periodic tasks unsupported on Windows");
 #else
     // If we are using a timerfd there is no need to repeatedly call
     // PostDelayedTask(). The kernel will wakeup the timer fd periodically. We
@@ -130,7 +131,7 @@ void PeriodicTask::RunTaskAndPostNext(base::WeakPtr<PeriodicTask> thiz,
     if (rsize != sizeof(uint64_t)) {
       if (errno == EAGAIN)
         return;  // A spurious wakeup. Rare, but can happen, just ignore.
-      PERFETTO_PLOG("read(timerfd) failed, falling back on PostDelayedTask");
+      PERFETTO_SOLACE_PLOG("read(timerfd) failed, falling back on PostDelayedTask");
       thiz->ResetTimerFd();
     }
 #endif
@@ -148,10 +149,10 @@ void PeriodicTask::RunTaskAndPostNext(base::WeakPtr<PeriodicTask> thiz,
 }
 
 void PeriodicTask::Reset() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   ++generation_;
   args_ = Args();
-  PERFETTO_DCHECK(!args_.task);
+  PERFETTO_SOLACE_DCHECK(!args_.task);
   ResetTimerFd();
 }
 
@@ -163,4 +164,5 @@ void PeriodicTask::ResetTimerFd() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

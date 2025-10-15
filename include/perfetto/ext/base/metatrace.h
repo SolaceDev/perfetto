@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_METATRACE_H_
-#define INCLUDE_PERFETTO_EXT_BASE_METATRACE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_METATRACE_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_METATRACE_H_
 
 #include <array>
 #include <atomic>
@@ -50,10 +50,11 @@
 // The available events and tags are defined in metatrace_events.h .
 
 namespace perfetto {
-
+namespace solace {
 namespace base {
 class TaskRunner;
 }  // namespace base
+}  // namespace solace
 
 namespace metatrace {
 
@@ -74,21 +75,21 @@ extern std::atomic<uint64_t> g_enabled_timestamp;
 // file or into the trace itself.
 // Must be called on the |task_runner| passed.
 // |task_runner| must have static lifetime.
-bool Enable(std::function<void()> read_task, base::TaskRunner*, uint32_t tags);
+bool Enable(std::function<void()> read_task, solace::base::TaskRunner*, uint32_t tags);
 
 // Disables meta-tracing.
 // Must be called on the same |task_runner| as Enable().
 void Disable();
 
 inline uint64_t TraceTimeNowNs() {
-  return static_cast<uint64_t>(base::GetBootTimeNs().count());
+  return static_cast<uint64_t>(solace::base::GetBootTimeNs().count());
 }
 
 // Returns a relaxed view of whether metatracing is enabled for the given tag.
 // Useful for skipping unnecessary argument computation if metatracing is off.
 inline bool IsEnabled(uint32_t tag) {
   auto enabled_tags = g_enabled_tags.load(std::memory_order_relaxed);
-  return PERFETTO_UNLIKELY((enabled_tags & tag) != 0);
+  return PERFETTO_SOLACE_UNLIKELY((enabled_tags & tag) != 0);
 }
 
 // Holds the data for a metatrace event or counter.
@@ -99,7 +100,7 @@ struct Record {
 
   uint64_t timestamp_ns() const {
     auto base_ns = g_enabled_timestamp.load(std::memory_order_relaxed);
-    PERFETTO_DCHECK(base_ns);
+    PERFETTO_SOLACE_DCHECK(base_ns);
     return base_ns + ((static_cast<uint64_t>(timestamp_ns_high) << 32) |
                       timestamp_ns_low);
   }
@@ -107,7 +108,7 @@ struct Record {
   void set_timestamp(uint64_t ts) {
     auto t_start = g_enabled_timestamp.load(std::memory_order_relaxed);
     uint64_t diff = ts - t_start;
-    PERFETTO_DCHECK(diff < (1ull << 48));
+    PERFETTO_SOLACE_DCHECK(diff < (1ull << 48));
     timestamp_ns_low = static_cast<uint32_t>(diff);
     timestamp_ns_high = static_cast<uint16_t>(diff >> 32);
   }
@@ -158,7 +159,7 @@ class RingBuffer {
   class ReadIterator {
    public:
     ReadIterator(ReadIterator&& other) {
-      PERFETTO_DCHECK(other.valid_);
+      PERFETTO_SOLACE_DCHECK(other.valid_);
       cur_ = other.cur_;
       end_ = other.end_;
       valid_ = other.valid_;
@@ -168,8 +169,8 @@ class RingBuffer {
     ~ReadIterator() {
       if (!valid_)
         return;
-      PERFETTO_DCHECK(cur_ >= RingBuffer::rd_index_);
-      PERFETTO_DCHECK(cur_ <= RingBuffer::wr_index_);
+      PERFETTO_SOLACE_DCHECK(cur_ >= RingBuffer::rd_index_);
+      PERFETTO_SOLACE_DCHECK(cur_ <= RingBuffer::wr_index_);
       RingBuffer::rd_index_.store(cur_, std::memory_order_release);
     }
 
@@ -179,7 +180,7 @@ class RingBuffer {
 
     // This is for ++it. it++ is deliberately not supported.
     ReadIterator& operator++() {
-      PERFETTO_DCHECK(cur_ < end_);
+      PERFETTO_SOLACE_DCHECK(cur_ < end_);
       // Once a record has been read, mark it as free clearing its type_and_id,
       // so if we encounter it in another read iteration while being written
       // we know it's not fully written yet.
@@ -213,14 +214,14 @@ class RingBuffer {
     // Doesn't really have to be pow2, but if not the compiler will emit
     // arithmetic operations to compute the modulo instead of a bitwise AND.
     static_assert(!(kCapacity & (kCapacity - 1)), "kCapacity must be pow2");
-    PERFETTO_DCHECK(index >= rd_index_);
-    PERFETTO_DCHECK(index <= wr_index_);
+    PERFETTO_SOLACE_DCHECK(index >= rd_index_);
+    PERFETTO_SOLACE_DCHECK(index <= wr_index_);
     return &records_[index % kCapacity];
   }
 
   // Must be called on the same task runner passed to Enable()
   static ReadIterator GetReadIterator() {
-    PERFETTO_DCHECK(RingBuffer::IsOnValidTaskRunner());
+    PERFETTO_SOLACE_DCHECK(RingBuffer::IsOnValidTaskRunner());
     return ReadIterator(rd_index_.load(std::memory_order_acquire),
                         wr_index_.load(std::memory_order_acquire));
   }
@@ -238,7 +239,7 @@ class RingBuffer {
   static uint64_t GetSizeForTesting() {
     auto wr_index = wr_index_.load(std::memory_order_relaxed);
     auto rd_index = rd_index_.load(std::memory_order_relaxed);
-    PERFETTO_DCHECK(wr_index >= rd_index);
+    PERFETTO_SOLACE_DCHECK(wr_index >= rd_index);
     return wr_index - rd_index;
   }
 
@@ -261,10 +262,10 @@ inline void TraceCounter(uint32_t tag, uint16_t id, int32_t value) {
   // memory_order_relaxed is okay because the storage has static lifetime.
   // It is safe to accidentally log an event soon after disabling.
   auto enabled_tags = g_enabled_tags.load(std::memory_order_relaxed);
-  if (PERFETTO_LIKELY((enabled_tags & tag) == 0))
+  if (PERFETTO_SOLACE_LIKELY((enabled_tags & tag) == 0))
     return;
   Record* record = RingBuffer::AppendNewRecord();
-  record->thread_id = static_cast<uint32_t>(base::GetThreadId());
+  record->thread_id = static_cast<uint32_t>(solace::base::GetThreadId());
   record->set_timestamp(TraceTimeNowNs());
   record->counter_value = value;
   record->type_and_id.store(Record::kTypeCounter | id,
@@ -275,16 +276,16 @@ class ScopedEvent {
  public:
   ScopedEvent(uint32_t tag, uint16_t event_id) {
     auto enabled_tags = g_enabled_tags.load(std::memory_order_relaxed);
-    if (PERFETTO_LIKELY((enabled_tags & tag) == 0))
+    if (PERFETTO_SOLACE_LIKELY((enabled_tags & tag) == 0))
       return;
     event_id_ = event_id;
     record_ = RingBuffer::AppendNewRecord();
-    record_->thread_id = static_cast<uint32_t>(base::GetThreadId());
+    record_->thread_id = static_cast<uint32_t>(solace::base::GetThreadId());
     record_->set_timestamp(TraceTimeNowNs());
   }
 
   ~ScopedEvent() {
-    if (PERFETTO_LIKELY(!record_))
+    if (PERFETTO_SOLACE_LIKELY(!record_))
       return;
     auto now = TraceTimeNowNs();
     record_->duration_ns = static_cast<uint32_t>(now - record_->timestamp_ns());
@@ -300,14 +301,14 @@ class ScopedEvent {
 };
 
 // Boilerplate to derive a unique variable name for the event.
-#define PERFETTO_METATRACE_UID2(a, b) a##b
-#define PERFETTO_METATRACE_UID(x) PERFETTO_METATRACE_UID2(metatrace_, x)
+#define PERFETTO_SOLACE_METATRACE_UID2(a, b) a##b
+#define PERFETTO_SOLACE_METATRACE_UID(x) PERFETTO_SOLACE_METATRACE_UID2(metatrace_, x)
 
-#define PERFETTO_METATRACE_SCOPED(TAG, ID)                                \
-  ::perfetto::metatrace::ScopedEvent PERFETTO_METATRACE_UID(__COUNTER__)( \
+#define PERFETTO_SOLACE_METATRACE_SCOPED(TAG, ID)                                \
+  ::perfetto::metatrace::ScopedEvent PERFETTO_SOLACE_METATRACE_UID(__COUNTER__)( \
       ::perfetto::metatrace::TAG, ::perfetto::metatrace::ID)
 
-#define PERFETTO_METATRACE_COUNTER(TAG, ID, VALUE)                \
+#define PERFETTO_SOLACE_METATRACE_COUNTER(TAG, ID, VALUE)                \
   ::perfetto::metatrace::TraceCounter(::perfetto::metatrace::TAG, \
                                       ::perfetto::metatrace::ID,  \
                                       static_cast<int32_t>(VALUE))
@@ -315,4 +316,4 @@ class ScopedEvent {
 }  // namespace metatrace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_METATRACE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_METATRACE_H_

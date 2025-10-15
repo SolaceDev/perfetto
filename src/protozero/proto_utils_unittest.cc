@@ -27,7 +27,7 @@ namespace protozero {
 namespace proto_utils {
 namespace {
 
-using ::perfetto::base::ArraySize;
+using ::perfetto::solace::base::ArraySize;
 
 struct VarIntExpectation {
   const char* encoded;

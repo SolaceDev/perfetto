@@ -47,7 +47,7 @@ class MessageHandleBase;
 // append-only operations and is designed for performance. None of the methods
 // require any dynamic memory allocation, unless more than 16 nested messages
 // are created via BeginNestedMessage() calls.
-class PERFETTO_EXPORT Message {
+class PERFETTO_SOLACE_EXPORT Message {
  public:
   friend class MessageHandleBase;
 
@@ -91,7 +91,7 @@ class PERFETTO_EXPORT Message {
 
   bool is_finalized() const { return finalized_; }
 
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   void set_handle(MessageHandleBase* handle) { handle_ = handle; }
 #endif
 
@@ -119,7 +119,7 @@ class PERFETTO_EXPORT Message {
   // Proto types: bool, enum (small).
   // Faster version of AppendVarInt for tiny numbers.
   void AppendTinyVarInt(uint32_t field_id, int32_t value) {
-    PERFETTO_DCHECK(0 <= value && value < 0x80);
+    PERFETTO_SOLACE_DCHECK(0 <= value && value < 0x80);
     if (nested_message_)
       EndNestedMessage();
 
@@ -202,8 +202,8 @@ class PERFETTO_EXPORT Message {
   void EndNestedMessage();
 
   void WriteToStream(const uint8_t* src_begin, const uint8_t* src_end) {
-    PERFETTO_DCHECK(!finalized_);
-    PERFETTO_DCHECK(src_begin <= src_end);
+    PERFETTO_SOLACE_DCHECK(!finalized_);
+    PERFETTO_SOLACE_DCHECK(src_begin <= src_end);
     const uint32_t size = static_cast<uint32_t>(src_end - src_begin);
     stream_writer_->WriteBytes(src_begin, size);
     size_ += size;
@@ -243,7 +243,7 @@ class PERFETTO_EXPORT Message {
   // attempts of writing to a message which has been Finalize()-d.
   bool finalized_;
 
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   // Current generation of message. Incremented on Reset.
   // Used to detect stale handles.
   uint32_t generation_;

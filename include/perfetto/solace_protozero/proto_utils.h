@@ -104,7 +104,7 @@ inline const char* ProtoSchemaToString(ProtoSchemaType v) {
       return "sint64";
   }
   // For gcc:
-  PERFETTO_DCHECK(false);
+  PERFETTO_SOLACE_DCHECK(false);
   return "";
 }
 

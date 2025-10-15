@@ -232,7 +232,7 @@ if (enable_perfetto_benchmarks) {
     if (perfetto_benchmark_3p_libs_prefix != "") {
       configs -= [ "//gn/standalone:c++11" ]
       configs += [ "//gn/standalone:c++17" ]
-      defines = [ "PERFETTO_HASH_MAP_COMPARE_THIRD_PARTY_LIBS" ]
+      defines = [ "PERFETTO_SOLACE_HASH_MAP_COMPARE_THIRD_PARTY_LIBS" ]
       cflags = [ "-isystem${perfetto_benchmark_3p_libs_prefix}/include" ]
       libs = [
         "${perfetto_benchmark_3p_libs_prefix}/lib/libfolly.a",

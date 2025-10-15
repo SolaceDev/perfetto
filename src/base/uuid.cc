@@ -21,6 +21,7 @@
 #include "perfetto/base/time.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -48,7 +49,7 @@ Uuid Uuidv4() {
 Uuid::Uuid() {}
 
 Uuid::Uuid(const std::string& s) {
-  PERFETTO_CHECK(s.size() == data_.size());
+  PERFETTO_SOLACE_CHECK(s.size() == data_.size());
   memcpy(data_.data(), s.data(), s.size());
 }
 
@@ -74,4 +75,5 @@ std::string Uuid::ToPrettyString() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

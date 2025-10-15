@@ -38,7 +38,7 @@ class Message;
 // Think about this as a WeakPtr<Message> which calls
 // Message::Finalize() when going out of scope.
 
-class PERFETTO_EXPORT MessageHandleBase {
+class PERFETTO_SOLACE_EXPORT MessageHandleBase {
  public:
   ~MessageHandleBase();
 
@@ -46,8 +46,8 @@ class PERFETTO_EXPORT MessageHandleBase {
   MessageHandleBase(MessageHandleBase&&) noexcept;
   MessageHandleBase& operator=(MessageHandleBase&&);
   explicit operator bool() const {
-#if PERFETTO_DCHECK_IS_ON()
-    PERFETTO_DCHECK(!message_ || generation_ == message_->generation_);
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
+    PERFETTO_SOLACE_DCHECK(!message_ || generation_ == message_->generation_);
 #endif
     return !!message_;
   }
@@ -55,8 +55,8 @@ class PERFETTO_EXPORT MessageHandleBase {
  protected:
   explicit MessageHandleBase(Message* = nullptr);
   Message* operator->() const {
-#if PERFETTO_DCHECK_IS_ON()
-    PERFETTO_DCHECK(!message_ || generation_ == message_->generation_);
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
+    PERFETTO_SOLACE_DCHECK(!message_ || generation_ == message_->generation_);
 #endif
     return message_;
   }
@@ -69,7 +69,7 @@ class PERFETTO_EXPORT MessageHandleBase {
 
   void reset_message() {
     // This is called by Message::Finalize().
-    PERFETTO_DCHECK(message_->is_finalized());
+    PERFETTO_SOLACE_DCHECK(message_->is_finalized());
     message_ = nullptr;
   }
 
@@ -78,7 +78,7 @@ class PERFETTO_EXPORT MessageHandleBase {
   void FinalizeMessage() { message_->Finalize(); }
 
   Message* message_;
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   uint32_t generation_;
 #endif
 };

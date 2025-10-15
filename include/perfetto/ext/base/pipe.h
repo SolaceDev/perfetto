@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_PIPE_H_
-#define INCLUDE_PERFETTO_EXT_BASE_PIPE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_PIPE_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_PIPE_H_
 
 #include "perfetto/base/platform_handle.h"
 #include "perfetto/ext/base/scoped_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class Pipe {
  public:
   enum Flags {
     kBothBlock = 0,
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     kBothNonBlock,
     kRdNonBlock,
     kWrNonBlock,
@@ -45,6 +46,7 @@ class Pipe {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_PIPE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_PIPE_H_

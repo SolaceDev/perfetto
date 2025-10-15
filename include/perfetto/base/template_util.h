@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_TEMPLATE_UTIL_H_
-#define INCLUDE_PERFETTO_BASE_TEMPLATE_UTIL_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_TEMPLATE_UTIL_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_TEMPLATE_UTIL_H_
 
 #include <cstddef>
 #include <type_traits>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Helper to express preferences in an overload set. If more than one overload
@@ -70,6 +71,7 @@ template <template <typename...> class Ref, typename... Args>
 struct is_specialization<Ref<Args...>, Ref> : std::true_type {};
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_TEMPLATE_UTIL_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_TEMPLATE_UTIL_H_

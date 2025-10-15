@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_THREAD_UTILS_H_
-#define INCLUDE_PERFETTO_BASE_THREAD_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_THREAD_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_THREAD_UTILS_H_
 
 #include <stdint.h>
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 extern "C" {
 // Prototype extracted from the Windows SDK to avoid including windows.h.
 __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
 #include <zircon/process.h>
 #include <zircon/types.h>
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -39,36 +39,37 @@ __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 using PlatformThreadId = pid_t;
 inline PlatformThreadId GetThreadId() {
   return gettid();
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX)
 using PlatformThreadId = pid_t;
 inline PlatformThreadId GetThreadId() {
   return static_cast<pid_t>(syscall(__NR_gettid));
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_FUCHSIA)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_FUCHSIA)
 using PlatformThreadId = zx_handle_t;
 inline PlatformThreadId GetThreadId() {
   return zx_thread_self();
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 using PlatformThreadId = uint64_t;
 inline PlatformThreadId GetThreadId() {
   uint64_t tid;
   pthread_threadid_np(nullptr, &tid);
   return tid;
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 using PlatformThreadId = uint64_t;
 inline PlatformThreadId GetThreadId() {
   return static_cast<uint64_t>(GetCurrentThreadId());
 }
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_NACL)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_NACL)
 using PlatformThreadId = pid_t;
 inline PlatformThreadId GetThreadId() {
   return reinterpret_cast<int32_t>(pthread_self());
@@ -81,6 +82,7 @@ inline PlatformThreadId GetThreadId() {
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_THREAD_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_THREAD_UTILS_H_

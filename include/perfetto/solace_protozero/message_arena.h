@@ -40,7 +40,7 @@ class Message;
 // allocating new blocks only when using deeply nested messages (which are
 // extremely rare).
 // This is used by RootMessage<T> to handle the storage for root-level messages.
-class PERFETTO_EXPORT MessageArena {
+class PERFETTO_SOLACE_EXPORT MessageArena {
  public:
   MessageArena();
   ~MessageArena();
@@ -57,8 +57,8 @@ class PERFETTO_EXPORT MessageArena {
   // Deletes the last message allocated. The |msg| argument is used only for
   // DCHECKs, it MUST be the pointer obtained by the last NewMessage() call.
   void DeleteLastMessage(Message* msg) {
-    PERFETTO_DCHECK(!blocks_.empty() && blocks_.back().entries > 0);
-    PERFETTO_DCHECK(&blocks_.back().storage[blocks_.back().entries - 1] ==
+    PERFETTO_SOLACE_DCHECK(!blocks_.empty() && blocks_.back().entries > 0);
+    PERFETTO_SOLACE_DCHECK(&blocks_.back().storage[blocks_.back().entries - 1] ==
                     static_cast<void*>(msg));
     DeleteLastMessageInternal();
   }
@@ -68,11 +68,11 @@ class PERFETTO_EXPORT MessageArena {
   // RootMessage object (this is extremely rare due to the RAII scoped handles
   // but could happen if some client does some overly clever std::move() trick).
   void Reset() {
-    PERFETTO_DCHECK(!blocks_.empty());
+    PERFETTO_SOLACE_DCHECK(!blocks_.empty());
     blocks_.resize(1);
     auto& block = blocks_.back();
     block.entries = 0;
-    PERFETTO_ASAN_POISON(block.storage, sizeof(block.storage));
+    PERFETTO_SOLACE_ASAN_POISON(block.storage, sizeof(block.storage));
   }
 
  private:
@@ -81,7 +81,7 @@ class PERFETTO_EXPORT MessageArena {
   struct Block {
     static constexpr size_t kCapacity = 16;
 
-    Block() { PERFETTO_ASAN_POISON(storage, sizeof(storage)); }
+    Block() { PERFETTO_SOLACE_ASAN_POISON(storage, sizeof(storage)); }
 
     std::aligned_storage<sizeof(Message), alignof(Message)>::type
         storage[kCapacity];

@@ -20,7 +20,7 @@
 
 #include <fcntl.h>  // For O_BINARY (Windows) and F_SETxx (UNIX)
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <namedpipeapi.h>
 #else
@@ -31,6 +31,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 Pipe::Pipe() = default;
@@ -39,35 +40,36 @@ Pipe& Pipe::operator=(Pipe&&) = default;
 
 Pipe Pipe::Create(Flags flags) {
   PlatformHandle fds[2];
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
-  PERFETTO_CHECK(::CreatePipe(&fds[0], &fds[1], /*lpPipeAttributes=*/nullptr,
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
+  PERFETTO_SOLACE_CHECK(::CreatePipe(&fds[0], &fds[1], /*lpPipeAttributes=*/nullptr,
                               0 /*default size*/));
 #else
-  PERFETTO_CHECK(pipe(fds) == 0);
-  PERFETTO_CHECK(fcntl(fds[0], F_SETFD, FD_CLOEXEC) == 0);
-  PERFETTO_CHECK(fcntl(fds[1], F_SETFD, FD_CLOEXEC) == 0);
+  PERFETTO_SOLACE_CHECK(pipe(fds) == 0);
+  PERFETTO_SOLACE_CHECK(fcntl(fds[0], F_SETFD, FD_CLOEXEC) == 0);
+  PERFETTO_SOLACE_CHECK(fcntl(fds[1], F_SETFD, FD_CLOEXEC) == 0);
 #endif
   Pipe p;
   p.rd.reset(fds[0]);
   p.wr.reset(fds[1]);
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   if (flags == kBothNonBlock || flags == kRdNonBlock) {
     int cur_flags = fcntl(*p.rd, F_GETFL, 0);
-    PERFETTO_CHECK(cur_flags >= 0);
-    PERFETTO_CHECK(fcntl(*p.rd, F_SETFL, cur_flags | O_NONBLOCK) == 0);
+    PERFETTO_SOLACE_CHECK(cur_flags >= 0);
+    PERFETTO_SOLACE_CHECK(fcntl(*p.rd, F_SETFL, cur_flags | O_NONBLOCK) == 0);
   }
 
   if (flags == kBothNonBlock || flags == kWrNonBlock) {
     int cur_flags = fcntl(*p.wr, F_GETFL, 0);
-    PERFETTO_CHECK(cur_flags >= 0);
-    PERFETTO_CHECK(fcntl(*p.wr, F_SETFL, cur_flags | O_NONBLOCK) == 0);
+    PERFETTO_SOLACE_CHECK(cur_flags >= 0);
+    PERFETTO_SOLACE_CHECK(fcntl(*p.wr, F_SETFL, cur_flags | O_NONBLOCK) == 0);
   }
 #else
-  PERFETTO_CHECK(flags == kBothBlock);
+  PERFETTO_SOLACE_CHECK(flags == kBothBlock);
 #endif
   return p;
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_PLATFORM_HANDLE_H_
-#define INCLUDE_PERFETTO_BASE_PLATFORM_HANDLE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_PLATFORM_HANDLE_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_PLATFORM_HANDLE_H_
 
 #include "perfetto/base/build_config.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // PlatformHandle should be used only for types that are HANDLE(s) in Windows.
@@ -30,7 +31,7 @@ namespace base {
 //    in Windows.h take an int, not a HANDLE.
 // 2. Handles returned by old-school WINAPI like CreateFile, CreateEvent etc.
 //    These are proper HANDLE(s). PlatformHandle should be used here.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 // Windows.h typedefs HANDLE to void*. We use void* here to avoid leaking
 // Windows.h through our headers.
 using PlatformHandle = void*;
@@ -56,6 +57,7 @@ struct PlatformHandleChecker {
 int ClosePlatformHandle(PlatformHandle);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_PLATFORM_HANDLE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_PLATFORM_HANDLE_H_

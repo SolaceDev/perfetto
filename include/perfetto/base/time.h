@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_TIME_H_
-#define INCLUDE_PERFETTO_BASE_TIME_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_TIME_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_TIME_H_
 
 #include <time.h>
 
@@ -25,18 +25,19 @@
 #include "perfetto/base/build_config.h"
 #include "perfetto/base/logging.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #include <mach/mach_init.h>
 #include <mach/mach_port.h>
 #include <mach/mach_time.h>
 #include <mach/thread_act.h>
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WASM)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WASM)
 #include <emscripten/emscripten.h>
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 using TimeSeconds = std::chrono::seconds;
@@ -49,7 +50,7 @@ inline TimeNanos FromPosixTimespec(const struct timespec& ts) {
 
 void SleepMicroseconds(unsigned interval_us);
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 TimeNanos GetWallTimeNs();
 TimeNanos GetThreadCPUTimeNs();
@@ -59,7 +60,7 @@ inline TimeNanos GetBootTimeNs() {
   return GetWallTimeNs();
 }
 
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 
 inline TimeNanos GetWallTimeNs() {
   auto init_time_factor = []() -> uint64_t {
@@ -87,7 +88,7 @@ inline TimeNanos GetThreadCPUTimeNs() {
   mach_port_deallocate(mach_task_self(), this_thread);
 
   if (kr != KERN_SUCCESS) {
-    PERFETTO_DFATAL("Failed to get CPU time.");
+    PERFETTO_SOLACE_DFATAL("Failed to get CPU time.");
     return TimeNanos(0);
   }
   return TimeNanos(info.user_time.seconds * 1000000000LL +
@@ -96,7 +97,7 @@ inline TimeNanos GetThreadCPUTimeNs() {
                    info.system_time.microseconds * 1000LL);
 }
 
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_WASM)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WASM)
 
 inline TimeNanos GetWallTimeNs() {
   return TimeNanos(static_cast<uint64_t>(emscripten_get_now()) * 1000000);
@@ -111,7 +112,7 @@ inline TimeNanos GetBootTimeNs() {
   return GetWallTimeNs();
 }
 
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_NACL)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_NACL)
 
 // Tracing time doesn't need to work on NaCl since its going away shortly. We
 // just need to compile on it. The only function NaCl could support is
@@ -135,7 +136,7 @@ constexpr clockid_t kWallTimeClockSource = CLOCK_MONOTONIC;
 
 inline TimeNanos GetTimeInternalNs(clockid_t clk_id) {
   struct timespec ts = {};
-  PERFETTO_CHECK(clock_gettime(clk_id, &ts) == 0);
+  PERFETTO_SOLACE_CHECK(clock_gettime(clk_id, &ts) == 0);
   return FromPosixTimespec(ts);
 }
 
@@ -183,6 +184,7 @@ inline struct timespec ToPosixTimespec(TimeMillis time) {
 std::string GetTimeFmt(const std::string& fmt);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_TIME_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_TIME_H_

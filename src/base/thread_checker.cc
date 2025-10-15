@@ -16,18 +16,19 @@
 
 #include "perfetto/ext/base/thread_checker.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
 constexpr ThreadID kDetached{};
 
 ThreadID CurrentThreadId() {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   return ::GetCurrentThreadId();
 #else
   return pthread_self();
@@ -65,4 +66,5 @@ void ThreadChecker::DetachFromThread() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

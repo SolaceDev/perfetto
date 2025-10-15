@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_NOOP_H_
-#define INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_NOOP_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_NOOP_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_NOOP_H_
 
 #include <stdint.h>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 enum class WatchdogCrashReason;  // Defined in watchdog.h.
@@ -46,6 +47,7 @@ class Watchdog {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_NOOP_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_NOOP_H_

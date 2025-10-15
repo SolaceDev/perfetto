@@ -25,6 +25,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace getopt_compat {
 
@@ -60,8 +61,8 @@ bool ParseOpts(const char* shortopts,
                std::vector<option>* res) {
   // Parse long options first.
   for (const option* lopt = longopts; lopt && lopt->name; lopt++) {
-    PERFETTO_CHECK(lopt->flag == nullptr);
-    PERFETTO_CHECK(lopt->has_arg == no_argument ||
+    PERFETTO_SOLACE_CHECK(lopt->flag == nullptr);
+    PERFETTO_SOLACE_CHECK(lopt->has_arg == no_argument ||
                    lopt->has_arg == required_argument);
     res->emplace_back(*lopt);
   }
@@ -154,7 +155,7 @@ int getopt_long(int argc,
       }
       // has_arg must be either |no_argument| or |required_argument|. We
       // shoulnd't get here unless the check in ParseOpts() has a bug.
-      PERFETTO_CHECK(false);
+      PERFETTO_SOLACE_CHECK(false);
     }  // if (arg ~= "--*").
 
     if (strlen(arg) > 1 && arg[0] == '-' && arg[1] != '-') {
@@ -170,7 +171,7 @@ int getopt_long(int argc,
     // 2. This is the N (>1) char of a sequence of short options, and we got
     //    here from a new getopt() call to getopt().
     const char cur_char = *nextchar;
-    PERFETTO_CHECK(cur_char != '\0');
+    PERFETTO_SOLACE_CHECK(cur_char != '\0');
 
     // Advance the option char in any case, before we start reasoning on them.
     // if we got to the end of the "-abc" sequence, increment optind so the next
@@ -214,7 +215,7 @@ int getopt_long(int argc,
         return cur_char;
       }
     }
-    PERFETTO_CHECK(false);
+    PERFETTO_SOLACE_CHECK(false);
   }  // if (nextchar)
 
   // If we get here, we found the first non-option argument. Stop here.
@@ -231,4 +232,5 @@ int getopt(int argc, char** argv, const char* shortopts) {
 
 }  // namespace getopt_compat
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

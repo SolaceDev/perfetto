@@ -33,6 +33,7 @@
 #include <vector>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -174,4 +175,5 @@ TEST(WatchdogTest, TimerCrashDeliveredToCallerThread) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

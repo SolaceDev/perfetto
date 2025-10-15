@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_UNIX_TASK_RUNNER_H_
-#define INCLUDE_PERFETTO_EXT_BASE_UNIX_TASK_RUNNER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_TASK_RUNNER_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_TASK_RUNNER_H_
 
 #include "perfetto/base/build_config.h"
 #include "perfetto/base/task_runner.h"
@@ -31,11 +31,12 @@
 #include <mutex>
 #include <vector>
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <poll.h>
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Runs a task runner on the current thread.
@@ -95,7 +96,7 @@ class UnixTaskRunner : public TaskRunner {
   EventFd event_;
 
 // The array of fds/handles passed to poll(2) / WaitForMultipleObjects().
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   std::vector<PlatformHandle> poll_fds_;
 #else
   std::vector<struct pollfd> poll_fds_;
@@ -111,7 +112,7 @@ class UnixTaskRunner : public TaskRunner {
 
   struct WatchTask {
     std::function<void()> callback;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     // On UNIX systems we make the FD number negative in |poll_fds_| to avoid
     // polling it again until the queued task runs. On Windows we can't do that.
     // Instead we keep track of its state here.
@@ -128,6 +129,7 @@ class UnixTaskRunner : public TaskRunner {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_UNIX_TASK_RUNNER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_UNIX_TASK_RUNNER_H_

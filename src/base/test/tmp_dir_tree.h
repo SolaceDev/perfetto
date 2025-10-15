@@ -23,6 +23,7 @@
 #include "perfetto/ext/base/temp_file.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Helper to construct and automatically destroy temporary file hierarchies in
@@ -39,11 +40,11 @@ class TmpDirTree {
   std::string AbsolutePath(const std::string& relative_path) const;
 
   // Creates a directory at `relative_path`. All the parent directories should
-  // have been created. PERFETTO_CHECK()s that the operation succeeds.
+  // have been created. PERFETTO_SOLACE_CHECK()s that the operation succeeds.
   void AddDir(const std::string& relative_path);
 
   // Creates a file at `relative_path` which contains `content`. All the parent
-  // directories should have been created. PERFETTO_CHECK()s that the operation
+  // directories should have been created. PERFETTO_SOLACE_CHECK()s that the operation
   // succeeds.
   void AddFile(const std::string& relative_path, const std::string& content);
 
@@ -57,6 +58,7 @@ class TmpDirTree {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // SRC_BASE_TEST_TMP_DIR_TREE_H_

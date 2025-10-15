@@ -122,11 +122,11 @@ class MessageFilter {
   // Inlining allows the compiler turn the per-byte call/return into a for loop,
   // while, at the same time, keeping the code easy to read and reason about.
   // It gives a 20-25% speedup (265ms vs 215ms for a 25MB trace).
-  void FilterOneByte(uint8_t octet) PERFETTO_ALWAYS_INLINE;
+  void FilterOneByte(uint8_t octet) PERFETTO_SOLACE_ALWAYS_INLINE;
 
   // No-inline because this is a slowpath (only when usage tracking is enabled).
   void IncrementCurrentFieldUsage(uint32_t field_id,
-                                  bool allowed) PERFETTO_NO_INLINE;
+                                  bool allowed) PERFETTO_SOLACE_NO_INLINE;
 
   // Gets into an error state which swallows all the input and emits no output.
   void SetUnrecoverableErrorState();

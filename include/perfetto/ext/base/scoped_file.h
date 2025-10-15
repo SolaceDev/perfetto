@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_SCOPED_FILE_H_
-#define INCLUDE_PERFETTO_EXT_BASE_SCOPED_FILE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_SCOPED_FILE_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_SCOPED_FILE_H_
 
 #include "perfetto/base/build_config.h"
 
 #include <stdio.h>
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <dirent.h>  // For DIR* / opendir().
 #endif
 
@@ -32,6 +32,7 @@
 #include "perfetto/base/platform_handle.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace internal {
@@ -73,7 +74,7 @@ class ScopedResource {
     if (Checker::IsValid(t_)) {
       int res = CloseFunction(t_);
       if (CheckClose)
-        PERFETTO_CHECK(res == 0);
+        PERFETTO_SOLACE_CHECK(res == 0);
     }
     t_ = r;
   }
@@ -91,7 +92,7 @@ class ScopedResource {
 };
 
 // Declared in file_utils.h. Forward declared to avoid #include cycles.
-int PERFETTO_EXPORT CloseFile(int fd);
+int PERFETTO_SOLACE_EXPORT CloseFile(int fd);
 
 // Use this for file resources obtained via open() and similar APIs.
 using ScopedFile = ScopedResource<int, CloseFile, -1>;
@@ -99,7 +100,7 @@ using ScopedFstream = ScopedResource<FILE*, fclose, nullptr>;
 
 // Use this for resources that are HANDLE on Windows. See comments in
 // platform_handle.h
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 using ScopedPlatformHandle = ScopedResource<PlatformHandle,
                                             ClosePlatformHandle,
                                             /*InvalidValue=*/nullptr,
@@ -117,6 +118,7 @@ using ScopedDir = ScopedResource<DIR*, closedir, nullptr>;
 #endif
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_SCOPED_FILE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SCOPED_FILE_H_

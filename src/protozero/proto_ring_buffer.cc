@@ -46,7 +46,7 @@ ProtoRingBuffer::Message TryReadMessage(const uint8_t* start,
   const uint32_t tag = field_tag & 0x07;
   if (tag !=
       static_cast<uint32_t>(proto_utils::ProtoWireType::kLengthDelimited)) {
-    PERFETTO_ELOG("RPC framing error, unexpected msg tag 0x%xu", tag);
+    PERFETTO_SOLACE_ELOG("RPC framing error, unexpected msg tag 0x%xu", tag);
     return FramingError();
   }
 
@@ -56,7 +56,7 @@ ProtoRingBuffer::Message TryReadMessage(const uint8_t* start,
     return ProtoRingBuffer::Message{};  // Not enough data.
 
   if (msg_len > ProtoRingBuffer::kMaxMsgSize) {
-    PERFETTO_ELOG("RPC framing error, message too large (%" PRIu64 " > %zu)",
+    PERFETTO_SOLACE_ELOG("RPC framing error, message too large (%" PRIu64 " > %zu)",
                   msg_len, ProtoRingBuffer::kMaxMsgSize);
     return FramingError();
   }
@@ -74,15 +74,15 @@ ProtoRingBuffer::Message TryReadMessage(const uint8_t* start,
 }  // namespace
 
 ProtoRingBuffer::ProtoRingBuffer()
-    : buf_(perfetto::base::PagedMemory::Allocate(kGrowBytes)) {}
+    : buf_(perfetto::solace::base::PagedMemory::Allocate(kGrowBytes)) {}
 ProtoRingBuffer::~ProtoRingBuffer() = default;
 
 void ProtoRingBuffer::Append(const void* data_void, size_t data_len) {
   if (failed_)
     return;
   const uint8_t* data = static_cast<const uint8_t*>(data_void);
-  PERFETTO_DCHECK(wr_ <= buf_.size());
-  PERFETTO_DCHECK(wr_ >= rd_);
+  PERFETTO_SOLACE_DCHECK(wr_ <= buf_.size());
+  PERFETTO_SOLACE_DCHECK(wr_ >= rd_);
 
   // If the last call to ReadMessage() consumed all the data in the buffer and
   // there are no incomplete messages pending, restart from the beginning rather
@@ -91,7 +91,7 @@ void ProtoRingBuffer::Append(const void* data_void, size_t data_len) {
     rd_ = wr_ = 0;
 
   // The caller is expected to always issue a ReadMessage() after each Append().
-  PERFETTO_CHECK(!fastpath_.valid());
+  PERFETTO_SOLACE_CHECK(!fastpath_.valid());
   if (rd_ == wr_) {
     auto msg = TryReadMessage(data, data + data_len);
     if (msg.valid() && msg.end() == (data + data_len)) {
@@ -137,7 +137,7 @@ void ProtoRingBuffer::Append(const void* data_void, size_t data_len) {
         failed_ = true;
         return;
       }
-      auto new_buf = perfetto::base::PagedMemory::Allocate(new_size);
+      auto new_buf = perfetto::solace::base::PagedMemory::Allocate(new_size);
       memcpy(new_buf.Get(), buf_.Get(), buf_.size());
       buf_ = std::move(new_buf);
       avail = new_size - wr_;
@@ -157,7 +157,7 @@ ProtoRingBuffer::Message ProtoRingBuffer::ReadMessage() {
 
   if (fastpath_.valid()) {
     // The fastpath can only be hit when the buffer is empty.
-    PERFETTO_CHECK(rd_ == wr_);
+    PERFETTO_SOLACE_CHECK(rd_ == wr_);
     auto msg = std::move(fastpath_);
     fastpath_ = Message{};
     return msg;
@@ -165,7 +165,7 @@ ProtoRingBuffer::Message ProtoRingBuffer::ReadMessage() {
 
   uint8_t* buf = static_cast<uint8_t*>(buf_.Get());
 
-  PERFETTO_DCHECK(rd_ <= wr_);
+  PERFETTO_SOLACE_DCHECK(rd_ <= wr_);
   if (rd_ >= wr_)
     return Message{};  // Completely empty.
 
@@ -176,9 +176,9 @@ ProtoRingBuffer::Message ProtoRingBuffer::ReadMessage() {
   }
 
   // Note: msg.start is > buf[rd_], because it skips the proto preamble.
-  PERFETTO_DCHECK(msg.start > &buf[rd_]);
+  PERFETTO_SOLACE_DCHECK(msg.start > &buf[rd_]);
   const uint8_t* msg_end = msg.start + msg.len;
-  PERFETTO_CHECK(msg_end > &buf[rd_] && msg_end <= &buf[wr_]);
+  PERFETTO_SOLACE_CHECK(msg_end > &buf[rd_] && msg_end <= &buf[wr_]);
   auto msg_outer_len = static_cast<size_t>(msg_end - &buf[rd_]);
   rd_ += msg_outer_len;
   return msg;

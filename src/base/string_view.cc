@@ -17,10 +17,12 @@
 #include "perfetto/ext/base/string_view.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // static
 constexpr size_t StringView::npos;
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

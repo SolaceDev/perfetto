@@ -41,7 +41,7 @@ namespace protozero {
 // (see proto_decoder_fuzzer.cc).
 // This class serves also as a building block for TypedProtoDecoder, used when
 // the schema is known at compile time.
-class PERFETTO_EXPORT ProtoDecoder {
+class PERFETTO_SOLACE_EXPORT ProtoDecoder {
  public:
   // Creates a ProtoDecoder using the given |buffer| with size |length| bytes.
   ProtoDecoder(const void* buffer, size_t length)
@@ -64,7 +64,7 @@ class PERFETTO_EXPORT ProtoDecoder {
 
   // Resets the read cursor to the given position (must be within the buffer).
   void Reset(const uint8_t* pos) {
-    PERFETTO_DCHECK(pos >= begin_ && pos < end_);
+    PERFETTO_SOLACE_DCHECK(pos >= begin_ && pos < end_);
     read_ptr_ = pos;
   }
 
@@ -72,7 +72,7 @@ class PERFETTO_EXPORT ProtoDecoder {
   size_t read_offset() const { return static_cast<size_t>(read_ptr_ - begin_); }
 
   size_t bytes_left() const {
-    PERFETTO_DCHECK(read_ptr_ <= end_);
+    PERFETTO_SOLACE_DCHECK(read_ptr_ <= end_);
     return static_cast<size_t>(end_ - read_ptr_);
   }
 
@@ -124,7 +124,7 @@ class RepeatedFieldIterator {
   const Field* operator->() const { return iter_; }
 
   RepeatedFieldIterator& operator++() {
-    PERFETTO_DCHECK(iter_ != end_);
+    PERFETTO_SOLACE_DCHECK(iter_ != end_);
     if (iter_ == last_) {
       iter_ = end_;
       return *this;
@@ -135,7 +135,7 @@ class RepeatedFieldIterator {
   }
 
   RepeatedFieldIterator operator++(int) {
-    PERFETTO_DCHECK(iter_ != end_);
+    PERFETTO_SOLACE_DCHECK(iter_ != end_);
     RepeatedFieldIterator it(*this);
     ++(*this);
     return it;
@@ -143,7 +143,7 @@ class RepeatedFieldIterator {
 
  private:
   void FindNextMatchingId() {
-    PERFETTO_DCHECK(iter_ != last_);
+    PERFETTO_SOLACE_DCHECK(iter_ != last_);
     for (; iter_ != end_; ++iter_) {
       if (iter_->id() == field_id_)
         return;
@@ -185,7 +185,7 @@ class PackedRepeatedFieldIterator {
                       wire_type == ProtoWireType::kFixed64,
                   "invalid type");
 
-    PERFETTO_DCHECK(parse_error_ptr);
+    PERFETTO_SOLACE_DCHECK(parse_error_ptr);
 
     // Either the field is unset (and there are no data pointer), or the field
     // is set with a zero length payload. Mark the iterator as invalid in both
@@ -211,10 +211,10 @@ class PackedRepeatedFieldIterator {
   PackedRepeatedFieldIterator& operator++() {
     using proto_utils::ProtoWireType;
 
-    if (PERFETTO_UNLIKELY(!curr_value_valid_))
+    if (PERFETTO_SOLACE_UNLIKELY(!curr_value_valid_))
       return *this;
 
-    if (PERFETTO_UNLIKELY(read_ptr_ == data_end_)) {
+    if (PERFETTO_SOLACE_UNLIKELY(read_ptr_ == data_end_)) {
       curr_value_valid_ = false;
       return *this;
     }
@@ -224,7 +224,7 @@ class PackedRepeatedFieldIterator {
       const uint8_t* new_pos =
           proto_utils::ParseVarInt(read_ptr_, data_end_, &new_value);
 
-      if (PERFETTO_UNLIKELY(new_pos == read_ptr_)) {
+      if (PERFETTO_SOLACE_UNLIKELY(new_pos == read_ptr_)) {
         // Failed to decode the varint (probably incomplete buffer).
         *parse_error_ = true;
         curr_value_valid_ = false;
@@ -280,12 +280,12 @@ class PackedRepeatedFieldIterator {
 //                                        num_fields_        size_
 // Note that if a message has high field numbers, upon creation |size_| can be
 // < |num_fields_| (until a heap expansion is hit while inserting).
-class PERFETTO_EXPORT TypedProtoDecoderBase : public ProtoDecoder {
+class PERFETTO_SOLACE_EXPORT TypedProtoDecoderBase : public ProtoDecoder {
  public:
   // If the field |id| is known at compile time, prefer the templated
   // specialization at<kFieldNumber>().
   const Field& Get(uint32_t id) const {
-    if (PERFETTO_LIKELY(id < num_fields_ && id < size_))
+    if (PERFETTO_SOLACE_LIKELY(id < num_fields_ && id < size_))
       return fields_[id];
     // If id >= num_fields_, the field id is invalid (was not known in the
     // .proto) and we return the 0th field, which is always !valid().
@@ -310,7 +310,7 @@ class PERFETTO_EXPORT TypedProtoDecoderBase : public ProtoDecoder {
     // [ F0 ] [ F1 ] ... [ F100 ] [ F101 ] [ F1012] [ repeated fields ]
     //                                            ^ num_fields_
     //                          ^ size (== capacity)
-    if (PERFETTO_LIKELY(num_fields_ < size_)) {
+    if (PERFETTO_SOLACE_LIKELY(num_fields_ < size_)) {
       repeated_begin = &fields_[num_fields_];
     } else {
       // This is the case of not having any storage space for repeated fields.
@@ -372,7 +372,7 @@ class PERFETTO_EXPORT TypedProtoDecoderBase : public ProtoDecoder {
                       std::is_trivial<Field>::value,
                   "Field must be a trivial aggregate type");
     memset(fields_, 0, sizeof(Field) * capacity_);
-    PERFETTO_DCHECK(capacity > 0);
+    PERFETTO_SOLACE_DCHECK(capacity > 0);
   }
 
   void ParseAllFields();

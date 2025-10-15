@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_BASE_FLAT_SET_H_
-#define INCLUDE_PERFETTO_BASE_FLAT_SET_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_BASE_FLAT_SET_H_
+#define INCLUDE_PERFETTO_SOLACE_BASE_FLAT_SET_H_
 
 #include <algorithm>
 #include <vector>
@@ -36,6 +36,7 @@
 // See flat_set_benchmark.cc and the charts in go/perfetto-int-set-benchmark.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 template <typename T>
@@ -95,6 +96,7 @@ class FlatSet {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_BASE_FLAT_SET_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_BASE_FLAT_SET_H_

@@ -36,7 +36,7 @@ void ScatteredStreamWriter::Reset(ContiguousMemoryRange range) {
   written_previously_ += static_cast<uint64_t>(write_ptr_ - cur_range_.begin);
   cur_range_ = range;
   write_ptr_ = range.begin;
-  PERFETTO_DCHECK(!write_ptr_ || write_ptr_ < cur_range_.end);
+  PERFETTO_SOLACE_DCHECK(!write_ptr_ || write_ptr_ < cur_range_.end);
 }
 
 void ScatteredStreamWriter::Extend() {
@@ -59,7 +59,7 @@ void ScatteredStreamWriter::WriteBytesSlowPath(const uint8_t* src,
 ScatteredStreamWriter::ReservedBytes
 ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
   constexpr size_t size = ReservedBytes::kFieldSize;
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   // In the past, the service had a matching DCHECK in
   // TraceBuffer::TryPatchChunkContents, which was assuming that service and all
   // producers are built with matching DCHECK levels. This turned out to be a
@@ -81,7 +81,7 @@ ScatteredStreamWriter::ReserveBytes(bool zeroReservedBytes) {
     // Assume the reservations are always < Delegate::GetNewBuffer().size(),
     // so that one single call to Extend() will definitely give enough headroom.
     Extend();
-    PERFETTO_DCHECK(write_ptr_ + size - ret.firstSz_ <= cur_range_.end);
+    PERFETTO_SOLACE_DCHECK(write_ptr_ + size - ret.firstSz_ <= cur_range_.end);
 
     if (ret.buf_[0] == nullptr) {
       // If the first buffer was not set, it means we entered with an uninitialized

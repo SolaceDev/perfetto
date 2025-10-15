@@ -23,6 +23,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -206,4 +207,5 @@ TEST(StringViewTest, HashCollisions) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

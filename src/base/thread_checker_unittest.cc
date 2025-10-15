@@ -23,6 +23,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -72,4 +73,5 @@ TEST(ThreadCheckerTest, CopyConstructor) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -66,8 +66,8 @@ class PackedBufferBase {
 
  protected:
   void GrowIfNeeded() {
-    PERFETTO_DCHECK(write_ptr_ >= storage_begin_ && write_ptr_ <= storage_end_);
-    if (PERFETTO_UNLIKELY(write_ptr_ + kMaxElementSize > storage_end_)) {
+    PERFETTO_SOLACE_DCHECK(write_ptr_ >= storage_begin_ && write_ptr_ <= storage_end_);
+    if (PERFETTO_SOLACE_UNLIKELY(write_ptr_ + kMaxElementSize > storage_end_)) {
       GrowSlowpath();
     }
   }
@@ -105,7 +105,7 @@ class PackedFixedSizeInt : public PackedBufferBase {
     static_assert(sizeof(T) <= kMaxElementSize,
                   "kMaxElementSize needs to be updated");
     GrowIfNeeded();
-    PERFETTO_DCHECK(reinterpret_cast<size_t>(write_ptr_) % alignof(T) == 0);
+    PERFETTO_SOLACE_DCHECK(reinterpret_cast<size_t>(write_ptr_) % alignof(T) == 0);
     memcpy(reinterpret_cast<T*>(write_ptr_), &value, sizeof(T));
     write_ptr_ += sizeof(T);
   }

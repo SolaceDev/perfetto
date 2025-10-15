@@ -22,9 +22,11 @@
 // overkill. This is for compliance with -Wweak-vtables.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 TaskRunner::~TaskRunner() = default;
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

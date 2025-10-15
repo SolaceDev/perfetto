@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_POSIX_H_
-#define INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_POSIX_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_POSIX_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_POSIX_H_
 
 #include "perfetto/base/time.h"
 #include "perfetto/ext/base/scoped_file.h"
@@ -26,6 +26,7 @@
 #include <vector>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 enum class WatchdogCrashReason;  // Defined in watchdog.h.
@@ -123,14 +124,14 @@ class Watchdog {
     // Gets the oldest value inserted in the buffer. The buffer must be full
     // (i.e. Push returned true) before this method can be called.
     uint64_t OldestWhenFull() const {
-      PERFETTO_CHECK(filled_);
+      PERFETTO_SOLACE_CHECK(filled_);
       return buffer_[position_];
     }
 
     // Gets the newest value inserted in the buffer. The buffer must be full
     // (i.e. Push returned true) before this method can be called.
     uint64_t NewestWhenFull() const {
-      PERFETTO_CHECK(filled_);
+      PERFETTO_SOLACE_CHECK(filled_);
       return buffer_[(position_ + size_ - 1) % size_];
     }
 
@@ -198,5 +199,6 @@ class Watchdog {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
-#endif  // INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_POSIX_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_POSIX_H_

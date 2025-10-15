@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_FLAT_HASH_MAP_H_
-#define INCLUDE_PERFETTO_EXT_BASE_FLAT_HASH_MAP_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_FLAT_HASH_MAP_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_FLAT_HASH_MAP_H_
 
 #include "perfetto/base/compiler.h"
 #include "perfetto/base/logging.h"
@@ -26,6 +26,7 @@
 #include <limits>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // An open-addressing hashmap implementation.
@@ -102,7 +103,7 @@ class FlatHashMap {
 
     explicit operator bool() const { return idx_ != kEnd; }
     Iterator& operator++() {
-      PERFETTO_DCHECK(idx_ < map_->capacity_);
+      PERFETTO_SOLACE_DCHECK(idx_ < map_->capacity_);
       ++idx_;
       FindNextNonFree();
       return *this;
@@ -176,7 +177,7 @@ class FlatHashMap {
     size_t insertion_slot;
     size_t probe_len;
     for (;;) {
-      PERFETTO_DCHECK((capacity_ & (capacity_ - 1)) == 0);  // Must be a pow2.
+      PERFETTO_SOLACE_DCHECK((capacity_ & (capacity_ - 1)) == 0);  // Must be a pow2.
       insertion_slot = kSlotNotFound;
       // Start the iteration at the desired slot (key_hash % capacity_)
       // searching either for a free slot or a tombstone. In the worst case we
@@ -189,7 +190,7 @@ class FlatHashMap {
       // key.
       for (probe_len = 0; probe_len < capacity_;) {
         const size_t idx = Probe::Calc(key_hash, probe_len, capacity_);
-        PERFETTO_DCHECK(idx < capacity_);
+        PERFETTO_SOLACE_DCHECK(idx < capacity_);
         const uint8_t tag_idx = tags_[idx];
         ++probe_len;
         if (tag_idx == kFreeSlot) {
@@ -201,7 +202,7 @@ class FlatHashMap {
           break;
         }
         // We should never encounter tombstones in AppendOnly mode.
-        PERFETTO_DCHECK(!(tag_idx == kTombstone && AppendOnly));
+        PERFETTO_SOLACE_DCHECK(!(tag_idx == kTombstone && AppendOnly));
         if (!AppendOnly && tag_idx == kTombstone) {
           insertion_slot = idx;
           continue;
@@ -215,22 +216,22 @@ class FlatHashMap {
       // If we got to this point the key does not exist (otherwise we would have
       // hit the the return above) and we are going to insert a new entry.
       // Before doing so, ensure we stay under the target load limit.
-      if (PERFETTO_UNLIKELY(size_ >= load_limit_)) {
+      if (PERFETTO_SOLACE_UNLIKELY(size_ >= load_limit_)) {
         MaybeGrowAndRehash(/*grow=*/true);
         continue;
       }
-      PERFETTO_DCHECK(insertion_slot != kSlotNotFound);
+      PERFETTO_SOLACE_DCHECK(insertion_slot != kSlotNotFound);
       break;
     }  // for (attempt)
 
-    PERFETTO_CHECK(insertion_slot < capacity_);
+    PERFETTO_SOLACE_CHECK(insertion_slot < capacity_);
 
     // We found a free slot (or a tombstone). Proceed with the insertion.
     Value* value_idx = &values_[insertion_slot];
     new (&keys_[insertion_slot]) Key(std::move(key));
     new (value_idx) Value(std::move(value));
     tags_[insertion_slot] = tag;
-    PERFETTO_DCHECK(probe_len > 0 && probe_len <= capacity_);
+    PERFETTO_SOLACE_DCHECK(probe_len > 0 && probe_len <= capacity_);
     max_probe_length_ = std::max(max_probe_length_, probe_len);
     size_++;
 
@@ -246,7 +247,7 @@ class FlatHashMap {
 
   bool Erase(const Key& key) {
     if (AppendOnly)
-      PERFETTO_FATAL("Erase() not supported because AppendOnly=true");
+      PERFETTO_SOLACE_FATAL("Erase() not supported because AppendOnly=true");
     size_t idx = FindInternal(key);
     if (idx == kNotFound)
       return false;
@@ -256,7 +257,7 @@ class FlatHashMap {
 
   void Clear() {
     // Avoid trivial heap operations on zero-capacity std::move()-d objects.
-    if (PERFETTO_UNLIKELY(capacity_ == 0))
+    if (PERFETTO_SOLACE_UNLIKELY(capacity_ == 0))
       return;
 
     for (size_t i = 0; i < capacity_; ++i) {
@@ -288,8 +289,8 @@ class FlatHashMap {
   size_t FindInternal(const Key& key) const {
     const size_t key_hash = Hasher{}(key);
     const uint8_t tag = HashToTag(key_hash);
-    PERFETTO_DCHECK((capacity_ & (capacity_ - 1)) == 0);  // Must be a pow2.
-    PERFETTO_DCHECK(max_probe_length_ <= capacity_);
+    PERFETTO_SOLACE_DCHECK((capacity_ & (capacity_ - 1)) == 0);  // Must be a pow2.
+    PERFETTO_SOLACE_DCHECK(max_probe_length_ <= capacity_);
     for (size_t i = 0; i < max_probe_length_; ++i) {
       const size_t idx = Probe::Calc(key_hash, i, capacity_);
       const uint8_t tag_idx = tags_[idx];
@@ -299,7 +300,7 @@ class FlatHashMap {
       // HashToTag() never returns kTombstone, so the tag-check below cannot
       // possibly match. Also we just want to skip tombstones.
       if (tag_idx == tag && keys_[idx] == key) {
-        PERFETTO_DCHECK(tag_idx > kTombstone);
+        PERFETTO_SOLACE_DCHECK(tag_idx > kTombstone);
         return idx;
       }
     }  // for (idx)
@@ -307,16 +308,16 @@ class FlatHashMap {
   }
 
   void EraseInternal(size_t idx) {
-    PERFETTO_DCHECK(tags_[idx] > kTombstone);
-    PERFETTO_DCHECK(size_ > 0);
+    PERFETTO_SOLACE_DCHECK(tags_[idx] > kTombstone);
+    PERFETTO_SOLACE_DCHECK(size_ > 0);
     tags_[idx] = kTombstone;
     keys_[idx].~Key();
     values_[idx].~Value();
     size_--;
   }
 
-  PERFETTO_NO_INLINE void MaybeGrowAndRehash(bool grow) {
-    PERFETTO_DCHECK(size_ <= capacity_);
+  PERFETTO_SOLACE_NO_INLINE void MaybeGrowAndRehash(bool grow) {
+    PERFETTO_SOLACE_DCHECK(size_ <= capacity_);
     const size_t old_capacity = capacity_;
 
     // Grow quickly up to 1MB, then chill.
@@ -333,7 +334,7 @@ class FlatHashMap {
 
     // This must be a CHECK (i.e. not just a DCHECK) to prevent UAF attacks on
     // 32-bit archs that try to double the size of the table until wrapping.
-    PERFETTO_CHECK(new_capacity >= old_capacity);
+    PERFETTO_SOLACE_CHECK(new_capacity >= old_capacity);
     Reset(new_capacity);
 
     size_t new_size = 0;  // Recompute the size.
@@ -346,13 +347,13 @@ class FlatHashMap {
         new_size++;
       }
     }
-    PERFETTO_DCHECK(new_size == old_size);
+    PERFETTO_SOLACE_DCHECK(new_size == old_size);
     size_ = new_size;
   }
 
   // Doesn't call destructors. Use Clear() for that.
-  PERFETTO_NO_INLINE void Reset(size_t n) {
-    PERFETTO_DCHECK((n & (n - 1)) == 0);  // Must be a pow2.
+  PERFETTO_SOLACE_NO_INLINE void Reset(size_t n) {
+    PERFETTO_SOLACE_DCHECK((n & (n - 1)) == 0);  // Must be a pow2.
 
     capacity_ = n;
     max_probe_length_ = 0;
@@ -370,7 +371,7 @@ class FlatHashMap {
     uint8_t tag = full_hash >> (sizeof(full_hash) * 8 - 8);
     // Ensure the hash is always >= 2. We use 0, 1 for kFreeSlot and kTombstone.
     tag += (tag <= kTombstone) << 1;
-    PERFETTO_DCHECK(tag > kTombstone);
+    PERFETTO_SOLACE_DCHECK(tag > kTombstone);
     return tag;
   }
 
@@ -389,6 +390,7 @@ class FlatHashMap {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_FLAT_HASH_MAP_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_FLAT_HASH_MAP_H_

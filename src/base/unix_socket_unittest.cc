@@ -21,7 +21,7 @@
 #include <list>
 #include <thread>
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -39,6 +39,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -475,7 +476,7 @@ TEST_F(UnixSocketTest, TcpStream) {
 // Posix-only tests below this point
 // ---------------------------------
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 // Tests the SockPeerCredMode::kIgnore logic.
 TEST_F(UnixSocketTest, IgnorePeerCredentials) {
@@ -502,8 +503,8 @@ TEST_F(UnixSocketTest, IgnorePeerCredentials) {
 
   ASSERT_EQ(cli1->peer_uid_posix(/*skip_check_for_testing=*/true), kInvalidUid);
   ASSERT_EQ(cli2->peer_uid_posix(), geteuid());
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   ASSERT_EQ(cli1->peer_pid_linux(/*skip_check_for_testing=*/true), kInvalidPid);
   ASSERT_EQ(cli2->peer_pid_linux(), getpid());
 #endif
@@ -524,8 +525,8 @@ TEST_F(UnixSocketTest, PeerCredentialsRetainedAfterDisconnect) {
                                                          UnixSocket* srv_conn) {
         srv_client_conn = srv_conn;
         EXPECT_EQ(geteuid(), static_cast<uint32_t>(srv_conn->peer_uid_posix()));
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
         EXPECT_EQ(getpid(), static_cast<pid_t>(srv_conn->peer_pid_linux()));
 #endif
         srv_connected();
@@ -557,8 +558,8 @@ TEST_F(UnixSocketTest, PeerCredentialsRetainedAfterDisconnect) {
   ASSERT_FALSE(srv_client_conn->is_connected());
   EXPECT_EQ(geteuid(),
             static_cast<uint32_t>(srv_client_conn->peer_uid_posix()));
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   EXPECT_EQ(getpid(), static_cast<pid_t>(srv_client_conn->peer_pid_linux()));
 #endif
 }
@@ -696,7 +697,7 @@ TEST_F(UnixSocketTest, SharedMemory) {
     _exit(0);
   } else {
     char sync_cmd = '\0';
-    ASSERT_EQ(1, PERFETTO_EINTR(read(*pipe.rd, &sync_cmd, 1)));
+    ASSERT_EQ(1, PERFETTO_SOLACE_EINTR(read(*pipe.rd, &sync_cmd, 1)));
     ASSERT_EQ('.', sync_cmd);
     auto cli =
         UnixSocket::Connect(kTestSocket.name(), &event_listener_, &task_runner_,
@@ -723,7 +724,7 @@ TEST_F(UnixSocketTest, SharedMemory) {
         }));
     task_runner_.RunUntilCheckpoint("change_seen_by_client");
     int st = 0;
-    PERFETTO_EINTR(waitpid(pid, &st, 0));
+    PERFETTO_SOLACE_EINTR(waitpid(pid, &st, 0));
     ASSERT_FALSE(WIFSIGNALED(st)) << "Server died with signal " << WTERMSIG(st);
     EXPECT_TRUE(WIFEXITED(st));
     ASSERT_EQ(0, WEXITSTATUS(st));
@@ -856,14 +857,14 @@ TEST_F(UnixSocketTest, PartialSendMsgAll) {
 
   auto blocked_thread = pthread_self();
   std::thread th([blocked_thread, &recv_sock, &recv_buf] {
-    ssize_t rd = PERFETTO_EINTR(read(recv_sock.fd(), &recv_buf[0], 1));
+    ssize_t rd = PERFETTO_SOLACE_EINTR(read(recv_sock.fd(), &recv_buf[0], 1));
     ASSERT_EQ(rd, 1);
     // We are now sure the other thread is in sendmsg, interrupt send.
     ASSERT_EQ(pthread_kill(blocked_thread, SIGWINCH), 0);
     // Drain the socket to allow SendMsgAllPosix to succeed.
     size_t offset = 1;
     while (offset < recv_buf.size()) {
-      rd = PERFETTO_EINTR(
+      rd = PERFETTO_SOLACE_EINTR(
           read(recv_sock.fd(), &recv_buf[offset], recv_buf.size() - offset));
       ASSERT_GE(rd, 0);
       offset += static_cast<size_t>(rd);
@@ -943,4 +944,5 @@ TEST_F(UnixSocketTest, BlockingSendTimeout) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #include <synchapi.h>
 #else
@@ -34,12 +34,13 @@
 #include "perfetto/ext/base/watchdog.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 UnixTaskRunner::UnixTaskRunner() {
   AddFileDescriptorWatch(event_.fd(), [] {
     // Not reached -- see PostFileDescriptorWatches().
-    PERFETTO_DFATAL("Should be unreachable.");
+    PERFETTO_SOLACE_DFATAL("Should be unreachable.");
   });
 }
 
@@ -50,7 +51,7 @@ void UnixTaskRunner::WakeUp() {
 }
 
 void UnixTaskRunner::Run() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   created_thread_id_ = GetThreadId();
   quit_ = false;
   for (;;) {
@@ -63,7 +64,7 @@ void UnixTaskRunner::Run() {
       UpdateWatchTasksLocked();
     }
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     DWORD timeout =
         poll_timeout_ms >= 0 ? static_cast<DWORD>(poll_timeout_ms) : INFINITE;
     DWORD ret =
@@ -77,9 +78,9 @@ void UnixTaskRunner::Run() {
     // returned.
     PostFileDescriptorWatches(ret);
 #else
-    int ret = PERFETTO_EINTR(poll(
+    int ret = PERFETTO_SOLACE_EINTR(poll(
         &poll_fds_[0], static_cast<nfds_t>(poll_fds_.size()), poll_timeout_ms));
-    PERFETTO_CHECK(ret >= 0);
+    PERFETTO_SOLACE_CHECK(ret >= 0);
     PostFileDescriptorWatches(0 /*ignored*/);
 #endif
 
@@ -106,8 +107,8 @@ bool UnixTaskRunner::IsIdleForTesting() {
 }
 
 void UnixTaskRunner::UpdateWatchTasksLocked() {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   if (!watch_tasks_changed_)
     return;
   watch_tasks_changed_ = false;
@@ -116,7 +117,7 @@ void UnixTaskRunner::UpdateWatchTasksLocked() {
   for (auto& it : watch_tasks_) {
     PlatformHandle handle = it.first;
     WatchTask& watch_task = it.second;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     if (!watch_task.pending)
       poll_fds_.push_back(handle);
 #else
@@ -155,9 +156,9 @@ void UnixTaskRunner::RunImmediateAndDelayedTask() {
 }
 
 void UnixTaskRunner::PostFileDescriptorWatches(uint64_t windows_wait_result) {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   for (size_t i = 0; i < poll_fds_.size(); i++) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     const PlatformHandle handle = poll_fds_[i];
     // |windows_wait_result| is the result of WaitForMultipleObjects() call. If
     // one of the objects was signalled, it will have a value between
@@ -186,18 +187,18 @@ void UnixTaskRunner::PostFileDescriptorWatches(uint64_t windows_wait_result) {
     PostTask(std::bind(&UnixTaskRunner::RunFileDescriptorWatch, this, handle));
 
     // Flag the task as pending.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     // On Windows this is done by marking the WatchTask entry as pending. This
     // is more expensive than Linux as requires rebuilding the |poll_fds_|
     // vector on each call. There doesn't seem to be a good alternative though.
     auto it = watch_tasks_.find(handle);
-    PERFETTO_CHECK(it != watch_tasks_.end());
-    PERFETTO_DCHECK(!it->second.pending);
+    PERFETTO_SOLACE_CHECK(it != watch_tasks_.end());
+    PERFETTO_SOLACE_DCHECK(!it->second.pending);
     it->second.pending = true;
 #else
     // On UNIX systems instead, we just make the fd negative while its task is
     // pending. This makes poll(2) ignore the fd.
-    PERFETTO_DCHECK(poll_fds_[i].fd >= 0);
+    PERFETTO_SOLACE_DCHECK(poll_fds_[i].fd >= 0);
     poll_fds_[i].fd = -poll_fds_[i].fd;
 #endif
   }
@@ -216,16 +217,16 @@ void UnixTaskRunner::RunFileDescriptorWatch(PlatformHandle fd) {
     // updated this watch we need to refresh the set first.
     UpdateWatchTasksLocked();
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     // On Windows we manually track the presence of outstanding tasks for the
     // watch. The UpdateWatchTasksLocked() in the Run() loop will re-add the
     // task to the |poll_fds_| vector.
-    PERFETTO_DCHECK(watch_task.pending);
+    PERFETTO_SOLACE_DCHECK(watch_task.pending);
     watch_task.pending = false;
 #else
     size_t fd_index = watch_task.poll_fd_index;
-    PERFETTO_DCHECK(fd_index < poll_fds_.size());
-    PERFETTO_DCHECK(::abs(poll_fds_[fd_index].fd) == fd);
+    PERFETTO_SOLACE_DCHECK(fd_index < poll_fds_.size());
+    PERFETTO_SOLACE_DCHECK(::abs(poll_fds_[fd_index].fd) == fd);
     poll_fds_[fd_index].fd = fd;
 #endif
     task = watch_task.callback;
@@ -235,7 +236,7 @@ void UnixTaskRunner::RunFileDescriptorWatch(PlatformHandle fd) {
 }
 
 int UnixTaskRunner::GetDelayMsToNextTaskLocked() const {
-  PERFETTO_DCHECK_THREAD(thread_checker_);
+  PERFETTO_SOLACE_DCHECK_THREAD(thread_checker_);
   if (!immediate_tasks_.empty())
     return 0;
   if (!delayed_tasks_.empty()) {
@@ -268,13 +269,13 @@ void UnixTaskRunner::PostDelayedTask(std::function<void()> task,
 
 void UnixTaskRunner::AddFileDescriptorWatch(PlatformHandle fd,
                                             std::function<void()> task) {
-  PERFETTO_DCHECK(PlatformHandleChecker::IsValid(fd));
+  PERFETTO_SOLACE_DCHECK(PlatformHandleChecker::IsValid(fd));
   {
     std::lock_guard<std::mutex> lock(lock_);
-    PERFETTO_DCHECK(!watch_tasks_.count(fd));
+    PERFETTO_SOLACE_DCHECK(!watch_tasks_.count(fd));
     WatchTask& watch_task = watch_tasks_[fd];
     watch_task.callback = std::move(task);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     watch_task.pending = false;
 #else
     watch_task.poll_fd_index = SIZE_MAX;
@@ -285,10 +286,10 @@ void UnixTaskRunner::AddFileDescriptorWatch(PlatformHandle fd,
 }
 
 void UnixTaskRunner::RemoveFileDescriptorWatch(PlatformHandle fd) {
-  PERFETTO_DCHECK(PlatformHandleChecker::IsValid(fd));
+  PERFETTO_SOLACE_DCHECK(PlatformHandleChecker::IsValid(fd));
   {
     std::lock_guard<std::mutex> lock(lock_);
-    PERFETTO_DCHECK(watch_tasks_.count(fd));
+    PERFETTO_SOLACE_DCHECK(watch_tasks_.count(fd));
     watch_tasks_.erase(fd);
     watch_tasks_changed_ = true;
   }
@@ -300,4 +301,5 @@ bool UnixTaskRunner::RunsTasksOnCurrentThread() const {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

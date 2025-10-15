@@ -58,7 +58,7 @@ static void BM_SetInsert(benchmark::State& state) {
   }
 }
 
-using perfetto::base::FlatSet;
+using perfetto::solace::base::FlatSet;
 BENCHMARK_TEMPLATE(BM_SetInsert, FlatSet<int>)->Apply(BenchmarkArgs);
 BENCHMARK_TEMPLATE(BM_SetInsert, std::set<int>)->Apply(BenchmarkArgs);
 BENCHMARK_TEMPLATE(BM_SetInsert, std::unordered_set<int>)->Apply(BenchmarkArgs);

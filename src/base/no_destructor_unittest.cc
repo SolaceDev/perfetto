@@ -21,6 +21,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -65,4 +66,5 @@ TEST(NoDestructorTest, ContainedObjectUsable) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

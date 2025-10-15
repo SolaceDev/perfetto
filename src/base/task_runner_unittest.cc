@@ -29,6 +29,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -373,7 +374,7 @@ TEST_F(TaskRunnerTest, FileDescriptorWatchFairness) {
   }
 }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 // This tests UNIX-specific behavior on pipe closure.
 TEST_F(TaskRunnerTest, FileDescriptorClosedEvent) {
@@ -389,4 +390,5 @@ TEST_F(TaskRunnerTest, FileDescriptorClosedEvent) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

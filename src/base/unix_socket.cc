@@ -24,7 +24,7 @@
 #include <sys/types.h>
 #include "perfetto/base/compiler.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 // The include order matters on these three Windows header groups.
 #include <Windows.h>
 
@@ -42,7 +42,7 @@
 #include <unistd.h>
 #endif
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #include <sys/ucred.h>
 #endif
 
@@ -57,11 +57,12 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // The CMSG_* macros use NULL instead of nullptr.
 // Note: MSVC doesn't have #pragma GCC diagnostic, hence the if __GNUC__.
-#if defined(__GNUC__) && !PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if defined(__GNUC__) && !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
@@ -69,7 +70,7 @@ namespace base {
 namespace {
 
 // Android takes an int instead of socklen_t for the control buffer size.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 using CBufLenType = size_t;
 #else
 using CBufLenType = socklen_t;
@@ -104,7 +105,7 @@ inline int GetSockFamily(SockFamily family) {
     case SockFamily::kInet6:
       return AF_INET6;
   }
-  PERFETTO_CHECK(false);  // For GCC.
+  PERFETTO_SOLACE_CHECK(false);  // For GCC.
 }
 
 inline int GetSockType(SockType type) {
@@ -121,7 +122,7 @@ inline int GetSockType(SockType type) {
     case SockType::kSeqPacket:
       return SOCK_SEQPACKET | kSockCloExec;
   }
-  PERFETTO_CHECK(false);  // For GCC.
+  PERFETTO_SOLACE_CHECK(false);  // For GCC.
 }
 
 SockaddrAny MakeSockAddr(SockFamily family, const std::string& socket_name) {
@@ -136,10 +137,10 @@ SockaddrAny MakeSockAddr(SockFamily family, const std::string& socket_name) {
       memcpy(saddr.sun_path, socket_name.data(), name_len);
       if (saddr.sun_path[0] == '@') {
         saddr.sun_path[0] = '\0';
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
         // The MSDN blog claims that abstract (non-filesystem based) AF_UNIX
         // socket are supported, but that doesn't seem true.
-        PERFETTO_ELOG(
+        PERFETTO_SOLACE_ELOG(
             "Abstract AF_UNIX sockets are not supported on Windows, see "
             "https://github.com/microsoft/WSL/issues/4240");
         return SockaddrAny{};
@@ -148,18 +149,18 @@ SockaddrAny MakeSockAddr(SockFamily family, const std::string& socket_name) {
       saddr.sun_family = AF_UNIX;
       auto size = static_cast<socklen_t>(
           __builtin_offsetof(sockaddr_un, sun_path) + name_len + 1);
-      PERFETTO_CHECK(static_cast<size_t>(size) <= sizeof(saddr));
+      PERFETTO_SOLACE_CHECK(static_cast<size_t>(size) <= sizeof(saddr));
       return SockaddrAny(&saddr, size);
     }
     case SockFamily::kInet: {
       auto parts = SplitString(socket_name, ":");
-      PERFETTO_CHECK(parts.size() == 2);
+      PERFETTO_SOLACE_CHECK(parts.size() == 2);
       struct addrinfo* addr_info = nullptr;
       struct addrinfo hints {};
       hints.ai_family = AF_INET;
-      PERFETTO_CHECK(getaddrinfo(parts[0].c_str(), parts[1].c_str(), &hints,
+      PERFETTO_SOLACE_CHECK(getaddrinfo(parts[0].c_str(), parts[1].c_str(), &hints,
                                  &addr_info) == 0);
-      PERFETTO_CHECK(addr_info->ai_family == AF_INET);
+      PERFETTO_SOLACE_CHECK(addr_info->ai_family == AF_INET);
       SockaddrAny res(addr_info->ai_addr,
                       static_cast<socklen_t>(addr_info->ai_addrlen));
       freeaddrinfo(addr_info);
@@ -167,33 +168,33 @@ SockaddrAny MakeSockAddr(SockFamily family, const std::string& socket_name) {
     }
     case SockFamily::kInet6: {
       auto parts = SplitString(socket_name, "]");
-      PERFETTO_CHECK(parts.size() == 2);
+      PERFETTO_SOLACE_CHECK(parts.size() == 2);
       auto address = SplitString(parts[0], "[");
-      PERFETTO_CHECK(address.size() == 1);
+      PERFETTO_SOLACE_CHECK(address.size() == 1);
       auto port = SplitString(parts[1], ":");
-      PERFETTO_CHECK(port.size() == 1);
+      PERFETTO_SOLACE_CHECK(port.size() == 1);
       struct addrinfo* addr_info = nullptr;
       struct addrinfo hints {};
       hints.ai_family = AF_INET6;
-      PERFETTO_CHECK(getaddrinfo(address[0].c_str(), port[0].c_str(), &hints,
+      PERFETTO_SOLACE_CHECK(getaddrinfo(address[0].c_str(), port[0].c_str(), &hints,
                                  &addr_info) == 0);
-      PERFETTO_CHECK(addr_info->ai_family == AF_INET6);
+      PERFETTO_SOLACE_CHECK(addr_info->ai_family == AF_INET6);
       SockaddrAny res(addr_info->ai_addr,
                       static_cast<socklen_t>(addr_info->ai_addrlen));
       freeaddrinfo(addr_info);
       return res;
     }
   }
-  PERFETTO_CHECK(false);  // For GCC.
+  PERFETTO_SOLACE_CHECK(false);  // For GCC.
 }
 
 ScopedSocketHandle CreateSocketHandle(SockFamily family, SockType type) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   static bool init_winsock_once = [] {
     WSADATA ignored{};
     return WSAStartup(MAKEWORD(2, 2), &ignored) == 0;
   }();
-  PERFETTO_CHECK(init_winsock_once);
+  PERFETTO_SOLACE_CHECK(init_winsock_once);
 #endif
   return ScopedSocketHandle(
       socket(GetSockFamily(family), GetSockType(type), 0));
@@ -201,7 +202,7 @@ ScopedSocketHandle CreateSocketHandle(SockFamily family, SockType type) {
 
 }  // namespace
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 int CloseSocket(SocketHandle s) {
   return ::closesocket(s);
 }
@@ -211,7 +212,7 @@ int CloseSocket(SocketHandle s) {
 // | UnixSocketRaw methods |
 // +-----------------------+
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 // static
 void UnixSocketRaw::ShiftMsgHdrPosix(size_t n, struct msghdr* msg) {
   using LenType = decltype(msg->msg_iovlen);  // Mac and Linux don't agree.
@@ -229,7 +230,7 @@ void UnixSocketRaw::ShiftMsgHdrPosix(size_t n, struct msghdr* msg) {
     n -= vec->iov_len;
   }
   // We sent all the iovecs.
-  PERFETTO_CHECK(n == 0);
+  PERFETTO_SOLACE_CHECK(n == 0);
   msg->msg_iovlen = 0;
   msg->msg_iov = nullptr;
 }
@@ -264,8 +265,8 @@ UnixSocketRaw::UnixSocketRaw(ScopedSocketHandle fd,
                              SockFamily family,
                              SockType type)
     : fd_(std::move(fd)), family_(family), type_(type) {
-  PERFETTO_CHECK(fd_);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+  PERFETTO_SOLACE_CHECK(fd_);
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   const int no_sigpipe = 1;
   setsockopt(*fd_, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(no_sigpipe));
 #endif
@@ -274,7 +275,7 @@ UnixSocketRaw::UnixSocketRaw(ScopedSocketHandle fd,
     int flag = 1;
     // The reinterpret_cast<const char*> is needed for Windows, where the 4th
     // arg is a const char* (on other POSIX system is a const void*).
-    PERFETTO_CHECK(!setsockopt(*fd_, SOL_SOCKET, SO_REUSEADDR,
+    PERFETTO_SOLACE_CHECK(!setsockopt(*fd_, SOL_SOCKET, SO_REUSEADDR,
                                reinterpret_cast<const char*>(&flag),
                                sizeof(flag)));
     flag = 1;
@@ -284,31 +285,31 @@ UnixSocketRaw::UnixSocketRaw(ScopedSocketHandle fd,
                reinterpret_cast<const char*>(&flag), sizeof(flag));
   }
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // We use one event handle for all socket events, to stay consistent to what
   // we do on UNIX with the base::TaskRunner's poll().
   event_handle_.reset(WSACreateEvent());
-  PERFETTO_CHECK(event_handle_);
+  PERFETTO_SOLACE_CHECK(event_handle_);
 #else
   // There is no reason why a socket should outlive the process in case of
   // exec() by default, this is just working around a broken unix design.
   int fcntl_res = fcntl(*fd_, F_SETFD, FD_CLOEXEC);
-  PERFETTO_CHECK(fcntl_res == 0);
+  PERFETTO_SOLACE_CHECK(fcntl_res == 0);
 #endif
 }
 
 void UnixSocketRaw::SetBlocking(bool is_blocking) {
-  PERFETTO_DCHECK(fd_);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+  PERFETTO_SOLACE_DCHECK(fd_);
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   unsigned long flag = is_blocking ? 0 : 1;  // FIONBIO has reverse logic.
   if (is_blocking) {
     // When switching between non-blocking -> blocking mode, we need to reset
     // the event handle registration, otherwise the call will fail.
-    PERFETTO_CHECK(WSAEventSelect(*fd_, *event_handle_, 0) == 0);
+    PERFETTO_SOLACE_CHECK(WSAEventSelect(*fd_, *event_handle_, 0) == 0);
   }
-  PERFETTO_CHECK(ioctlsocket(*fd_, static_cast<long>(FIONBIO), &flag) == 0);
+  PERFETTO_SOLACE_CHECK(ioctlsocket(*fd_, static_cast<long>(FIONBIO), &flag) == 0);
   if (!is_blocking) {
-    PERFETTO_CHECK(
+    PERFETTO_SOLACE_CHECK(
         WSAEventSelect(*fd_, *event_handle_,
                        FD_ACCEPT | FD_CONNECT | FD_READ | FD_CLOSE) == 0);
   }
@@ -320,38 +321,38 @@ void UnixSocketRaw::SetBlocking(bool is_blocking) {
     flags &= ~static_cast<int>(O_NONBLOCK);
   }
   int fcntl_res = fcntl(*fd_, F_SETFL, flags);
-  PERFETTO_CHECK(fcntl_res == 0);
+  PERFETTO_SOLACE_CHECK(fcntl_res == 0);
 #endif
 }
 
 void UnixSocketRaw::RetainOnExec() {
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
-  PERFETTO_DCHECK(fd_);
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
+  PERFETTO_SOLACE_DCHECK(fd_);
   int flags = fcntl(*fd_, F_GETFD, 0);
   flags &= ~static_cast<int>(FD_CLOEXEC);
   int fcntl_res = fcntl(*fd_, F_SETFD, flags);
-  PERFETTO_CHECK(fcntl_res == 0);
+  PERFETTO_SOLACE_CHECK(fcntl_res == 0);
 #endif
 }
 
 void UnixSocketRaw::DcheckIsBlocking(bool expected) const {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   ignore_result(expected);
 #else
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
   bool is_blocking = (fcntl(*fd_, F_GETFL, 0) & O_NONBLOCK) == 0;
-  PERFETTO_DCHECK(is_blocking == expected);
+  PERFETTO_SOLACE_DCHECK(is_blocking == expected);
 #endif
 }
 
 bool UnixSocketRaw::Bind(const std::string& socket_name) {
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
   SockaddrAny addr = MakeSockAddr(family_, socket_name);
   if (addr.size == 0)
     return false;
 
   if (bind(*fd_, addr.addr(), addr.size)) {
-    PERFETTO_DPLOG("bind(%s)", socket_name.c_str());
+    PERFETTO_SOLACE_DPLOG("bind(%s)", socket_name.c_str());
     return false;
   }
 
@@ -359,19 +360,19 @@ bool UnixSocketRaw::Bind(const std::string& socket_name) {
 }
 
 bool UnixSocketRaw::Listen() {
-  PERFETTO_DCHECK(fd_);
-  PERFETTO_DCHECK(type_ == SockType::kStream || type_ == SockType::kSeqPacket);
+  PERFETTO_SOLACE_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(type_ == SockType::kStream || type_ == SockType::kSeqPacket);
   return listen(*fd_, SOMAXCONN) == 0;
 }
 
 bool UnixSocketRaw::Connect(const std::string& socket_name) {
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
   SockaddrAny addr = MakeSockAddr(family_, socket_name);
   if (addr.size == 0)
     return false;
 
-  int res = PERFETTO_EINTR(connect(*fd_, addr.addr(), addr.size));
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+  int res = PERFETTO_SOLACE_EINTR(connect(*fd_, addr.addr(), addr.size));
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   bool continue_async = WSAGetLastError() == WSAEWOULDBLOCK;
 #else
   bool continue_async = errno == EINPROGRESS;
@@ -383,7 +384,7 @@ bool UnixSocketRaw::Connect(const std::string& socket_name) {
 }
 
 void UnixSocketRaw::Shutdown() {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   // Somebody felt very strongly about the naming of this constant.
   shutdown(*fd_, SD_BOTH);
 #else
@@ -392,13 +393,13 @@ void UnixSocketRaw::Shutdown() {
   fd_.reset();
 }
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 ssize_t UnixSocketRaw::Send(const void* msg,
                             size_t len,
                             const int* /*send_fds*/,
                             size_t num_fds) {
-  PERFETTO_DCHECK(num_fds == 0);
+  PERFETTO_SOLACE_DCHECK(num_fds == 0);
   return sendto(*fd_, static_cast<const char*>(msg), static_cast<int>(len), 0,
                 nullptr, 0);
 }
@@ -421,7 +422,7 @@ ssize_t UnixSocketRaw::Receive(void* msg,
 // [2]: https://elixir.bootlin.com/linux/v4.18.10/source/net/core/sock.c#L2101
 ssize_t UnixSocketRaw::SendMsgAllPosix(struct msghdr* msg) {
   // This does not make sense on non-blocking sockets.
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
 
   const bool is_blocking_with_timeout =
       tx_timeout_ms_ > 0 && ((fcntl(*fd_, F_GETFL, 0) & O_NONBLOCK) == 0);
@@ -430,21 +431,21 @@ ssize_t UnixSocketRaw::SendMsgAllPosix(struct msghdr* msg) {
   // Waits until some space is available in the tx buffer.
   // Returns true if some buffer space is available, false if times out.
   auto poll_or_timeout = [&] {
-    PERFETTO_DCHECK(is_blocking_with_timeout);
+    PERFETTO_SOLACE_DCHECK(is_blocking_with_timeout);
     const int64_t deadline = start_ms + tx_timeout_ms_;
     const int64_t now_ms = GetWallTimeMs().count();
     if (now_ms >= deadline)
       return false;  // Timed out
     const int timeout_ms = static_cast<int>(deadline - now_ms);
     pollfd pfd{*fd_, POLLOUT, 0};
-    return PERFETTO_EINTR(poll(&pfd, 1, timeout_ms)) > 0;
+    return PERFETTO_SOLACE_EINTR(poll(&pfd, 1, timeout_ms)) > 0;
   };
 
 // We implement blocking sends that require a timeout as non-blocking + poll.
 // This is because SO_SNDTIMEO doesn't work as expected (b/193234818). On linux
 // we can just pass MSG_DONTWAIT to force the send to be non-blocking. On Mac,
 // instead we need to flip the O_NONBLOCK flag back and forth.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   // MSG_NOSIGNAL is not supported on Mac OS X, but in that case the socket is
   // created with SO_NOSIGPIPE (See InitializeSocket()).
   int send_flags = 0;
@@ -462,7 +463,7 @@ ssize_t UnixSocketRaw::SendMsgAllPosix(struct msghdr* msg) {
 
   ssize_t total_sent = 0;
   while (msg->msg_iov) {
-    ssize_t send_res = PERFETTO_EINTR(sendmsg(*fd_, msg, send_flags));
+    ssize_t send_res = PERFETTO_SOLACE_EINTR(sendmsg(*fd_, msg, send_flags));
     if (send_res == -1 && IsAgain(errno)) {
       if (is_blocking_with_timeout && poll_or_timeout()) {
         continue;  // Tx buffer unblocked, repeat the loop.
@@ -485,7 +486,7 @@ ssize_t UnixSocketRaw::Send(const void* msg,
                             size_t len,
                             const int* send_fds,
                             size_t num_fds) {
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
   msghdr msg_hdr = {};
   iovec iov = {const_cast<void*>(msg), len};
   msg_hdr.msg_iov = &iov;
@@ -496,7 +497,7 @@ ssize_t UnixSocketRaw::Send(const void* msg,
     const auto raw_ctl_data_sz = num_fds * sizeof(int);
     const CBufLenType control_buf_len =
         static_cast<CBufLenType>(CMSG_SPACE(raw_ctl_data_sz));
-    PERFETTO_CHECK(control_buf_len <= sizeof(control_buf));
+    PERFETTO_SOLACE_CHECK(control_buf_len <= sizeof(control_buf));
     memset(control_buf, 0, sizeof(control_buf));
     msg_hdr.msg_control = control_buf;
     msg_hdr.msg_controllen = control_buf_len;  // used by CMSG_FIRSTHDR
@@ -516,7 +517,7 @@ ssize_t UnixSocketRaw::Receive(void* msg,
                                size_t len,
                                ScopedFile* fd_vec,
                                size_t max_files) {
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
   msghdr msg_hdr = {};
   iovec iov = {msg, len};
   msg_hdr.msg_iov = &iov;
@@ -527,13 +528,13 @@ ssize_t UnixSocketRaw::Receive(void* msg,
     msg_hdr.msg_control = control_buf;
     msg_hdr.msg_controllen =
         static_cast<CBufLenType>(CMSG_SPACE(max_files * sizeof(int)));
-    PERFETTO_CHECK(msg_hdr.msg_controllen <= sizeof(control_buf));
+    PERFETTO_SOLACE_CHECK(msg_hdr.msg_controllen <= sizeof(control_buf));
   }
-  const ssize_t sz = PERFETTO_EINTR(recvmsg(*fd_, &msg_hdr, 0));
+  const ssize_t sz = PERFETTO_SOLACE_EINTR(recvmsg(*fd_, &msg_hdr, 0));
   if (sz <= 0) {
     return sz;
   }
-  PERFETTO_CHECK(static_cast<size_t>(sz) <= len);
+  PERFETTO_SOLACE_CHECK(static_cast<size_t>(sz) <= len);
 
   int* fds = nullptr;
   uint32_t fds_len = 0;
@@ -543,8 +544,8 @@ ssize_t UnixSocketRaw::Receive(void* msg,
          cmsg = CMSG_NXTHDR(&msg_hdr, cmsg)) {
       const size_t payload_len = cmsg->cmsg_len - CMSG_LEN(0);
       if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
-        PERFETTO_DCHECK(payload_len % sizeof(int) == 0u);
-        PERFETTO_CHECK(fds == nullptr);
+        PERFETTO_SOLACE_DCHECK(payload_len % sizeof(int) == 0u);
+        PERFETTO_SOLACE_CHECK(fds == nullptr);
         fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
         fds_len = static_cast<uint32_t>(payload_len / sizeof(int));
       }
@@ -554,7 +555,7 @@ ssize_t UnixSocketRaw::Receive(void* msg,
   if (msg_hdr.msg_flags & MSG_TRUNC || msg_hdr.msg_flags & MSG_CTRUNC) {
     for (size_t i = 0; fds && i < fds_len; ++i)
       close(fds[i]);
-    PERFETTO_ELOG(
+    PERFETTO_SOLACE_ELOG(
         "Socket message truncated. This might be due to a SELinux denial on "
         "fd:use.");
     errno = EMSGSIZE;
@@ -573,13 +574,13 @@ ssize_t UnixSocketRaw::Receive(void* msg,
 #endif  // OS_WIN
 
 bool UnixSocketRaw::SetTxTimeout(uint32_t timeout_ms) {
-  PERFETTO_DCHECK(fd_);
+  PERFETTO_SOLACE_DCHECK(fd_);
   // On Unix-based systems, SO_SNDTIMEO isn't used for Send() because it's
   // unreliable (b/193234818). Instead we use non-blocking sendmsg() + poll().
   // See SendMsgAllPosix(). We still make the setsockopt call because
   // SO_SNDTIMEO also affects connect().
   tx_timeout_ms_ = timeout_ms;
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   DWORD timeout = timeout_ms;
   ignore_result(tx_timeout_ms_);
 #else
@@ -595,8 +596,8 @@ bool UnixSocketRaw::SetTxTimeout(uint32_t timeout_ms) {
 }
 
 bool UnixSocketRaw::SetRxTimeout(uint32_t timeout_ms) {
-  PERFETTO_DCHECK(fd_);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+  PERFETTO_SOLACE_DCHECK(fd_);
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   DWORD timeout = timeout_ms;
 #else
   struct timeval timeout {};
@@ -610,7 +611,7 @@ bool UnixSocketRaw::SetRxTimeout(uint32_t timeout_ms) {
                     sizeof(timeout)) == 0;
 }
 
-#if defined(__GNUC__) && !PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if defined(__GNUC__) && !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 #pragma GCC diagnostic pop
 #endif
 
@@ -699,15 +700,15 @@ UnixSocket::UnixSocket(EventListener* event_listener,
       weak_ptr_factory_(this) {
   state_ = State::kDisconnected;
   if (adopt_state == State::kDisconnected) {
-    PERFETTO_DCHECK(!adopt_fd);
+    PERFETTO_SOLACE_DCHECK(!adopt_fd);
     sock_raw_ = UnixSocketRaw::CreateMayFail(sock_family, sock_type);
     if (!sock_raw_)
       return;
   } else if (adopt_state == State::kConnected) {
-    PERFETTO_DCHECK(adopt_fd);
+    PERFETTO_SOLACE_DCHECK(adopt_fd);
     sock_raw_ = UnixSocketRaw(std::move(adopt_fd), sock_family, sock_type);
     state_ = State::kConnected;
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     if (peer_cred_mode_ == SockPeerCredMode::kReadOnConnect)
       ReadPeerCredentialsPosix();
 #endif
@@ -720,15 +721,15 @@ UnixSocket::UnixSocket(EventListener* event_listener,
 
     sock_raw_ = UnixSocketRaw(std::move(adopt_fd), sock_family, sock_type);
     if (!sock_raw_.Listen()) {
-      PERFETTO_DPLOG("listen() failed");
+      PERFETTO_SOLACE_DPLOG("listen() failed");
       return;
     }
     state_ = State::kListening;
   } else {
-    PERFETTO_FATAL("Unexpected adopt_state");  // Unfeasible.
+    PERFETTO_SOLACE_FATAL("Unexpected adopt_state");  // Unfeasible.
   }
 
-  PERFETTO_CHECK(sock_raw_);
+  PERFETTO_SOLACE_CHECK(sock_raw_);
 
   sock_raw_.SetBlocking(false);
 
@@ -756,7 +757,7 @@ UnixSocketRaw UnixSocket::ReleaseSocket() {
 
 // Called only by the Connect() static constructor.
 void UnixSocket::DoConnect(const std::string& socket_name) {
-  PERFETTO_DCHECK(state_ == State::kDisconnected);
+  PERFETTO_SOLACE_DCHECK(state_ == State::kDisconnected);
 
   // This is the only thing that can gracefully fail in the ctor.
   if (!sock_raw_)
@@ -784,53 +785,53 @@ void UnixSocket::DoConnect(const std::string& socket_name) {
   });
 }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 void UnixSocket::ReadPeerCredentialsPosix() {
   // Peer credentials are supported only on AF_UNIX sockets.
   if (sock_raw_.family() != SockFamily::kUnix)
     return;
-  PERFETTO_CHECK(peer_cred_mode_ != SockPeerCredMode::kIgnore);
+  PERFETTO_SOLACE_CHECK(peer_cred_mode_ != SockPeerCredMode::kIgnore);
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   struct ucred user_cred;
   socklen_t len = sizeof(user_cred);
   int fd = sock_raw_.fd();
   int res = getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &user_cred, &len);
-  PERFETTO_CHECK(res == 0);
+  PERFETTO_SOLACE_CHECK(res == 0);
   peer_uid_ = user_cred.uid;
   peer_pid_ = user_cred.pid;
-#elif PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#elif PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
   struct xucred user_cred;
   socklen_t len = sizeof(user_cred);
   int res = getsockopt(sock_raw_.fd(), 0, LOCAL_PEERCRED, &user_cred, &len);
-  PERFETTO_CHECK(res == 0 && user_cred.cr_version == XUCRED_VERSION);
+  PERFETTO_SOLACE_CHECK(res == 0 && user_cred.cr_version == XUCRED_VERSION);
   peer_uid_ = static_cast<uid_t>(user_cred.cr_uid);
   // There is no pid in the LOCAL_PEERCREDS for MacOS / FreeBSD.
 #endif
 }
 #endif  // !OS_WIN
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 void UnixSocket::OnEvent() {
   WSANETWORKEVENTS evts{};
-  PERFETTO_CHECK(WSAEnumNetworkEvents(sock_raw_.fd(), sock_raw_.watch_handle(),
+  PERFETTO_SOLACE_CHECK(WSAEnumNetworkEvents(sock_raw_.fd(), sock_raw_.watch_handle(),
                                       &evts) == 0);
   if (state_ == State::kDisconnected)
     return;  // Some spurious event, typically queued just before Shutdown().
 
   if (state_ == State::kConnecting && (evts.lNetworkEvents & FD_CONNECT)) {
-    PERFETTO_DCHECK(sock_raw_);
+    PERFETTO_SOLACE_DCHECK(sock_raw_);
     int err = evts.iErrorCode[FD_CONNECT_BIT];
     if (err) {
-      PERFETTO_DPLOG("Connection error: %d", err);
+      PERFETTO_SOLACE_DPLOG("Connection error: %d", err);
       Shutdown(false);
       event_listener_->OnConnect(this, false /* connected */);
       return;
     }
 
     // kReadOnConnect is not supported on Windows.
-    PERFETTO_DCHECK(peer_cred_mode_ != SockPeerCredMode::kReadOnConnect);
+    PERFETTO_SOLACE_DCHECK(peer_cred_mode_ != SockPeerCredMode::kReadOnConnect);
     state_ = State::kConnected;
     event_listener_->OnConnect(this, true /* connected */);
   }
@@ -900,7 +901,7 @@ void UnixSocket::OnEvent() {
     return event_listener_->OnDataAvailable(this);
 
   if (state_ == State::kConnecting) {
-    PERFETTO_DCHECK(sock_raw_);
+    PERFETTO_SOLACE_DCHECK(sock_raw_);
     int sock_err = EINVAL;
     socklen_t err_len = sizeof(sock_err);
     int res =
@@ -914,7 +915,7 @@ void UnixSocket::OnEvent() {
       state_ = State::kConnected;
       return event_listener_->OnConnect(this, true /* connected */);
     }
-    PERFETTO_DLOG("Connection error: %s", strerror(sock_err));
+    PERFETTO_SOLACE_DLOG("Connection error: %s", strerror(sock_err));
     Shutdown(false);
     return event_listener_->OnConnect(this, false /* connected */);
   }
@@ -925,7 +926,7 @@ void UnixSocket::OnEvent() {
     // notification. Drain'em all.
     for (;;) {
       ScopedFile new_fd(
-          PERFETTO_EINTR(accept(sock_raw_.fd(), nullptr, nullptr)));
+          PERFETTO_SOLACE_EINTR(accept(sock_raw_.fd(), nullptr, nullptr)));
       if (!new_fd)
         return;
       std::unique_ptr<UnixSocket> new_sock(new UnixSocket(
@@ -962,7 +963,7 @@ bool UnixSocket::Send(const void* msg,
   // to send only a portion of the buffer.
   // If sz < 0, either the other endpoint disconnected (ECONNRESET) or some
   // other error happened. In both cases we should just give up.
-  PERFETTO_DPLOG("sendmsg() failed");
+  PERFETTO_SOLACE_DPLOG("sendmsg() failed");
   Shutdown(true);
   return false;
 }
@@ -998,7 +999,7 @@ size_t UnixSocket::Receive(void* msg,
     return 0;
 
   const ssize_t sz = sock_raw_.Receive(msg, len, fd_vec, max_files);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   bool async_would_block = WSAGetLastError() == WSAEWOULDBLOCK;
 #else
   bool async_would_block = IsAgain(errno);
@@ -1010,14 +1011,14 @@ size_t UnixSocket::Receive(void* msg,
     Shutdown(true);
     return 0;
   }
-  PERFETTO_CHECK(static_cast<size_t>(sz) <= len);
+  PERFETTO_SOLACE_CHECK(static_cast<size_t>(sz) <= len);
   return static_cast<size_t>(sz);
 }
 
 std::string UnixSocket::ReceiveString(size_t max_length) {
   std::unique_ptr<char[]> buf(new char[max_length + 1]);
   size_t rsize = Receive(buf.get(), max_length);
-  PERFETTO_CHECK(rsize <= max_length);
+  PERFETTO_SOLACE_CHECK(rsize <= max_length);
   buf[rsize] = '\0';
   return std::string(buf.get());
 }
@@ -1042,4 +1043,5 @@ void UnixSocket::EventListener::OnDisconnect(UnixSocket*) {}
 void UnixSocket::EventListener::OnDataAvailable(UnixSocket*) {}
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

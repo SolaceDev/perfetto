@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_CONTAINER_ANNOTATIONS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_CONTAINER_ANNOTATIONS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_CONTAINER_ANNOTATIONS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_CONTAINER_ANNOTATIONS_H_
 
 #include "perfetto/base/build_config.h"
 
 // Windows ASAN doesn't currently support these annotations.
-#if defined(ADDRESS_SANITIZER) && !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN) && \
+#if defined(ADDRESS_SANITIZER) && !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN) && \
     !defined(ADDRESS_SANITIZER_WITHOUT_INSTRUMENTATION)
 
 #define ANNOTATE_NEW_BUFFER(buffer, capacity, new_size)                      \
@@ -54,4 +54,4 @@
                                  new_capacity)
 #endif  // defined(ADDRESS_SANITIZER)
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_CONTAINER_ANNOTATIONS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_CONTAINER_ANNOTATIONS_H_

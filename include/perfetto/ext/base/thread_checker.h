@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_THREAD_CHECKER_H_
-#define INCLUDE_PERFETTO_EXT_BASE_THREAD_CHECKER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_CHECKER_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_CHECKER_H_
 
 #include "perfetto/base/build_config.h"
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <pthread.h>
 #endif
 #include <atomic>
@@ -29,40 +29,42 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 using ThreadID = unsigned long;
 #else
 using ThreadID = pthread_t;
 #endif
 
-class PERFETTO_EXPORT ThreadChecker {
+class PERFETTO_SOLACE_EXPORT ThreadChecker {
  public:
   ThreadChecker();
   ~ThreadChecker();
   ThreadChecker(const ThreadChecker&);
   ThreadChecker& operator=(const ThreadChecker&);
-  bool CalledOnValidThread() const PERFETTO_WARN_UNUSED_RESULT;
+  bool CalledOnValidThread() const PERFETTO_SOLACE_WARN_UNUSED_RESULT;
   void DetachFromThread();
 
  private:
   mutable std::atomic<ThreadID> thread_id_;
 };
 
-#if PERFETTO_DCHECK_IS_ON() && !PERFETTO_BUILDFLAG(PERFETTO_CHROMIUM_BUILD)
+#if PERFETTO_SOLACE_DCHECK_IS_ON() && !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_CHROMIUM_BUILD)
 // TODO(primiano) Use Chromium's thread checker in Chromium.
-#define PERFETTO_THREAD_CHECKER(name) base::ThreadChecker name;
-#define PERFETTO_DCHECK_THREAD(name) \
-  PERFETTO_DCHECK((name).CalledOnValidThread())
-#define PERFETTO_DETACH_FROM_THREAD(name) (name).DetachFromThread()
+#define PERFETTO_SOLACE_THREAD_CHECKER(name) base::ThreadChecker name;
+#define PERFETTO_SOLACE_DCHECK_THREAD(name) \
+  PERFETTO_SOLACE_DCHECK((name).CalledOnValidThread())
+#define PERFETTO_SOLACE_DETACH_FROM_THREAD(name) (name).DetachFromThread()
 #else
-#define PERFETTO_THREAD_CHECKER(name)
-#define PERFETTO_DCHECK_THREAD(name)
-#define PERFETTO_DETACH_FROM_THREAD(name)
-#endif  // PERFETTO_DCHECK_IS_ON()
+#define PERFETTO_SOLACE_THREAD_CHECKER(name)
+#define PERFETTO_SOLACE_DCHECK_THREAD(name)
+#define PERFETTO_SOLACE_DETACH_FROM_THREAD(name)
+#endif  // PERFETTO_SOLACE_DCHECK_IS_ON()
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_THREAD_CHECKER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_THREAD_CHECKER_H_

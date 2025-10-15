@@ -43,12 +43,12 @@ using google::protobuf::FileDescriptor;
 using google::protobuf::compiler::GeneratorContext;
 using google::protobuf::io::Printer;
 using google::protobuf::io::ZeroCopyOutputStream;
-using perfetto::base::SplitString;
-using perfetto::base::StripChars;
-using perfetto::base::StripPrefix;
-using perfetto::base::StripSuffix;
-using perfetto::base::ToUpper;
-using perfetto::base::Uppercase;
+using perfetto::solace::base::SplitString;
+using perfetto::solace::base::StripChars;
+using perfetto::solace::base::StripPrefix;
+using perfetto::solace::base::StripSuffix;
+using perfetto::solace::base::ToUpper;
+using perfetto::solace::base::Uppercase;
 
 // Keep this value in sync with ProtoDecoder::kMaxDecoderFieldId. If they go out
 // of sync pbzero.h files will stop compiling, hitting the at() static_assert.

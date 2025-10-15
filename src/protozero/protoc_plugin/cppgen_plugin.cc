@@ -43,10 +43,10 @@ namespace {
 using namespace google::protobuf;
 using namespace google::protobuf::compiler;
 using namespace google::protobuf::io;
-using perfetto::base::SplitString;
-using perfetto::base::StripChars;
-using perfetto::base::StripSuffix;
-using perfetto::base::ToUpper;
+using perfetto::solace::base::SplitString;
+using perfetto::solace::base::StripChars;
+using perfetto::solace::base::StripSuffix;
+using perfetto::solace::base::ToUpper;
 
 static constexpr auto TYPE_MESSAGE = FieldDescriptor::TYPE_MESSAGE;
 static constexpr auto TYPE_SINT32 = FieldDescriptor::TYPE_SINT32;
@@ -279,13 +279,13 @@ bool CppObjGenerator::Generate(const google::protobuf::FileDescriptor* file,
   auto add_fwd_decl = [&fwd_decls](FwdType cpp_type,
                                    const std::string& full_name) {
     auto dot = full_name.rfind("::");
-    PERFETTO_CHECK(dot != std::string::npos);
+    PERFETTO_SOLACE_CHECK(dot != std::string::npos);
     auto package = full_name.substr(0, dot);
     auto name = full_name.substr(dot + 2);
     if (cpp_type == kClass) {
       fwd_decls.emplace(package, "class " + name + ";");
     } else {
-      PERFETTO_CHECK(cpp_type == kEnum);
+      PERFETTO_SOLACE_CHECK(cpp_type == kEnum);
       fwd_decls.emplace(package, "enum " + name + " : int;");
     }
   };
@@ -534,7 +534,7 @@ void CppObjGenerator::GenEnumAliases(const EnumDescriptor* enum_desc,
 void CppObjGenerator::GenClassDecl(const Descriptor* msg, Printer* p) const {
   std::string full_name = GetFullName(msg);
   p->Print(
-      "\nclass PERFETTO_EXPORT $n$ : public solace::protozero::CppMessageObj {\n",
+      "\nclass PERFETTO_SOLACE_EXPORT $n$ : public solace::protozero::CppMessageObj {\n",
       "n", full_name);
   p->Print(" public:\n");
   p->Indent();
@@ -558,7 +558,7 @@ void CppObjGenerator::GenClassDecl(const Descriptor* msg, Printer* p) const {
   for (int i = 0; i < msg->field_count(); i++) {
     const FieldDescriptor* field = msg->field(i);
     std::string name = field->camelcase_name();
-    name[0] = perfetto::base::Uppercase(name[0]);
+    name[0] = perfetto::solace::base::Uppercase(name[0]);
     p->Print("  k$n$FieldNumber = $num$,\n", "n", name, "num",
              std::to_string(field->number()));
   }
@@ -770,9 +770,9 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
         }
       }
       if (field->is_packed()) {
-        PERFETTO_CHECK(field->is_repeated());
+        PERFETTO_SOLACE_CHECK(field->is_repeated());
         if (field->type() == TYPE_SINT32 || field->type() == TYPE_SINT64) {
-          PERFETTO_FATAL("packed signed (zigzag) fields are not supported");
+          PERFETTO_SOLACE_FATAL("packed signed (zigzag) fields are not supported");
         }
         p->Print(
             "for (solace::protozero::PackedRepeatedFieldIterator<$w$, $c$> "
@@ -836,7 +836,7 @@ void CppObjGenerator::GenClassDef(const Descriptor* msg, Printer* p) const {
     args["n"] = field->lowercase_name();
     p->Print(args, "// Field $id$: $n$\n");
     if (field->is_packed()) {
-      PERFETTO_CHECK(field->is_repeated());
+      PERFETTO_SOLACE_CHECK(field->is_repeated());
       p->Print("{\n");
       p->Indent();
       p->Print("$p$ pack;\n", "p", GetPackedBuffer(field));

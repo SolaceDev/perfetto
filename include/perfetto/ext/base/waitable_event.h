@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_WAITABLE_EVENT_H_
-#define INCLUDE_PERFETTO_EXT_BASE_WAITABLE_EVENT_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_WAITABLE_EVENT_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_WAITABLE_EVENT_H_
 
 #include <condition_variable>
 #include <mutex>
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // A waitable event for cross-thread synchronization.
@@ -45,6 +46,7 @@ class WaitableEvent {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_WAITABLE_EVENT_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WAITABLE_EVENT_H_

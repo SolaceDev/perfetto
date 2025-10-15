@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_METATRACE_EVENTS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_METATRACE_EVENTS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_METATRACE_EVENTS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_METATRACE_EVENTS_H_
 
 #include <stdint.h>
 
@@ -39,7 +39,7 @@ enum Tags : uint32_t {
 
 // DO NOT remove or reshuffle items in this list, only append. The ID of these
 // events are an ABI, the trace processor relies on these to open old traces.
-#define PERFETTO_METATRACE_EVENTS(F) \
+#define PERFETTO_SOLACE_METATRACE_EVENTS(F) \
   F(EVENT_ZERO_UNUSED), \
   F(FTRACE_CPU_READER_READ), /*unused*/ \
   F(FTRACE_DRAIN_CPUS), /*unused*/ \
@@ -79,7 +79,7 @@ enum Tags : uint32_t {
 //   tracing_service_impl.cc for the format.
 // * PROFILER_UNWIND_CURRENT_PID represents the PID that is being unwound.
 //
-#define PERFETTO_METATRACE_COUNTERS(F) \
+#define PERFETTO_SOLACE_METATRACE_COUNTERS(F) \
   F(COUNTER_ZERO_UNUSED),\
   F(FTRACE_PAGES_DRAINED), \
   F(PS_PIDS_SCANNED), \
@@ -89,22 +89,22 @@ enum Tags : uint32_t {
 
 // clang-format on
 
-#define PERFETTO_METATRACE_IDENTITY(name) name
-#define PERFETTO_METATRACE_TOSTRING(name) #name
+#define PERFETTO_SOLACE_METATRACE_IDENTITY(name) name
+#define PERFETTO_SOLACE_METATRACE_TOSTRING(name) #name
 
 enum Events : uint16_t {
-  PERFETTO_METATRACE_EVENTS(PERFETTO_METATRACE_IDENTITY),
+  PERFETTO_SOLACE_METATRACE_EVENTS(PERFETTO_SOLACE_METATRACE_IDENTITY),
   EVENTS_MAX
 };
 constexpr char const* kEventNames[] = {
-    PERFETTO_METATRACE_EVENTS(PERFETTO_METATRACE_TOSTRING)};
+    PERFETTO_SOLACE_METATRACE_EVENTS(PERFETTO_SOLACE_METATRACE_TOSTRING)};
 
 enum Counters : uint16_t {
-  PERFETTO_METATRACE_COUNTERS(PERFETTO_METATRACE_IDENTITY),
+  PERFETTO_SOLACE_METATRACE_COUNTERS(PERFETTO_SOLACE_METATRACE_IDENTITY),
   COUNTERS_MAX
 };
 constexpr char const* kCounterNames[] = {
-    PERFETTO_METATRACE_COUNTERS(PERFETTO_METATRACE_TOSTRING)};
+    PERFETTO_SOLACE_METATRACE_COUNTERS(PERFETTO_SOLACE_METATRACE_TOSTRING)};
 
 inline void SuppressUnusedVarsInAmalgamatedBuild() {
   (void)kCounterNames;
@@ -114,4 +114,4 @@ inline void SuppressUnusedVarsInAmalgamatedBuild() {
 }  // namespace metatrace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_METATRACE_EVENTS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_METATRACE_EVENTS_H_

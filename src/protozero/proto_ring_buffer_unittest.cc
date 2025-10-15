@@ -58,7 +58,7 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 namespace {
 
-using ::perfetto::base::ArraySize;
+using ::perfetto::solace::base::ArraySize;
 
 constexpr uint32_t kMaxMsgSize = ProtoRingBuffer::kMaxMsgSize;
 
@@ -86,13 +86,13 @@ class ProtoRingBufferTest : public ::testing::Test {
     for (uint32_t i = 0; i < len; i++)
       *(wptr++) = '0' + ((len + i) % 73);  // 73 prime for more unique patterns.
 
-    PERFETTO_CHECK(wptr <= &last_msg_.back());
+    PERFETTO_SOLACE_CHECK(wptr <= &last_msg_.back());
     last_msg_.resize(static_cast<size_t>(wptr - &last_msg_[0]));
 
     // Vector must not expand, because the returned Mesdage relies on pointer
     // stability. The TEST_F must reserve enough capacity.
     if (append)
-      PERFETTO_CHECK(last_msg_.data() == initial_ptr);
+      PERFETTO_SOLACE_CHECK(last_msg_.data() == initial_ptr);
     return msg;
   }
 

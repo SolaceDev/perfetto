@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_BASE64_H_
-#define INCLUDE_PERFETTO_EXT_BASE_BASE64_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_BASE64_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_BASE64_H_
 
 #include <string>
 
@@ -24,6 +24,7 @@
 #include "perfetto/ext/base/utils.h"  // For ssize_t.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Returns the length of the destination string (included '=' padding).
@@ -63,6 +64,7 @@ inline Optional<std::string> Base64Decode(StringView sv) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_BASE64_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_BASE64_H_

@@ -20,26 +20,28 @@
 
 #include <stdio.h>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_VERSION_GEN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_VERSION_GEN)
 #include "perfetto_version.gen.h"
 #else
-#define PERFETTO_VERSION_STRING() "v0.0"
-#define PERFETTO_VERSION_SCM_REVISION() "unknown"
+#define PERFETTO_SOLACE_VERSION_STRING() "v0.0"
+#define PERFETTO_SOLACE_VERSION_SCM_REVISION() "unknown"
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 const char* GetVersionString() {
   static const char* version_str = [] {
     static constexpr size_t kMaxLen = 256;
     char* version = new char[kMaxLen + 1];
-    snprintf(version, kMaxLen, "Perfetto %s (%s)", PERFETTO_VERSION_STRING(),
-             PERFETTO_VERSION_SCM_REVISION());
+    snprintf(version, kMaxLen, "Perfetto %s (%s)", PERFETTO_SOLACE_VERSION_STRING(),
+             PERFETTO_SOLACE_VERSION_SCM_REVISION());
     return version;
   }();
   return version_str;
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

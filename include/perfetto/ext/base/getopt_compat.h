@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_GETOPT_COMPAT_H_
-#define INCLUDE_PERFETTO_EXT_BASE_GETOPT_COMPAT_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_GETOPT_COMPAT_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_GETOPT_COMPAT_H_
 
 #include <cstddef>  // For std::nullptr_t
 
@@ -23,6 +23,7 @@
 // should directly include this file. Use base/getopt.h instead.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace getopt_compat {
 
@@ -66,6 +67,7 @@ int getopt(int argc, char** argv, const char* shortopts);
 
 }  // namespace getopt_compat
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_GETOPT_COMPAT_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_GETOPT_COMPAT_H_

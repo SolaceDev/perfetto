@@ -21,6 +21,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 StringSplitter::StringSplitter(std::string str, char delimiter)
@@ -41,7 +42,7 @@ StringSplitter::StringSplitter(StringSplitter* outer, char delimiter)
 }
 
 void StringSplitter::Initialize(char* str, size_t size) {
-  PERFETTO_DCHECK(!size || str);
+  PERFETTO_SOLACE_DCHECK(!size || str);
   next_ = str;
   end_ = str + size;
   cur_ = nullptr;
@@ -77,4 +78,5 @@ bool StringSplitter::Next() {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

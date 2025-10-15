@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_CRASH_KEYS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_CRASH_KEYS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_CRASH_KEYS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_CRASH_KEYS_H_
 
 #include <algorithm>
 #include <atomic>
@@ -62,6 +62,7 @@
 // The tests live in logging_unittest.cc.
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 constexpr size_t kCrashKeyMaxStrSize = 32;
@@ -107,7 +108,7 @@ class CrashKey {
   void Set(int64_t value) {
     int_value_.store(value, std::memory_order_relaxed);
     type_.store(Type::kInt, std::memory_order_relaxed);
-    if (PERFETTO_UNLIKELY(!registered_.load(std::memory_order_relaxed)))
+    if (PERFETTO_SOLACE_UNLIKELY(!registered_.load(std::memory_order_relaxed)))
       Register();
   }
 
@@ -117,16 +118,16 @@ class CrashKey {
       str_value_[i].store(sv.data()[i], std::memory_order_relaxed);
     str_value_[len].store('\0', std::memory_order_relaxed);
     type_.store(Type::kStr, std::memory_order_relaxed);
-    if (PERFETTO_UNLIKELY(!registered_.load(std::memory_order_relaxed)))
+    if (PERFETTO_SOLACE_UNLIKELY(!registered_.load(std::memory_order_relaxed)))
       Register();
   }
 
-  ScopedClear SetScoped(int64_t value) PERFETTO_WARN_UNUSED_RESULT {
+  ScopedClear SetScoped(int64_t value) PERFETTO_SOLACE_WARN_UNUSED_RESULT {
     Set(value);
     return ScopedClear(this);
   }
 
-  ScopedClear SetScoped(StringView sv) PERFETTO_WARN_UNUSED_RESULT {
+  ScopedClear SetScoped(StringView sv) PERFETTO_SOLACE_WARN_UNUSED_RESULT {
     Set(sv);
     return ScopedClear(this);
   }
@@ -157,6 +158,7 @@ size_t SerializeCrashKeys(char* dst, size_t len);
 void UnregisterAllCrashKeysForTesting();
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_CRASH_KEYS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_CRASH_KEYS_H_

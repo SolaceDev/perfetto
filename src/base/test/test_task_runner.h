@@ -28,6 +28,7 @@
 #include "perfetto/ext/base/unix_task_runner.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class TestTaskRunner : public TaskRunner {
@@ -36,7 +37,7 @@ class TestTaskRunner : public TaskRunner {
   ~TestTaskRunner() override;
 
   void RunUntilIdle();
-  void PERFETTO_NORETURN Run();
+  void PERFETTO_SOLACE_NORETURN Run();
 
   std::function<void()> CreateCheckpoint(const std::string& checkpoint);
   void RunUntilCheckpoint(const std::string& checkpoint,
@@ -64,6 +65,7 @@ class TestTaskRunner : public TaskRunner {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 #endif  // SRC_BASE_TEST_TEST_TASK_RUNNER_H_

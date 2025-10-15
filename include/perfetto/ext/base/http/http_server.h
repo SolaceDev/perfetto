@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_HTTP_HTTP_SERVER_H_
-#define INCLUDE_PERFETTO_EXT_BASE_HTTP_HTTP_SERVER_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_HTTP_HTTP_SERVER_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_HTTP_HTTP_SERVER_H_
 
 #include <array>
 #include <initializer_list>
@@ -30,6 +30,7 @@
 #include "perfetto/ext/base/unix_socket.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class HttpServerConnection;
@@ -184,6 +185,7 @@ class HttpServer : public UnixSocket::EventListener {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_HTTP_HTTP_SERVER_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_HTTP_HTTP_SERVER_H_

@@ -87,7 +87,7 @@ struct SOLMsg {
 };
 
 template <typename T>
-PERFETTO_ALWAYS_INLINE void FillMessage_Simple(T* msg) {
+PERFETTO_SOLACE_ALWAYS_INLINE void FillMessage_Simple(T* msg) {
   benchmark::DoNotOptimize(g_fake_input_simple);
   msg->set_field_int32(static_cast<int32_t>(g_fake_input_simple[0]));
   msg->set_field_uint32(static_cast<uint32_t>(g_fake_input_simple[1]));
@@ -97,7 +97,7 @@ PERFETTO_ALWAYS_INLINE void FillMessage_Simple(T* msg) {
 }
 
 template <typename T>
-PERFETTO_ALWAYS_INLINE void FillMessage_Nested(T* msg, int depth = 0) {
+PERFETTO_SOLACE_ALWAYS_INLINE void FillMessage_Nested(T* msg, int depth = 0) {
   benchmark::DoNotOptimize(g_fake_input_simple);
   FillMessage_Simple(msg);
   if (depth < 3) {
@@ -106,7 +106,7 @@ PERFETTO_ALWAYS_INLINE void FillMessage_Nested(T* msg, int depth = 0) {
   }
 }
 
-PERFETTO_ALWAYS_INLINE void Clobber(benchmark::State& state) {
+PERFETTO_SOLACE_ALWAYS_INLINE void Clobber(benchmark::State& state) {
   uint64_t* buf = reinterpret_cast<uint64_t*>(g_cur);
 
   // Read-back the data written to have a realistic evaluation of the
@@ -120,7 +120,7 @@ PERFETTO_ALWAYS_INLINE void Clobber(benchmark::State& state) {
   for (size_t i = 1; i < kBufPerIteration / sizeof(uint64_t); i++)
     buf[i] ^= buf[i - 1];
   if (buf[(kBufPerIteration / sizeof(uint64_t)) - 1] == 42)
-    PERFETTO_CHECK(false);
+    PERFETTO_SOLACE_CHECK(false);
   benchmark::DoNotOptimize(buf);
 
   constexpr size_t kWrap = kTotalWorkingSetSize / kBufPerIteration;

@@ -16,7 +16,7 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)
 
 #include "perfetto/ext/base/watchdog_posix.h"
 
@@ -28,6 +28,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -50,6 +51,7 @@ TEST(WatchdogPosixTest, ParseProcStat) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#endif  // PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)

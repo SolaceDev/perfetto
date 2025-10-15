@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_H_
-#define INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_H_
 
 #include <functional>
 
@@ -23,13 +23,14 @@
 
 // The POSIX watchdog is only supported on Linux and Android in non-embedder
 // builds.
-#if PERFETTO_BUILDFLAG(PERFETTO_WATCHDOG)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_WATCHDOG)
 #include "perfetto/ext/base/watchdog_posix.h"
 #else
 #include "perfetto/ext/base/watchdog_noop.h"
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Used only to add more details to crash reporting.
@@ -44,7 +45,7 @@ enum class WatchdogCrashReason {
 // Make the limits more relaxed on desktop, where multi-GB traces are likely.
 // Multi-GB traces can take bursts of cpu time to write into disk at the end of
 // the trace.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 constexpr uint32_t kWatchdogDefaultCpuLimit = 75;
 constexpr uint32_t kWatchdogDefaultCpuWindow = 5 * 60 * 1000;  // 5 minutes.
 #else
@@ -74,6 +75,7 @@ inline void RunTaskWithWatchdogGuard(const std::function<void()>& task) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_WATCHDOG_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_WATCHDOG_H_

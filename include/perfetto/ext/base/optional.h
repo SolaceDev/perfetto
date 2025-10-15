@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_OPTIONAL_H_
-#define INCLUDE_PERFETTO_EXT_BASE_OPTIONAL_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_OPTIONAL_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_OPTIONAL_H_
 
 #include <functional>
 #include <type_traits>
@@ -24,6 +24,7 @@
 #include "perfetto/base/logging.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // Specification:
@@ -78,7 +79,7 @@ struct OptionalStorageBase {
 
   template <class... Args>
   void Init(Args&&... args) {
-    PERFETTO_DCHECK(!is_populated_);
+    PERFETTO_SOLACE_DCHECK(!is_populated_);
     ::new (&value_) T(std::forward<Args>(args)...);
     is_populated_ = true;
   }
@@ -119,7 +120,7 @@ struct OptionalStorageBase<T, true /* trivially destructible */> {
 
   template <class... Args>
   void Init(Args&&... args) {
-    PERFETTO_DCHECK(!is_populated_);
+    PERFETTO_SOLACE_DCHECK(!is_populated_);
     ::new (&value_) T(std::forward<Args>(args)...);
     is_populated_ = true;
   }
@@ -380,8 +381,8 @@ using RemoveCvRefT =
 // byte for its body. __declspec(empty_bases) enables the optimization.
 // cf)
 // https://blogs.msdn.microsoft.com/vcblog/2016/03/30/optimizing-the-layout-of-empty-base-classes-in-vs2015-update-2-3/
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN) && \
-    !PERFETTO_BUILDFLAG(PERFETTO_COMPILER_GCC)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN) && \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_COMPILER_GCC)
 #define OPTIONAL_DECLSPEC_EMPTY_BASES __declspec(empty_bases)
 #else
 #define OPTIONAL_DECLSPEC_EMPTY_BASES
@@ -401,8 +402,8 @@ using RemoveCvRefT =
 // - All the non-members are in the 'base' namespace instead of 'std'.
 //
 // Note that T cannot have a constructor T(Optional<T>) etc. Optional<T>
-// PERFETTO_CHECKs T's constructor (specifically via IsConvertibleFromOptional),
-// and in the PERFETTO_CHECK whether T can be constructible from Optional<T>,
+// PERFETTO_SOLACE_CHECKs T's constructor (specifically via IsConvertibleFromOptional),
+// and in the PERFETTO_SOLACE_CHECK whether T can be constructible from Optional<T>,
 // which is recursive so it does not work. As of Feb 2018, std::optional C++17
 // implementation in both clang and gcc has same limitation. MSVC SFINAE looks
 // to have different behavior, but anyway it reports an error, too.
@@ -560,32 +561,32 @@ class OPTIONAL_DECLSPEC_EMPTY_BASES Optional
   }
 
   const T* operator->() const {
-    PERFETTO_DCHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_);
     return &storage_.value_;
   }
 
   T* operator->() {
-    PERFETTO_DCHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_);
     return &storage_.value_;
   }
 
   const T& operator*() const& {
-    PERFETTO_DCHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_);
     return storage_.value_;
   }
 
   T& operator*() & {
-    PERFETTO_DCHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_);
     return storage_.value_;
   }
 
   const T&& operator*() const&& {
-    PERFETTO_DCHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_);
     return std::move(storage_.value_);
   }
 
   T&& operator*() && {
-    PERFETTO_DCHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_);
     return std::move(storage_.value_);
   }
 
@@ -594,22 +595,22 @@ class OPTIONAL_DECLSPEC_EMPTY_BASES Optional
   constexpr bool has_value() const { return storage_.is_populated_; }
 
   T& value() & {
-    PERFETTO_CHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_CHECK(storage_.is_populated_);
     return storage_.value_;
   }
 
   const T& value() const& {
-    PERFETTO_CHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_CHECK(storage_.is_populated_);
     return storage_.value_;
   }
 
   T&& value() && {
-    PERFETTO_CHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_CHECK(storage_.is_populated_);
     return std::move(storage_.value_);
   }
 
   const T&& value() const&& {
-    PERFETTO_CHECK(storage_.is_populated_);
+    PERFETTO_SOLACE_CHECK(storage_.is_populated_);
     return std::move(storage_.value_);
   }
 
@@ -646,7 +647,7 @@ class OPTIONAL_DECLSPEC_EMPTY_BASES Optional
       return;
     }
 
-    PERFETTO_DCHECK(storage_.is_populated_ && other.storage_.is_populated_);
+    PERFETTO_SOLACE_DCHECK(storage_.is_populated_ && other.storage_.is_populated_);
     using std::swap;
     swap(**this, *other);
   }
@@ -886,13 +887,14 @@ swap(Optional<T>& lhs, Optional<T>& rhs) {
 }
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
 template <class T>
-struct std::hash<perfetto::base::Optional<T>> {
-  size_t operator()(const perfetto::base::Optional<T>& opt) const {
-    return opt == perfetto::base::nullopt ? 0 : std::hash<T>()(*opt);
+struct std::hash<perfetto::solace::base::Optional<T>> {
+  size_t operator()(const perfetto::solace::base::Optional<T>& opt) const {
+    return opt == perfetto::solace::base::nullopt ? 0 : std::hash<T>()(*opt);
   }
 };
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_OPTIONAL_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_OPTIONAL_H_

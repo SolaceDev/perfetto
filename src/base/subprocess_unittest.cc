@@ -18,7 +18,7 @@
 
 #include <thread>
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #else
 #include <signal.h>
@@ -33,12 +33,13 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
 std::string GetOutput(const Subprocess& p) {
   std::string output = p.output();
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   size_t pos = 0;
   while ((pos = output.find("\r\n", pos)) != std::string::npos)
     output.erase(pos, 1);
@@ -52,7 +53,7 @@ std::string GenLargeString() {
     contents += "very long text " + std::to_string(i) + "\n";
   }
   // Make sure that |contents| is > the default pipe buffer on Linux (4 pages).
-  PERFETTO_DCHECK(contents.size() > 4096 * 4);
+  PERFETTO_SOLACE_DCHECK(contents.size() > 4096 * 4);
   return contents;
 }
 
@@ -60,7 +61,7 @@ TEST(SubprocessTest, InvalidPath) {
   Subprocess p({"/usr/bin/invalid_1337"});
   EXPECT_FALSE(p.Call());
   EXPECT_EQ(p.status(), Subprocess::kTerminated);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   EXPECT_EQ(p.returncode(), ERROR_FILE_NOT_FOUND);
 #else
   EXPECT_EQ(p.returncode(), 128);
@@ -69,7 +70,7 @@ TEST(SubprocessTest, InvalidPath) {
 }
 
 TEST(SubprocessTest, StdoutOnly) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "(echo skip_err 1>&2) && echo out_only"});
 #else
   Subprocess p({"sh", "-c", "(echo skip_err >&2); echo out_only"});
@@ -83,7 +84,7 @@ TEST(SubprocessTest, StdoutOnly) {
 }
 
 TEST(SubprocessTest, StderrOnly) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "(echo err_only>&2) && echo skip_out"});
 #else
   Subprocess p({"sh", "-c", "(echo err_only >&2); echo skip_out"});
@@ -95,7 +96,7 @@ TEST(SubprocessTest, StderrOnly) {
 }
 
 TEST(SubprocessTest, BothStdoutAndStderr) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "echo out&&(echo err>&2)&&echo out2"});
 #else
   Subprocess p({"sh", "-c", "echo out; (echo err >&2); echo out2"});
@@ -107,7 +108,7 @@ TEST(SubprocessTest, BothStdoutAndStderr) {
 }
 
 TEST(SubprocessTest, BinTrue) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "(exit 0)"});
 #else
   Subprocess p({"true"});
@@ -118,7 +119,7 @@ TEST(SubprocessTest, BinTrue) {
 }
 
 TEST(SubprocessTest, BinFalse) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "(exit 1)"});
 #else
   Subprocess p({"false"});
@@ -129,7 +130,7 @@ TEST(SubprocessTest, BinFalse) {
 }
 
 TEST(SubprocessTest, Echo) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "echo|set /p ignored_var=foobar"});
 #else
   Subprocess p({"echo", "-n", "foobar"});
@@ -143,7 +144,7 @@ TEST(SubprocessTest, Echo) {
 
 TEST(SubprocessTest, FeedbackLongInput) {
   std::string contents = GenLargeString();
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/C", "findstr ."});
 #else
   Subprocess p({"cat", "-"});
@@ -161,7 +162,7 @@ TEST(SubprocessTest, CatLargeFile) {
   TempFile tf = TempFile::Create();
   WriteAll(tf.fd(), contents.data(), contents.size());
   FlushFile(tf.fd());
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", ("type \"" + tf.path() + "\"").c_str()});
 #else
   Subprocess p({"cat", tf.path().c_str()});
@@ -172,7 +173,7 @@ TEST(SubprocessTest, CatLargeFile) {
 }
 
 TEST(SubprocessTest, Timeout) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"ping", "127.0.0.1", "-n", "60"});
   p.args.stdout_mode = Subprocess::kDevNull;
 #else
@@ -185,7 +186,7 @@ TEST(SubprocessTest, Timeout) {
 }
 
 TEST(SubprocessTest, TimeoutNotHit) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"ping", "127.0.0.1", "-n", "1"});
   p.args.stdout_mode = Subprocess::kDevNull;
 #else
@@ -196,7 +197,7 @@ TEST(SubprocessTest, TimeoutNotHit) {
 }
 
 TEST(SubprocessTest, TimeoutStopOutput) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "FOR /L %N IN () DO @echo stuff>NUL"});
 #else
   Subprocess p({"sh", "-c", "while true; do echo stuff; done"});
@@ -208,7 +209,7 @@ TEST(SubprocessTest, TimeoutStopOutput) {
 }
 
 TEST(SubprocessTest, ExitBeforeReadingStdin) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"ping", "127.0.0.1", "-n", "1"});
 #else
   // 'sh -c' is to avoid closing stdin (sleep closes it before sleeping).
@@ -223,7 +224,7 @@ TEST(SubprocessTest, ExitBeforeReadingStdin) {
 }
 
 TEST(SubprocessTest, StdinWriteStall) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"ping", "127.0.0.1", "-n", "10"});
 #else
   // 'sh -c' is to avoid closing stdin (sleep closes it before sleeping).
@@ -241,7 +242,7 @@ TEST(SubprocessTest, StdinWriteStall) {
 }
 
 TEST(SubprocessTest, StartAndWait) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"ping", "127.0.0.1", "-n", "1000"});
 #else
   Subprocess p({"sleep", "1000"});
@@ -253,7 +254,7 @@ TEST(SubprocessTest, StartAndWait) {
 
   EXPECT_EQ(p.status(), Subprocess::kTerminated);
   EXPECT_EQ(p.Poll(), Subprocess::kTerminated);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   EXPECT_EQ(p.returncode(), static_cast<int>(STATUS_CONTROL_C_EXIT));
 #else
   EXPECT_EQ(p.returncode(), static_cast<int>(128 + SIGKILL));
@@ -262,7 +263,7 @@ TEST(SubprocessTest, StartAndWait) {
 
 TEST(SubprocessTest, PollBehavesProperly) {
   Pipe pipe = Pipe::Create();
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "(exit 0)"});
 #else
   Subprocess p({"true"});
@@ -291,7 +292,7 @@ TEST(SubprocessTest, PollBehavesProperly) {
 }
 
 TEST(SubprocessTest, Wait) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   Subprocess p({"cmd", "/c", "echo exec_done && FOR /L %N IN () DO @echo>NUL"});
 #else
   Subprocess p({"sh", "-c", "echo exec_done; while true; do true; done"});
@@ -305,7 +306,7 @@ TEST(SubprocessTest, Wait) {
     EXPECT_EQ(p.status(), Subprocess::kRunning);
   }
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   ScopedPlatformHandle proc_handle(::OpenProcess(
       PROCESS_TERMINATE, /*inherit=*/false, static_cast<DWORD>(p.pid())));
   ASSERT_TRUE(proc_handle);
@@ -316,7 +317,7 @@ TEST(SubprocessTest, Wait) {
   EXPECT_TRUE(p.Wait(30000 /*ms*/));  // We shouldn't hit this.
   EXPECT_TRUE(p.Wait());              // Should be a no-op.
   EXPECT_EQ(p.status(), Subprocess::kTerminated);
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
   EXPECT_EQ(p.returncode(), static_cast<int>(DBG_CONTROL_BREAK));
 #else
   EXPECT_EQ(p.returncode(), 128 + SIGBUS);
@@ -325,7 +326,7 @@ TEST(SubprocessTest, Wait) {
 
 TEST(SubprocessTest, KillOnDtor) {
   auto is_process_alive = [](PlatformProcessId pid) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     DWORD ignored = 0;
     return ProcessIdToSessionId(static_cast<DWORD>(pid), &ignored);
 #else
@@ -338,7 +339,7 @@ TEST(SubprocessTest, KillOnDtor) {
 
   PlatformProcessId pid;
   {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     Subprocess p({"ping", "127.0.0.1", "-n", "1000"});
 #else
     Subprocess p({"sleep", "1000"});
@@ -360,7 +361,7 @@ TEST(SubprocessTest, KillOnDtor) {
 // Regression test for b/162505491.
 TEST(SubprocessTest, MoveOperators) {
   {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     Subprocess initial({"ping", "127.0.0.1", "-n", "100"});
 #else
     Subprocess initial = Subprocess({"sleep", "10000"});
@@ -372,7 +373,7 @@ TEST(SubprocessTest, MoveOperators) {
     EXPECT_EQ(initial.Poll(), Subprocess::kNotStarted);
 
     // Check that reuse works
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     initial = Subprocess({"cmd", "/c", "echo|set /p ignored_var=hello"});
 #else
     initial = Subprocess({"echo", "-n", "hello"});
@@ -387,7 +388,7 @@ TEST(SubprocessTest, MoveOperators) {
 
   std::vector<Subprocess> v;
   for (int i = 0; i < 10; i++) {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
     v.emplace_back(Subprocess({"ping", "127.0.0.1", "-n", "10"}));
 #else
     v.emplace_back(Subprocess({"sleep", "10"}));
@@ -400,7 +401,7 @@ TEST(SubprocessTest, MoveOperators) {
 }
 
 // posix_entrypoint_for_testing is not supported on Windows.
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
 // Test the case of passing a lambda in |entrypoint| but no cmd.c
 TEST(SubprocessTest, Entrypoint) {
@@ -409,8 +410,8 @@ TEST(SubprocessTest, Entrypoint) {
   p.args.stdout_mode = Subprocess::kBuffer;
   p.args.posix_entrypoint_for_testing = [] {
     char buf[32]{};
-    PERFETTO_CHECK(fgets(buf, sizeof(buf), stdin));
-    PERFETTO_CHECK(strcmp(buf, "ping\n") == 0);
+    PERFETTO_SOLACE_CHECK(fgets(buf, sizeof(buf), stdin));
+    PERFETTO_SOLACE_CHECK(strcmp(buf, "ping\n") == 0);
     printf("pong\n");
     fflush(stdout);
     _exit(42);
@@ -453,4 +454,5 @@ TEST(SubprocessTest, EntrypointAndExec) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

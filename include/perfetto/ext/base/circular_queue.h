@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_CIRCULAR_QUEUE_H_
-#define INCLUDE_PERFETTO_EXT_BASE_CIRCULAR_QUEUE_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_CIRCULAR_QUEUE_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_CIRCULAR_QUEUE_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -26,6 +26,7 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 // CircularQueue is a push-back-only / pop-front-only queue with the following
@@ -61,7 +62,7 @@ class CircularQueue {
     Iterator(CircularQueue* queue, uint64_t pos, uint32_t generation)
         : queue_(queue),
           pos_(pos)
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
           ,
           generation_(generation)
 #endif
@@ -75,8 +76,8 @@ class CircularQueue {
     Iterator& operator=(Iterator&&) noexcept = default;
 
     T* operator->() const {
-#if PERFETTO_DCHECK_IS_ON()
-      PERFETTO_DCHECK(generation_ == queue_->generation());
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
+      PERFETTO_SOLACE_DCHECK(generation_ == queue_->generation());
 #endif
       return queue_->Get(pos_);
     }
@@ -161,13 +162,13 @@ class CircularQueue {
    private:
     inline void Add(difference_type offset) {
       pos_ = static_cast<uint64_t>(static_cast<difference_type>(pos_) + offset);
-      PERFETTO_DCHECK(pos_ <= queue_->end_);
+      PERFETTO_SOLACE_DCHECK(pos_ <= queue_->end_);
     }
 
     CircularQueue* queue_;
     uint64_t pos_;
 
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
     uint32_t generation_;
 #endif
   };
@@ -193,17 +194,17 @@ class CircularQueue {
 
   ~CircularQueue() {
     if (!entries_) {
-      PERFETTO_DCHECK(empty());
+      PERFETTO_SOLACE_DCHECK(empty());
       return;
     }
     clear();  // Invoke destructors on all alive entries.
-    PERFETTO_DCHECK(empty());
+    PERFETTO_SOLACE_DCHECK(empty());
   }
 
   template <typename... Args>
   void emplace_back(Args&&... args) {
     increment_generation();
-    if (PERFETTO_UNLIKELY(size() >= capacity_))
+    if (PERFETTO_SOLACE_UNLIKELY(size() >= capacity_))
       Grow();
     T* slot = Get(end_++);
     new (slot) T(std::forward<Args>(args)...);
@@ -222,7 +223,7 @@ class CircularQueue {
   void clear() { erase_front(size()); }
 
   T& at(size_t idx) {
-    PERFETTO_DCHECK(idx < size());
+    PERFETTO_SOLACE_DCHECK(idx < size());
     return *Get(begin_ + idx);
   }
 
@@ -234,13 +235,13 @@ class CircularQueue {
   bool empty() const { return size() == 0; }
 
   size_t size() const {
-    PERFETTO_DCHECK(end_ - begin_ <= capacity_);
+    PERFETTO_SOLACE_DCHECK(end_ - begin_ <= capacity_);
     return static_cast<size_t>(end_ - begin_);
   }
 
   size_t capacity() const { return capacity_; }
 
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   uint32_t generation() const { return generation_; }
   void increment_generation() { ++generation_; }
 #else
@@ -256,11 +257,11 @@ class CircularQueue {
     // Capacity must be always a power of two. This allows Get() to use a simple
     // bitwise-AND for handling the wrapping instead of a full division.
     new_capacity = new_capacity ? new_capacity : capacity_ * 2;
-    PERFETTO_CHECK((new_capacity & (new_capacity - 1)) == 0);  // Must be pow2.
+    PERFETTO_SOLACE_CHECK((new_capacity & (new_capacity - 1)) == 0);  // Must be pow2.
 
     // On 32-bit systems this might hit the 4GB wall and overflow. We can't do
     // anything other than crash in this case.
-    PERFETTO_CHECK(new_capacity > capacity_);
+    PERFETTO_SOLACE_CHECK(new_capacity > capacity_);
 
     AlignedUniquePtr<T[]> new_vec = AlignedAllocTyped<T[]>(new_capacity);
 
@@ -281,8 +282,8 @@ class CircularQueue {
   }
 
   inline T* Get(uint64_t pos) {
-    PERFETTO_DCHECK(pos >= begin_ && pos < end_);
-    PERFETTO_DCHECK((capacity_ & (capacity_ - 1)) == 0);  // Must be a pow2.
+    PERFETTO_SOLACE_DCHECK(pos >= begin_ && pos < end_);
+    PERFETTO_SOLACE_DCHECK((capacity_ & (capacity_ - 1)) == 0);  // Must be a pow2.
     auto index = static_cast<size_t>(pos & (capacity_ - 1));
     return &entries_[index];
   }
@@ -298,12 +299,13 @@ class CircularQueue {
   uint64_t end_ = 0;
 
 // Generation is used in debug builds only for checking iterator validity.
-#if PERFETTO_DCHECK_IS_ON()
+#if PERFETTO_SOLACE_DCHECK_IS_ON()
   uint32_t generation_ = 0;
 #endif
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_CIRCULAR_QUEUE_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_CIRCULAR_QUEUE_H_

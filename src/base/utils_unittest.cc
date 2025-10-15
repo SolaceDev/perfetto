@@ -18,7 +18,7 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <Windows.h>
 #else
 #include <fcntl.h>
@@ -38,6 +38,7 @@
 #include "test/gtest_and_gmock.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 namespace {
 
@@ -110,7 +111,7 @@ TEST(UtilsTest, ReadWritePlatformHandle) {
   // that the file is automatically closed via RAII before being reopened.
   {
     ScopedPlatformHandle handle {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
       ::CreateFileA(tmp_path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
                     FILE_ATTRIBUTE_NORMAL, nullptr)
 #else
@@ -125,7 +126,7 @@ TEST(UtilsTest, ReadWritePlatformHandle) {
   // Read it back.
   {
     ScopedPlatformHandle handle {
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
       ::CreateFileA(tmp_path.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING,
                     FILE_ATTRIBUTE_NORMAL, nullptr)
 #else
@@ -143,9 +144,9 @@ TEST(UtilsTest, ReadWritePlatformHandle) {
 
 // Fuchsia doesn't currently support sigaction(), see
 // fuchsia.atlassian.net/browse/ZX-560.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_LINUX) ||   \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID) || \
-    PERFETTO_BUILDFLAG(PERFETTO_OS_APPLE)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_LINUX) ||   \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID) || \
+    PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_APPLE)
 TEST(UtilsTest, EintrWrapper) {
   Pipe pipe = Pipe::Create();
 
@@ -172,7 +173,7 @@ TEST(UtilsTest, EintrWrapper) {
   }
 
   char buf[6] = {};
-  EXPECT_EQ(4, PERFETTO_EINTR(read(*pipe.rd, buf, sizeof(buf))));
+  EXPECT_EQ(4, PERFETTO_SOLACE_EINTR(read(*pipe.rd, buf, sizeof(buf))));
   EXPECT_TRUE(close(*pipe.rd) == 0 || errno == EINTR);
   pipe.wr.reset();
 
@@ -217,4 +218,5 @@ TEST(UtilsTest, HexDump) {
 
 }  // namespace
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

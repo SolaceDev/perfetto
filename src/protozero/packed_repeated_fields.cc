@@ -28,7 +28,7 @@ void PackedBufferBase::GrowSlowpath() {
   size_t write_off = static_cast<size_t>(write_ptr_ - storage_begin_);
   size_t old_size = static_cast<size_t>(storage_end_ - storage_begin_);
   size_t new_size = old_size < 65536 ? (old_size * 2) : (old_size * 3 / 2);
-  new_size = perfetto::base::AlignUp<4096>(new_size);
+  new_size = perfetto::solace::base::AlignUp<4096>(new_size);
   std::unique_ptr<uint8_t[]> new_buf(new uint8_t[new_size]);
   memcpy(new_buf.get(), storage_begin_, old_size);
   heap_buf_ = std::move(new_buf);

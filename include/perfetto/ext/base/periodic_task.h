@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_PERIODIC_TASK_H_
-#define INCLUDE_PERFETTO_EXT_BASE_PERIODIC_TASK_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_PERIODIC_TASK_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_PERIODIC_TASK_H_
 
 #include <functional>
 
@@ -24,6 +24,7 @@
 #include "perfetto/ext/base/weak_ptr.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class TaskRunner;
@@ -76,11 +77,12 @@ class PeriodicTask {
   uint32_t generation_ = 0;
   base::ScopedPlatformHandle timer_fd_;
 
-  PERFETTO_THREAD_CHECKER(thread_checker_)
+  PERFETTO_SOLACE_THREAD_CHECKER(thread_checker_)
   base::WeakPtrFactory<PeriodicTask> weak_ptr_factory_;  // Keep last.
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_PERIODIC_TASK_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_PERIODIC_TASK_H_

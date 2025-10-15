@@ -19,7 +19,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 #include <unistd.h>  // For isatty()
 #endif
 
@@ -33,11 +33,12 @@
 #include "perfetto/ext/base/string_view.h"
 #include "src/base/log_ring_buffer.h"
 
-#if PERFETTO_ENABLE_LOG_RING_BUFFER() && PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_ENABLE_LOG_RING_BUFFER() && PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
 #include <android/set_abort_message.h>
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 namespace {
@@ -50,10 +51,10 @@ const char kLightGray[] = "\x1b[90m";
 
 std::atomic<LogMessageCallback> g_log_callback{};
 
-#if PERFETTO_BUILDFLAG(PERFETTO_STDERR_CRASH_DUMP)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_STDERR_CRASH_DUMP)
 // __attribute__((constructor)) causes a static initializer that automagically
 // early runs this function before the main().
-void PERFETTO_EXPORT __attribute__((constructor)) InitDebugCrashReporter() {
+void PERFETTO_SOLACE_EXPORT __attribute__((constructor)) InitDebugCrashReporter() {
   // This function is defined in debug_crash_stack_trace.cc.
   // The dynamic initializer is in logging.cc because logging.cc is included
   // in virtually any target that depends on base. Having it in
@@ -63,12 +64,12 @@ void PERFETTO_EXPORT __attribute__((constructor)) InitDebugCrashReporter() {
 }
 #endif
 
-#if PERFETTO_ENABLE_LOG_RING_BUFFER()
+#if PERFETTO_SOLACE_ENABLE_LOG_RING_BUFFER()
 LogRingBuffer g_log_ring_buffer{};
 
 // This is global to avoid allocating memory or growing too much the stack
 // in MaybeSerializeLastLogsForCrashReporting(), which is called from
-// arbitrary code paths hitting PERFETTO_CHECK()/FATAL().
+// arbitrary code paths hitting PERFETTO_SOLACE_CHECK()/FATAL().
 char g_crash_buf[kLogRingBufEntries * kLogRingBufMsgLen];
 #endif
 
@@ -140,9 +141,9 @@ void LogMessage(LogLev level,
       break;
   }
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_OS_WIN) &&  \
-    !PERFETTO_BUILDFLAG(PERFETTO_OS_WASM) && \
-    !PERFETTO_BUILDFLAG(PERFETTO_CHROMIUM_BUILD)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN) &&  \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WASM) && \
+    !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_CHROMIUM_BUILD)
   static const bool use_colors = isatty(STDERR_FILENO);
 #else
   static const bool use_colors = false;
@@ -161,7 +162,7 @@ void LogMessage(LogLev level,
       "%*s:%s", static_cast<int>(fname_max), &fname[fname_offset],
       line_str.c_str());
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   // Logcat has already timestamping, don't re-emit it.
   __android_log_print(ANDROID_LOG_DEBUG + level, "perfetto", "%s %s",
                       file_and_line.c_str(), log_msg);
@@ -185,7 +186,7 @@ void LogMessage(LogLev level,
             log_msg);
   }
 
-#if PERFETTO_ENABLE_LOG_RING_BUFFER()
+#if PERFETTO_SOLACE_ENABLE_LOG_RING_BUFFER()
   // Append the message to the ring buffer for crash reporting postmortems.
   StringView timestamp_sv = timestamp.string_view();
   StringView file_and_line_sv = file_and_line.string_view();
@@ -196,7 +197,7 @@ void LogMessage(LogLev level,
 #endif
 }
 
-#if PERFETTO_ENABLE_LOG_RING_BUFFER()
+#if PERFETTO_SOLACE_ENABLE_LOG_RING_BUFFER()
 void MaybeSerializeLastLogsForCrashReporting() {
   // Keep this function minimal. This is called from the watchdog thread, often
   // when the system is thrashing.
@@ -215,7 +216,7 @@ void MaybeSerializeLastLogsForCrashReporting() {
   // finishes writing the longer string with the \0 -> boom.
   g_crash_buf[sizeof(g_crash_buf) - 1] = '\0';
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_ANDROID)
   // android_set_abort_message() will cause debuggerd to report the message
   // in the tombstone and in the crash log in logcat.
   // NOTE: android_set_abort_message() can be called only once. This should
@@ -228,7 +229,8 @@ void MaybeSerializeLastLogsForCrashReporting() {
   fputs("\n-----END PERFETTO PRE-CRASH LOG-----\n", stderr);
 #endif
 }
-#endif  // PERFETTO_ENABLE_LOG_RING_BUFFER
+#endif  // PERFETTO_SOLACE_ENABLE_LOG_RING_BUFFER
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto

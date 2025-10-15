@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_PAGED_MEMORY_H_
-#define INCLUDE_PERFETTO_EXT_BASE_PAGED_MEMORY_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_PAGED_MEMORY_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_PAGED_MEMORY_H_
 
 #include <memory>
 
@@ -23,13 +23,14 @@
 #include "perfetto/ext/base/container_annotations.h"
 
 // We need to track the committed size on windows and when ASAN is enabled.
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN) || defined(ADDRESS_SANITIZER)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN) || defined(ADDRESS_SANITIZER)
 #define TRACK_COMMITTED_SIZE() 1
 #else
 #define TRACK_COMMITTED_SIZE() 0
 #endif
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 class PagedMemory {
@@ -99,6 +100,7 @@ class PagedMemory {
 };
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_PAGED_MEMORY_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_PAGED_MEMORY_H_

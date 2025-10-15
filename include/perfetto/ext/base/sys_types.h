@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_SYS_TYPES_H_
-#define INCLUDE_PERFETTO_EXT_BASE_SYS_TYPES_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_SYS_TYPES_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_SYS_TYPES_H_
 
 // This headers deals with sys types commonly used in the codebase that are
 // missing on Windows.
@@ -24,9 +24,9 @@
 
 #include "perfetto/base/build_config.h"
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 
-#if !PERFETTO_BUILDFLAG(PERFETTO_COMPILER_GCC)
+#if !PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_COMPILER_GCC)
 // MinGW has these. clang-cl and MSVC, which use just the Windows SDK, don't.
 using uid_t = unsigned int;
 using pid_t = int;
@@ -41,12 +41,14 @@ using ssize_t = long;
 #endif  // OS_WIN
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
 constexpr uid_t kInvalidUid = static_cast<uid_t>(-1);
 constexpr pid_t kInvalidPid = static_cast<pid_t>(-1);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_SYS_TYPES_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_SYS_TYPES_H_

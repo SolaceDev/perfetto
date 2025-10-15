@@ -26,10 +26,10 @@ namespace protozero {
 
 namespace {
 
-perfetto::base::TempFile MkTemp(const char* str) {
-  auto tmp = perfetto::base::TempFile::Create();
-  perfetto::base::WriteAll(*tmp, str, strlen(str));
-  perfetto::base::FlushFile(*tmp);
+perfetto::solace::base::TempFile MkTemp(const char* str) {
+  auto tmp = perfetto::solace::base::TempFile::Create();
+  perfetto::solace::base::WriteAll(*tmp, str, strlen(str));
+  perfetto::solace::base::FlushFile(*tmp);
   return tmp;
 }
 

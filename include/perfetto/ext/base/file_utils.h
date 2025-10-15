@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_PERFETTO_EXT_BASE_FILE_UTILS_H_
-#define INCLUDE_PERFETTO_EXT_BASE_FILE_UTILS_H_
+#ifndef INCLUDE_PERFETTO_SOLACE_EXT_BASE_FILE_UTILS_H_
+#define INCLUDE_PERFETTO_SOLACE_EXT_BASE_FILE_UTILS_H_
 
 #include <fcntl.h>  // For mode_t & O_RDONLY/RDWR. Exists also on Windows.
 #include <stddef.h>
@@ -31,9 +31,10 @@
 #include "perfetto/ext/base/utils.h"
 
 namespace perfetto {
+namespace solace {
 namespace base {
 
-#if PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
+#if PERFETTO_SOLACE_BUILDFLAG(PERFETTO_SOLACE_OS_WIN)
 using FileOpenMode = int;
 #else
 using FileOpenMode = mode_t;
@@ -68,7 +69,7 @@ ScopedFile OpenFile(const std::string& path,
 // This is an alias for close(). It's to avoid leaking Windows.h in headers.
 // Exported because ScopedFile is used in the /include/ext API by Chromium
 // component builds.
-int PERFETTO_EXPORT CloseFile(int fd);
+int PERFETTO_SOLACE_EXPORT CloseFile(int fd);
 
 bool FlushFile(int fd);
 
@@ -97,6 +98,7 @@ base::Status ListFilesRecursive(const std::string& dir_path,
 Optional<size_t> GetFileSize(const std::string& path);
 
 }  // namespace base
+}  // namespace solace
 }  // namespace perfetto
 
-#endif  // INCLUDE_PERFETTO_EXT_BASE_FILE_UTILS_H_
+#endif  // INCLUDE_PERFETTO_SOLACE_EXT_BASE_FILE_UTILS_H_
